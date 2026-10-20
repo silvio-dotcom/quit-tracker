@@ -51,8 +51,10 @@ const seed = {
   chipCelebrationMigrationV17: true,
   seenMilestoneCelebrations: [
     'chip:chip-24h',
+    'chip:chip-3d',
     'chip:chip-1w',
-    'chip:chip-30d',
+    'chip:chip-3w',
+    'chip:chip-1mo',
   ],
   milestoneAlertsEnabled: false,
 };

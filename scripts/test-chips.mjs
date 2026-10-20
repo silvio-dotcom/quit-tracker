@@ -41,16 +41,16 @@ if (!hi24 || hi24.tier.id !== 'chip-24h') {
   process.exit(1);
 }
 
-const at30d = stateAtDays(30);
-const hi30 = highestEarnedChip(at30d, Date.now());
-if (!hi30 || hi30.tier.id !== 'chip-30d') {
-  console.error('expected 30d chip at 30 days');
+const at1mo = stateAtDays(30);
+const hi1mo = highestEarnedChip(at1mo, Date.now());
+if (!hi1mo || hi1mo.tier.id !== 'chip-1mo') {
+  console.error('expected 1-month chip at 30 days');
   process.exit(1);
 }
 
-const quitMs = new Date(at30d.profile.quitDate).getTime();
-const tier30 = BASE_SMOKE_FREE_CHIPS.find((t) => t.id === 'chip-30d');
-const earnedAt = chipEarnedAtMs(quitMs, tier30.ms);
+const quitMs = new Date(at1mo.profile.quitDate).getTime();
+const tier1mo = BASE_SMOKE_FREE_CHIPS.find((t) => t.id === 'chip-1mo');
+const earnedAt = chipEarnedAtMs(quitMs, tier1mo.ms);
 if (Math.abs(earnedAt - (quitMs + 30 * MS_D)) > 1000) {
   console.error('earned date should be quit + duration');
   process.exit(1);
@@ -58,8 +58,15 @@ if (Math.abs(earnedAt - (quitMs + 30 * MS_D)) > 1000) {
 
 const at29d = stateAtDays(29.9);
 const hi29 = highestEarnedChip(at29d, Date.now());
-if (hi29 && hi29.tier.id === 'chip-30d') {
-  console.error('30d chip should not unlock before 30 days');
+if (hi29 && hi29.tier.id === 'chip-1mo') {
+  console.error('1-month chip should not unlock before 30 days');
+  process.exit(1);
+}
+
+const at3d = { profile: { quitDate: new Date(Date.now() - 3 * MS_D).toISOString() } };
+const hi3d = highestEarnedChip(at3d, Date.now());
+if (!hi3d || hi3d.tier.id !== 'chip-3d') {
+  console.error('expected 3-day chip at 3 days');
   process.exit(1);
 }
 
@@ -76,7 +83,7 @@ if (!tiers.some((t) => t.id === 'chip-2y')) {
   process.exit(1);
 }
 
-if (!isChipEarned(quitMs, tier30.ms, quitMs + tier30.ms)) {
+if (!isChipEarned(quitMs, tier1mo.ms, quitMs + tier1mo.ms)) {
   console.error('boundary inclusive at exact unlock');
   process.exit(1);
 }
