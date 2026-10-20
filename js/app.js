@@ -19,6 +19,7 @@ import {
   formatUnlockDate,
   moneyBadgeTitle,
 } from './achievements.js';
+import { toDatetimeLocalValue, datetimeLocalNow, quitDateFromDatetimeLocal } from './datetime.js';
 import {
   getCurrentRank,
   getNextRank,
@@ -47,14 +48,6 @@ function setText(sel, text) {
 function setWidth(sel, width) {
   const el = $(sel);
   if (el) el.style.width = width;
-}
-
-function toDatetimeLocalValue(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function persist() {
@@ -106,9 +99,7 @@ function needsSetup() {
 function renderSetup() {
   const p = state.profile;
   $('#setup-name').value = p.displayName || 'Silvio';
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  $('#setup-quit').value = p.quitDate ? toDatetimeLocalValue(p.quitDate) : now.toISOString().slice(0, 16);
+  $('#setup-quit').value = p.quitDate ? toDatetimeLocalValue(p.quitDate) : datetimeLocalNow();
   $('#setup-cpd').value = p.cigsPerDay;
   $('#setup-cpp').value = p.cigsPerPack;
   $('#setup-price').value = p.packPrice;
@@ -384,7 +375,12 @@ function bindEvents() {
   $('#setup-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     state.profile.displayName = $('#setup-name').value.trim() || 'Silvio';
-    state.profile.quitDate = new Date($('#setup-quit').value).toISOString();
+    const quit = quitDateFromDatetimeLocal($('#setup-quit').value);
+    if (!quit.ok) {
+      toast(quit.error);
+      return;
+    }
+    state.profile.quitDate = quit.iso;
     state.profile.cigsPerDay = Number($('#setup-cpd').value) || 15;
     state.profile.cigsPerPack = Number($('#setup-cpp').value) || 20;
     state.profile.packPrice = Number($('#setup-price').value) || 0;
@@ -398,7 +394,14 @@ function bindEvents() {
   $('#settings-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const q = $('#settings-quit').value;
-    if (q) state.profile.quitDate = new Date(q).toISOString();
+    if (q) {
+      const quit = quitDateFromDatetimeLocal(q);
+      if (!quit.ok) {
+        toast(quit.error);
+        return;
+      }
+      state.profile.quitDate = quit.iso;
+    }
     state.profile.cigsPerDay = Number($('#settings-cpd').value);
     state.profile.cigsPerPack = Number($('#settings-cpp').value);
     state.profile.packPrice = Number($('#settings-price').value);
