@@ -610,8 +610,9 @@ export function initApp() {
   showView('home');
 
   if ('serviceWorker' in navigator) {
-    const swUrl = new URL('sw.js', import.meta.url);
-    navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => {});
+    const swUrl = new URL('../sw.js', import.meta.url);
+    const scope = new URL('../', import.meta.url);
+    navigator.serviceWorker.register(swUrl, { scope }).catch(() => {});
   }
 }
 
