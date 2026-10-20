@@ -64,27 +64,64 @@ function pickOnLadder(ladder, ideal, prev, maxInclusive = Infinity) {
   return best;
 }
 
+/** @returns {{ amount: number, text: string }} */
+export function formatTimebackLabel(minutes) {
+  if (minutes >= 525600) return { amount: 1, text: '1 year' };
+  if (minutes >= 43200) {
+    const mo = Math.round(minutes / 43200);
+    return { amount: mo, text: `${mo} month${mo === 1 ? '' : 's'}` };
+  }
+  if (minutes >= 10080) {
+    const w = Math.round(minutes / 10080);
+    return { amount: w, text: `${w} week${w === 1 ? '' : 's'}` };
+  }
+  if (minutes >= 1440) {
+    const d = Math.round(minutes / 1440);
+    return { amount: d, text: `${d} day${d === 1 ? '' : 's'}` };
+  }
+  if (minutes >= 60) {
+    const h = Math.round(minutes / 60);
+    return { amount: h, text: `${h} hour${h === 1 ? '' : 's'}` };
+  }
+  return { amount: minutes, text: `${minutes} min` };
+}
+
+export function timebackTitle(minutes, isYear = false) {
+  if (isYear) return '1 year back';
+  return `${formatTimebackLabel(minutes).text} back`;
+}
+
+export function timebackDesc(minutes, isYear = false) {
+  if (isYear) return 'A year of life back from not smoking.';
+  return `${formatTimebackLabel(minutes).text} of life regained.`;
+}
+
+export function moneyTitle(amount, isYear = false) {
+  if (isYear) return 'Year savings';
+  const label = amount >= 1000 ? amount.toLocaleString() : String(amount);
+  return `${label} saved`;
+}
+
 function moneyDesc(amount, isYear) {
   const label = amount >= 1000 ? amount.toLocaleString() : String(amount);
   if (isYear) return `A full year of savings — about ${label} kept.`;
   return `${label} saved instead of spent on cigarettes.`;
 }
 
+export function cigsTitle(count, specId) {
+  if (specId === 'cigs-1') return 'First cigarette';
+  return `${count.toLocaleString()} avoided`;
+}
+
+export function cigsPackTitle(packs, specId) {
+  if (specId === 'cigs-first-pack') return 'First pack';
+  return `${packs} pack${packs === 1 ? '' : 's'}`;
+}
+
 function cigsDesc(count, isYear) {
   const label = count.toLocaleString();
   if (isYear) return `Your one-year total: ${label} cigarettes not smoked.`;
   return `${label} cigarettes never lit.`;
-}
-
-function timebackDesc(minutes, isYear) {
-  if (isYear) return 'A year of life back from not smoking.';
-  if (minutes < 60) return `${minutes} minutes of life regained.`;
-  if (minutes < 1440) {
-    const h = Math.round(minutes / 60);
-    return `${h} hour${h === 1 ? '' : 's'} of life regained.`;
-  }
-  const d = Math.round(minutes / 1440);
-  return `${d} day${d === 1 ? '' : 's'} of life regained.`;
 }
 
 export function yearHorizonMetrics(profile) {
@@ -149,14 +186,7 @@ function buildCigsAchievements(profile, horizon) {
     }
     if (spec.packFraction != null) {
       const packs = Math.max(1, Math.ceil(equiv / cpp));
-      const title =
-        spec.id === 'cigs-first-pack'
-          ? 'First pack'
-          : spec.id === 'cigs-5pack'
-            ? '5 packs'
-            : spec.id === 'cigs-10pack'
-              ? '10 packs'
-              : `${packs} pack${packs === 1 ? '' : 's'}`;
+      const title = cigsPackTitle(packs, spec.id);
       byId.set(spec.id, {
         id: spec.id,
         category: 'cigs',
@@ -168,7 +198,7 @@ function buildCigsAchievements(profile, horizon) {
       prevEquiv = packs * cpp;
     } else {
       const count = equiv;
-      const title = spec.id === 'cigs-1' ? 'First cigarette' : `${count.toLocaleString()} avoided`;
+      const title = cigsTitle(count, spec.id);
       byId.set(spec.id, {
         id: spec.id,
         category: 'cigs',
@@ -221,7 +251,7 @@ function buildMoneyAchievements(horizon) {
       id: spec.id,
       category: 'money',
       icon: spec.icon,
-      title: spec.id === 'money-year' ? 'Year savings' : spec.title,
+      title: moneyTitle(amount, isYear),
       desc: moneyDesc(amount, isYear),
       amount,
     };
@@ -230,16 +260,33 @@ function buildMoneyAchievements(horizon) {
 
 function buildTimebackAchievements(horizon) {
   const yearCap = Math.max(30, Math.round(horizon.regainedMinutes));
-  const values = assignInteriorSeries(TIMEBACK_SPECS, yearCap, MINUTES_LADDER, 'timeback-year');
+  const interior = TIMEBACK_SPECS.filter((s) => s.id !== 'timeback-year');
+  const values = new Map();
+  const maxInterior = Math.max(30, Math.floor(yearCap / MIN_STEP_RATIO));
+  const minStart = 30;
+  const stepRatio = (maxInterior / minStart) ** (1 / interior.length);
+  let prev = 0;
+  for (let i = 0; i < interior.length; i++) {
+    let minutes = Math.round(minStart * stepRatio ** (i + 1));
+    const minV = prev ? Math.ceil(prev * MIN_STEP_RATIO) : minStart;
+    if (minV > maxInterior) {
+      const remaining = interior.length - i;
+      minutes = Math.round(prev + (maxInterior - prev) / (remaining + 1));
+    } else {
+      minutes = Math.max(minV, Math.min(maxInterior, minutes));
+    }
+    prev = minutes;
+    values.set(interior[i].id, minutes);
+  }
+  values.set('timeback-year', yearCap);
   return TIMEBACK_SPECS.map((spec) => {
     const isYear = spec.id === 'timeback-year' || spec.yearFraction >= 1;
     const regainedMinutes = values.get(spec.id);
-    const title = isYear ? '1 year back' : spec.title;
     return {
       id: spec.id,
       category: 'timeback',
       icon: spec.icon,
-      title,
+      title: timebackTitle(regainedMinutes, isYear),
       desc: timebackDesc(regainedMinutes, isYear),
       regainedMinutes,
     };

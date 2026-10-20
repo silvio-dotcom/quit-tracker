@@ -3,8 +3,10 @@ import { unlockedAchievements } from './achievements.js';
 import { BADGE_YEAR_MS } from './badge-year-scale.js';
 
 const MS_H = 60 * 60 * 1000;
-const XP_PER_HOUR = 0.38;
-const XP_PER_BADGE = 72;
+/** Time XP grows ~linearly early, slower late — pairs with modest badge XP for even pacing. */
+const TIME_XP_COEFF = 0.35;
+const TIME_XP_POWER = 1.1;
+const XP_PER_BADGE = 4;
 export const MAX_LEVEL = 20;
 
 export const LEVEL_TITLES = [
@@ -34,7 +36,9 @@ export function totalXp(state, now = Date.now()) {
   if (!state.profile.quitDate) return 0;
   const hours = msSinceQuit(state.profile, now) / MS_H;
   const badges = unlockedAchievements(state, now).length;
-  return Math.floor(hours * XP_PER_HOUR + badges * XP_PER_BADGE);
+  const timeXp = Math.floor(hours ** TIME_XP_POWER * TIME_XP_COEFF);
+  const badgeXp = Math.floor(badges * XP_PER_BADGE);
+  return timeXp + badgeXp;
 }
 
 /** XP cost to advance from `level` to `level + 1` (quick early, slower later). */
