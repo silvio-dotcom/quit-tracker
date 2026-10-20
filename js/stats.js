@@ -1,6 +1,10 @@
 import { MINUTES_PER_CIG_LIFE, ACHIEVEMENTS } from './constants.js';
 import { HEALTH_MILESTONES } from './health-milestones.js';
 
+/** Daily cigarette rate is spread over waking hours only (QuitNow-style). */
+export const WAKING_HOURS_PER_DAY = 16;
+const MS_PER_HOUR = 60 * 60 * 1000;
+
 export function pricePerCig(profile) {
   const pack = Number(profile.cigsPerPack) || 20;
   const price = Number(profile.packPrice) || 0;
@@ -16,7 +20,7 @@ export function msSinceQuit(profile, now = Date.now()) {
 export function cigarettesAvoided(state, now = Date.now()) {
   const ms = msSinceQuit(state.profile, now);
   const perDay = Number(state.profile.cigsPerDay) || 0;
-  const perMs = perDay / (24 * 60 * 60 * 1000);
+  const perMs = perDay / (WAKING_HOURS_PER_DAY * MS_PER_HOUR);
   return Math.max(0, Math.floor(ms * perMs));
 }
 

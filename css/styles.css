@@ -190,6 +190,15 @@ body.modal-open {
   font-weight: 700;
 }
 
+.stat-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.65rem;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
