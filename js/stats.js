@@ -3,6 +3,7 @@ import { HEALTH_MILESTONES } from './health-milestones.js';
 /** Daily cigarette rate is spread over waking hours only (QuitNow-style). */
 export const WAKING_HOURS_PER_DAY = 16;
 const MS_PER_HOUR = 60 * 60 * 1000;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 export function pricePerCig(profile) {
   const pack = Number(profile.cigsPerPack) || 20;
@@ -45,15 +46,24 @@ export function formatDuration(ms) {
   return { parts, label };
 }
 
-/** Days since quit date (inclusive of today). */
+/** Full 24-hour periods since quit instant (0 until 24h elapse). */
 export function currentStreakDays(state, now = Date.now()) {
   if (!state.profile.quitDate) return 0;
-  const quit = new Date(state.profile.quitDate);
-  quit.setHours(0, 0, 0, 0);
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-  if (today < quit) return 0;
-  return Math.floor((today - quit) / 86400000) + 1;
+  return Math.floor(msSinceQuit(state.profile, now) / MS_PER_DAY);
+}
+
+/** Streak label for UI: days when ≥1, otherwise hours/minutes under 24h. */
+export function formatStreakDisplay(state, now = Date.now()) {
+  if (!state.profile.quitDate) return formatDayCount(0);
+  const ms = msSinceQuit(state.profile, now);
+  const days = Math.floor(ms / MS_PER_DAY);
+  if (days >= 1) return formatDayCount(days);
+  if (ms <= 0) return formatDayCount(0);
+  const hours = Math.floor(ms / MS_PER_HOUR);
+  if (hours >= 1) return `${hours} ${hours === 1 ? 'hr' : 'hrs'}`;
+  const mins = Math.floor(ms / (60 * 1000));
+  if (mins >= 1) return `${mins} ${mins === 1 ? 'min' : 'mins'}`;
+  return formatDayCount(0);
 }
 
 export function healthProgress(now, quitDate) {
