@@ -12,6 +12,7 @@
   --sky: #38bdf8;
   --radius: 14px;
   --nav-h: 64px;
+  --header-h: 76px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif;
 }
@@ -20,6 +21,10 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
 }
 
 html,
@@ -39,15 +44,23 @@ body.modal-open {
   max-width: 480px;
   margin: 0 auto;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 12px);
 }
 
 .top-bar {
-  padding: 16px 16px 8px;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 5;
-  background: linear-gradient(180deg, var(--bg) 70%, transparent);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .brand {
@@ -73,7 +86,14 @@ body.modal-open {
 }
 
 .main-content {
-  padding: 0 16px 24px;
+  flex: 1;
+  min-height: 0;
+  padding: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 4px) 16px 24px;
+}
+
+/* datetime-local needs room below sticky header when focused/scrolled */
+.form-card input[type='datetime-local'] {
+  min-height: 44px;
 }
 
 .view.hidden {
@@ -257,14 +277,55 @@ body.modal-open {
   font-size: 0.85rem;
 }
 
-.btn.craving-btn {
-  width: 100%;
-  margin: 8px 0 10px;
-  padding: 16px;
-  font-size: 1.05rem;
-  background: linear-gradient(135deg, #0ea5e9, #22c55e);
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25);
+.btn.danger {
+  margin: 16px 0 8px;
+  background: rgba(248, 113, 113, 0.15);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+}
+
+.health-home-section h2 {
+  margin-top: 0;
+}
+
+.health-subhead {
+  font-size: 0.85rem;
+  margin: 16px 0 8px;
+}
+
+.health-next-card {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.health-recent-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.health-recent-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+
+.health-source-inline {
+  color: var(--sky);
+  font-size: 0.72rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.streak-compare-home {
+  text-align: center;
+  margin: -4px 0 12px;
 }
 
 .row-actions {
@@ -301,7 +362,7 @@ body.modal-open {
   height: calc(var(--nav-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   background: rgba(15, 20, 25, 0.92);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);

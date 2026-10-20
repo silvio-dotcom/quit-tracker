@@ -1,7 +1,7 @@
 {
   "name": "Quit Tracker",
   "short_name": "Quit",
-  "description": "Silvio's personal smoke-free tracker with cravings, health milestones, and savings.",
+  "description": "Silvio's personal smoke-free tracker with health milestones, ranks, and savings.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
