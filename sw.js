@@ -23,6 +23,8 @@ const PRECACHE = [
   './js/platform.js',
   './js/milestone-schedule.js',
   './js/native-notifications.js',
+  './js/native-shell.js',
+  './js/back-handler.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',

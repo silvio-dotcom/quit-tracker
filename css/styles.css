@@ -1,5 +1,6 @@
 :root {
   --bg: #0f1419;
+  --content-max: min(100%, 448px);
   --bg-elevated: #171d24;
   --bg-card: #1c242d;
   --border: rgba(255, 255, 255, 0.08);
@@ -25,6 +26,8 @@
 
 html {
   scroll-padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
@@ -41,12 +44,14 @@ body.modal-open {
 }
 
 #app {
-  max-width: 480px;
+  max-width: var(--content-max);
   margin: 0 auto;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 12px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 .top-bar {
@@ -55,9 +60,10 @@ body.modal-open {
   left: 0;
   right: 0;
   z-index: 30;
-  max-width: 480px;
+  max-width: var(--content-max);
   margin: 0 auto;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 10px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 10px
+    max(16px, env(safe-area-inset-left, 0px));
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -175,6 +181,28 @@ body.modal-open {
   border-radius: calc(var(--radius) + 4px);
   padding: 20px 16px;
   margin-bottom: 16px;
+}
+
+@media (min-height: 780px) {
+  .hero-card {
+    padding: 28px 16px 32px;
+    margin-bottom: 20px;
+  }
+
+  .main-content {
+    padding-bottom: 32px;
+  }
+
+  .live-counter {
+    gap: 10px;
+  }
+}
+
+.view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .hero-label {
@@ -388,6 +416,12 @@ body.modal-open {
   background: linear-gradient(90deg, #0ea5e9, var(--accent));
 }
 
+.btn,
+.btn.ghost,
+.btn.danger {
+  min-height: 48px;
+}
+
 .btn {
   appearance: none;
   border: none;
@@ -503,7 +537,7 @@ body.modal-open {
   left: 0;
   right: 0;
   bottom: 0;
-  max-width: 480px;
+  max-width: var(--content-max);
   margin: 0 auto;
   height: calc(var(--nav-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);

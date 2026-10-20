@@ -7,6 +7,7 @@ import sharp from 'sharp';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const androidRes = path.join(root, 'android/app/src/main/res');
 const svg = fs.readFileSync(path.join(root, 'icons/logo.svg'));
+const monoSvg = fs.readFileSync(path.join(root, 'icons/logo-monochrome.svg'));
 
 const densities = {
   mdpi: 48,
@@ -30,6 +31,8 @@ async function main() {
     const dir = path.join(androidRes, `mipmap-${folder}`);
     await writePng(size, path.join(dir, 'ic_launcher.png'));
     await writePng(size, path.join(dir, 'ic_launcher_round.png'));
+    const mono = Math.round(size * 0.55);
+    await sharp(monoSvg).resize(mono, mono).png().toFile(path.join(dir, 'ic_launcher_monochrome.png'));
     const fg = Math.round(size * 0.62);
     await sharp(svg)
       .resize(fg, fg)
@@ -49,6 +52,7 @@ async function main() {
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background"/>
     <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>
 </adaptive-icon>
 `;
   fs.writeFileSync(path.join(anydpi, 'ic_launcher.xml'), adaptive);

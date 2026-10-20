@@ -32,6 +32,31 @@ async function ensureChannel() {
   }
 }
 
+function buildNotificationPayload(upcoming, exact) {
+  return upcoming.map((item) => ({
+    id: item.id,
+    title: item.title,
+    body: item.body,
+    channelId: CHANNEL_ID,
+    extra: { key: item.key },
+    schedule: { at: new Date(item.at), allowWhileIdle: exact },
+  }));
+}
+
+async function scheduleWithExactFallback(LN, upcoming) {
+  try {
+    await LN.schedule({ notifications: buildNotificationPayload(upcoming, true) });
+    return;
+  } catch {
+    /* SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM not granted — inexact fallback */
+  }
+  try {
+    await LN.schedule({ notifications: buildNotificationPayload(upcoming, false) });
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Cancel all pending milestone notifications and reschedule from state. */
 export async function syncNativeMilestoneSchedule(state) {
   if (!isNativePlatform()) return;
@@ -67,14 +92,5 @@ export async function syncNativeMilestoneSchedule(state) {
 
   if (!upcoming.length) return;
 
-  const notifications = upcoming.map((item) => ({
-    id: item.id,
-    title: item.title,
-    body: item.body,
-    channelId: CHANNEL_ID,
-    schedule: { at: new Date(item.at), allowWhileIdle: true },
-    extra: { key: item.key },
-  }));
-
-  await LN.schedule({ notifications });
+  await scheduleWithExactFallback(LN, upcoming);
 }

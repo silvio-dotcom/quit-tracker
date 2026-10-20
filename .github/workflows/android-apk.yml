@@ -32,6 +32,9 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Prepare Android SDK (API 36/37)
+        run: bash scripts/prepare-android-sdk.sh
+
       - name: Ensure debug keystore
         run: bash scripts/generate-debug-keystore.sh
 
