@@ -76,6 +76,16 @@ async function runCase(name, seedLocalStorage) {
   await page.locator('#btn-health-toggle').tap();
   if (name === 'fresh') {
     await page.waitForTimeout(200);
+    const installBanner = await page.locator('#install-home-banner:not(.hidden)').count();
+    if (!installBanner) throw new Error('fresh: install banner should show before installed');
+    const rankNameColor = await page.evaluate(() => {
+      const el = document.querySelector('#rank-dash-name');
+      if (!el) return null;
+      return getComputedStyle(el).color;
+    });
+    if (!rankNameColor || rankNameColor === 'rgb(0, 0, 0)') {
+      throw new Error(`fresh: rank name low contrast color ${rankNameColor}`);
+    }
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/home-simplified-mobile.png', fullPage: false });
     await page.locator('.nav-btn[data-nav="badges"]').tap();
     await page.waitForTimeout(250);
