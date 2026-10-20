@@ -26,6 +26,7 @@ import { renderHeroChip, bindChipsUi } from './chips-ui.js';
 import { registerPredictiveBack } from './back-handler.js';
 import { initNativeShell, onNativeAppActive } from './native-shell.js';
 import { renderBadgesScreen, homeLevelPillHtml, BADGE_FILTER_ALL } from './badges-screen.js';
+import { initPixelNavIcons } from './pixel-nav-icons.js';
 import { syncAchievementUnlocks, unlockedAchievements } from './achievements.js';
 import { toDatetimeLocalValue, datetimeLocalNow, quitDateFromDatetimeLocal } from './datetime.js';
 import { initInstallUi, updateInstallUi } from './install.js';
@@ -481,6 +482,7 @@ function startTicker() {
 }
 
 export function initApp() {
+  initPixelNavIcons();
   bindEvents();
   initInstallUi();
   initNativeShell().then(() => updateInstallUi());
