@@ -13,6 +13,7 @@ const SKIP = new Set([
   '.git',
   '.github',
   'package-lock.json',
+  'capacitor.js',
 ]);
 
 function copyDir(src, dest) {
@@ -29,4 +30,13 @@ function copyDir(src, dest) {
 
 fs.rmSync(www, { recursive: true, force: true });
 copyDir(root, www);
+
+const capBridge = path.join(root, 'node_modules/@capacitor/core/dist/capacitor.js');
+if (fs.existsSync(capBridge)) {
+  fs.copyFileSync(capBridge, path.join(www, 'capacitor.js'));
+  console.log('copied Capacitor bridge to www/capacitor.js');
+} else {
+  console.warn('Capacitor bridge missing — run npm ci before cap sync');
+}
+
 console.log('synced web assets to www/');

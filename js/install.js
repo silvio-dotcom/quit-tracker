@@ -47,10 +47,15 @@ function wasInstalledBefore() {
   }
 }
 
+function hideAllInstallUi() {
+  setHidden($('#btn-install-header'), true);
+  document.querySelectorAll('[data-install-ui]').forEach((el) => el.classList.add('hidden'));
+  $('#modal-ios-install')?.classList.remove('open');
+}
+
 export function updateInstallUi() {
   if (isNativePlatform()) {
-    setHidden($('#btn-install-header'), true);
-    document.querySelectorAll('[data-install-ui]').forEach((el) => el.classList.add('hidden'));
+    hideAllInstallUi();
     return;
   }
   const standalone = isStandalonePwa();
@@ -76,6 +81,7 @@ function closeIosInstallSheet() {
 }
 
 async function onInstallTap() {
+  if (isNativePlatform()) return;
   if (isStandalonePwa()) return;
 
   if (deferredPrompt) {

@@ -12,16 +12,35 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=15" />
-  <script>window.__QT_BUILD__ = '15';</script>
+  <link rel="stylesheet" href="css/styles.css?v=16" />
+  <style>
+    html.qt-native-android #btn-install-header,
+    html.qt-native-android [data-install-ui],
+    html.qt-native-android #modal-ios-install {
+      display: none !important;
+    }
+  </style>
+  <script>window.__QT_BUILD__ = '16';</script>
   <script src="capacitor.js"></script>
   <script>
     (function () {
-      var native = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+      function detectNative() {
+        var ua = navigator.userAgent || '';
+        if (ua.indexOf('QuitTrackerAndroid') !== -1) return true;
+        var c = window.Capacitor;
+        if (!c) return false;
+        try {
+          if (c.isNativePlatform && c.isNativePlatform()) return true;
+          if (c.getPlatform && (c.getPlatform() === 'android' || c.getPlatform() === 'ios')) return true;
+        } catch (e) {}
+        return false;
+      }
+      var native = detectNative();
       window.__QT_NATIVE__ = native;
+      if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=15';
+        s.src = 'js/sw-register.js?v=16';
         document.head.appendChild(s);
       }
     })();
@@ -83,7 +102,10 @@
           </article>
         </div>
 
-        <button type="button" id="btn-share-progress" class="btn ghost full">Share progress</button>
+        <button type="button" id="btn-share-progress" class="btn ghost full btn-with-icon">
+          <span class="btn-icon" aria-hidden="true">↗</span>
+          Share my progress
+        </button>
 
         <div class="card health-home-section">
           <h2>Health recovery</h2>
@@ -220,6 +242,22 @@
     </div>
   </div>
 
+  <div id="modal-share-preview" class="modal" aria-modal="true" aria-labelledby="share-preview-title">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel share-preview-panel">
+        <h2 id="share-preview-title">Share my progress</h2>
+        <p class="muted small">Preview what you will share.</p>
+        <img id="share-preview-image" class="share-preview-image" alt="" width="280" height="350" />
+        <pre id="share-preview-text" class="share-preview-text"></pre>
+        <div class="share-preview-actions">
+          <button type="button" id="btn-share-preview-share" class="btn full">Share</button>
+          <button type="button" id="btn-share-preview-copy" class="btn ghost full">Copy text</button>
+          <button type="button" class="btn ghost full" data-close="modal-share-preview">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-ios-install" class="modal" aria-modal="true" aria-labelledby="ios-install-title">
     <div class="modal-backdrop">
       <div class="modal-panel ios-install-panel">
@@ -235,6 +273,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=15"></script>
+  <script type="module" src="js/bootstrap.js?v=16"></script>
 </body>
 </html>

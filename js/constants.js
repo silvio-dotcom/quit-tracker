@@ -2,6 +2,9 @@
 
 export const STORAGE_KEY = 'quit-tracker-data-v1';
 
+/** Minutes of life regained per cigarette not smoked (share / time-back). */
+export const TIME_BACK_MINUTES_PER_CIG = 6;
+
 export const CURRENCIES = {
   USD: { symbol: '$', label: 'US Dollar' },
   NIO: { symbol: 'C$', label: 'Nicaraguan córdoba' },
