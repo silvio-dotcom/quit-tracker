@@ -1,9 +1,10 @@
-/** @typedef {'USD'|'EUR'|'GBP'|'CAD'|'AUD'} CurrencyCode */
+/** @typedef {'USD'|'NIO'|'EUR'|'GBP'|'CAD'|'AUD'} CurrencyCode */
 
 export const STORAGE_KEY = 'quit-tracker-data-v1';
 
 export const CURRENCIES = {
   USD: { symbol: '$', label: 'US Dollar' },
+  NIO: { symbol: 'C$', label: 'Nicaraguan córdoba' },
   EUR: { symbol: '€', label: 'Euro' },
   GBP: { symbol: '£', label: 'British Pound' },
   CAD: { symbol: 'CA$', label: 'Canadian Dollar' },
@@ -118,5 +119,8 @@ export function defaultState() {
     seenRanks: [],
     achievementUnlocks: {},
     badgeMigrationV9: false,
+    seenMilestoneCelebrations: [],
+    milestoneAlertsEnabled: false,
+    celebrationMigrationV14: false,
   };
 }

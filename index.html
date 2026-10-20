@@ -12,9 +12,9 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/styles.css?v=13" />
-  <script>window.__QT_BUILD__ = '13';</script>
-  <script src="js/sw-register.js?v=13"></script>
+  <link rel="stylesheet" href="css/styles.css?v=14" />
+  <script>window.__QT_BUILD__ = '14';</script>
+  <script src="js/sw-register.js?v=14"></script>
 </head>
 <body>
   <div id="app">
@@ -50,15 +50,21 @@
           <p id="rank-dash-streaks" class="rank-dash-streaks small muted"></p>
         </button>
 
+        <div id="next-up-card" class="card next-up-card">
+          <h2 class="next-up-heading">Next up</h2>
+          <div id="next-up-body"></div>
+        </div>
+
         <div class="stat-grid">
           <article class="stat-card">
             <span class="stat-label">Not smoked</span>
             <span id="stat-cigs" class="stat-value">0</span>
             <span class="stat-hint muted">Based on 16 waking hours/day</span>
           </article>
-          <article class="stat-card">
+          <article class="stat-card stat-card-wide">
             <span class="stat-label">Money saved</span>
             <span id="stat-money" class="stat-value">$0.00</span>
+            <ul id="money-projections" class="money-projections muted small"></ul>
           </article>
           <article class="stat-card">
             <span class="stat-label">Current streak</span>
@@ -66,10 +72,11 @@
           </article>
         </div>
 
+        <button type="button" id="btn-share-progress" class="btn ghost full">Share progress</button>
+
         <div class="card health-home-section">
           <h2>Health recovery</h2>
           <p class="muted small">Sourced public-health milestones (not medical advice).</p>
-          <div id="health-next-card" class="health-next-card"></div>
           <h3 class="health-subhead">Recently achieved</h3>
           <ul id="health-recent-list" class="health-recent-list"></ul>
           <button type="button" id="btn-health-toggle" class="btn ghost full">See all health milestones</button>
@@ -117,6 +124,15 @@
           <label>Currency<select id="settings-currency"></select></label>
           <button type="submit" class="btn">Save settings</button>
         </form>
+
+        <h2 class="section-title">Alerts</h2>
+        <div class="card form-card">
+          <label class="toggle-row">
+            <span>Milestone alerts</span>
+            <input type="checkbox" id="toggle-milestone-alerts" />
+          </label>
+          <p id="milestone-alerts-help" class="muted small"></p>
+        </div>
 
         <h2 class="section-title">App</h2>
         <div class="card row-actions">
@@ -181,6 +197,18 @@
     </div>
   </div>
 
+  <div id="modal-milestone" class="modal" aria-modal="true">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel rank-up-panel">
+        <p class="rank-up-label">Milestone</p>
+        <div id="milestone-celebration-icon" class="rank-up-icon">🏅</div>
+        <h2 id="milestone-celebration-title">Unlocked</h2>
+        <p id="milestone-celebration-sub" class="muted center"></p>
+        <button type="button" class="btn full" data-close="modal-milestone">Nice!</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-ios-install" class="modal" aria-modal="true" aria-labelledby="ios-install-title">
     <div class="modal-backdrop">
       <div class="modal-panel ios-install-panel">
@@ -196,6 +224,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=13"></script>
+  <script type="module" src="js/bootstrap.js?v=14"></script>
 </body>
 </html>

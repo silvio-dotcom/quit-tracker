@@ -226,6 +226,79 @@ body.modal-open {
   margin-bottom: 16px;
 }
 
+.stat-card-wide {
+  grid-column: 1 / -1;
+}
+
+.money-projections {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  line-height: 1.45;
+}
+
+.next-up-card {
+  margin-bottom: 14px;
+  padding: 14px 14px 12px;
+}
+
+.next-up-heading {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.next-up-row {
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.next-up-row:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.next-up-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.next-up-tag {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b8c6d6;
+}
+
+.next-up-countdown {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.next-up-title {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.toggle-row input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
 @media (max-width: 360px) {
   .stat-grid {
     grid-template-columns: 1fr;
