@@ -141,6 +141,10 @@
 
       <section data-view="more" class="view hidden">
         <h2 class="section-title">Settings</h2>
+        <div class="card row-actions">
+          <button type="button" id="btn-open-setup" class="btn ghost full">Open setup wizard</button>
+        </div>
+        <p class="muted small">Use this to set or change your quit date, cigarettes per day, and pack price.</p>
         <form id="settings-form" class="card form-card">
           <label>Quit date &amp; time<input type="datetime-local" id="settings-quit" required /></label>
           <label>Cigarettes per day<input type="number" id="settings-cpd" min="1" max="100" required /></label>
