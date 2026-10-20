@@ -4,14 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f1419" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Quit" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Silvio's personal smoke-free tracker — time, savings, health milestones, and ranks." />
   <title>Quit Tracker</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/styles.css?v=11" />
-  <script>window.__QT_BUILD__ = '11';</script>
-  <script src="js/sw-register.js?v=11"></script>
+  <link rel="stylesheet" href="css/styles.css?v=12" />
+  <script>window.__QT_BUILD__ = '12';</script>
+  <script src="js/sw-register.js?v=12"></script>
 </head>
 <body>
   <div id="app">
@@ -23,6 +26,7 @@
           <p class="tagline">Smoke-free &amp; stronger every minute</p>
         </div>
       </div>
+      <button type="button" id="btn-install-header" class="btn-install-header hidden" aria-label="Add to Home Screen">📲 Install</button>
     </header>
 
     <main class="main-content">
@@ -30,6 +34,12 @@
         <div class="hero-card">
           <p class="hero-label">Smoke-free for</p>
           <div id="live-counter" class="live-counter" aria-live="polite"></div>
+        </div>
+
+        <div id="install-home-banner" class="install-banner card hidden">
+          <p class="install-banner-title">Install on your home screen</p>
+          <p class="install-banner-text muted small">Open Quit Tracker in one tap — works offline after the first visit.</p>
+          <button type="button" id="btn-install-home" class="btn full">Add to Home Screen</button>
         </div>
 
         <button type="button" id="rank-dashboard-card" class="rank-dashboard card" aria-label="View rank ladder">
@@ -114,6 +124,11 @@
           <button type="submit" class="btn">Save settings</button>
         </form>
 
+        <h2 class="section-title">App</h2>
+        <div class="card row-actions">
+          <button type="button" id="btn-install-more" class="btn ghost full">Add to Home Screen</button>
+        </div>
+
         <h2 class="section-title">Streaks</h2>
         <div class="card">
           <p>Current streak: <strong id="stats-current">0 days</strong></p>
@@ -172,6 +187,21 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=11"></script>
+  <div id="modal-ios-install" class="modal" aria-modal="true" aria-labelledby="ios-install-title">
+    <div class="modal-backdrop">
+      <div class="modal-panel ios-install-panel">
+        <h2 id="ios-install-title">Add to Home Screen</h2>
+        <p class="muted">On iPhone or iPad, install Quit Tracker from Safari:</p>
+        <ol class="ios-install-steps">
+          <li><span class="ios-step-icon" aria-hidden="true">⬆️</span> Tap the <strong>Share</strong> button in Safari’s toolbar.</li>
+          <li><span class="ios-step-icon" aria-hidden="true">➕</span> Scroll and tap <strong>Add to Home Screen</strong>.</li>
+          <li><span class="ios-step-icon" aria-hidden="true">✓</span> Tap <strong>Add</strong> in the top corner.</li>
+        </ol>
+        <button type="button" class="btn full" data-close="modal-ios-install">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/bootstrap.js?v=12"></script>
 </body>
 </html>
