@@ -1,5 +1,11 @@
 import { HEALTH_MILESTONES } from './health-milestones.js';
-import { achievementsForState, estimateUnlockTime, metricsForBadges, isBadgeUnlocked } from './achievements.js';
+import {
+  achievementsForState,
+  estimateUnlockTime,
+  metricsForBadges,
+  isBadgeUnlocked,
+  badgeDisplayTitle,
+} from './achievements.js';
 import { upcomingChipNotifications } from './chips.js';
 
 export function notificationIdForKey(key) {
@@ -43,7 +49,7 @@ export function upcomingMilestoneNotifications(state, now = Date.now()) {
       id: notificationIdForKey(key),
       at,
       title: 'Badge unlocked',
-      body: a.title,
+      body: badgeDisplayTitle(a, state.profile.currency),
     });
   }
 

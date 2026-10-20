@@ -36,7 +36,6 @@ import {
   progressToNextRank,
   rankMetrics,
   rankLadderStatus,
-  leaderboardPayload,
   nextRankHint,
   formatSmokeFreeRequirement,
   RANK_LADDER,
@@ -144,7 +143,7 @@ function renderHealthHome(now = Date.now()) {
       ? recent
           .map(
             (m) => `<li class="health-recent-item">
-          <span class="health-recent-title">✓ ${escapeHtml(m.title)}</span>
+          <span class="health-recent-title">✓ ${escapeHtml(m.displayBenefit)}</span>
           <a class="health-source-inline" href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source.name)}</a>
         </li>`
           )
@@ -161,10 +160,10 @@ function renderHealthHome(now = Date.now()) {
         (m) => `
       <article class="health-item ${m.done ? 'done' : ''}">
         <div class="health-head">
-          <span class="health-title">${escapeHtml(m.title)}</span>
+          <span class="health-title">${escapeHtml(m.displayBenefit)}</span>
           <span class="health-pct">${m.done ? '✓' : `${Math.round(m.progress)}%`}</span>
         </div>
-        <p class="health-body">${escapeHtml(m.benefit)}</p>
+        <p class="health-at muted small">at ${escapeHtml(m.title)}</p>
         <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(m.source.name)}</a></p>
         <div class="progress-track"><div class="progress-fill" style="width:${m.progress}%"></div></div>
       </article>`
@@ -240,15 +239,17 @@ function renderRank() {
   const rank = getCurrentRank(metrics);
   const next = getNextRank(metrics);
   const pct = progressToNextRank(metrics);
-  const payload = leaderboardPayload(state, now);
-
   setText('#rank-hero-icon', rank.icon);
   setText('#rank-hero-name', rank.name);
   setText('#rank-hero-tag', rank.tagline);
   setText('#rank-current-streak', formatStreakDisplay(state, now));
   setWidth('#rank-hero-bar', `${pct}%`);
-  setText('#rank-hero-next', next ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}` : 'Top rank unlocked.');
-  setText('#rank-hero-score', `Leaderboard score (local): ${payload.score}`);
+  setText(
+    '#rank-hero-next',
+    next
+      ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}`
+      : 'Legend rank — one year smoke-free. You made it.'
+  );
 
   const ladder = $('#rank-ladder');
   if (ladder) {

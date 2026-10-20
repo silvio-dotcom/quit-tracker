@@ -2,7 +2,8 @@ import {
   BADGE_CATEGORIES,
   badgeStatuses,
   syncAchievementUnlocks,
-  moneyBadgeTitle,
+  badgeDisplayTitle,
+  badgeDisplayDesc,
   formatUnlockDate,
   badgeUnlockIso,
   selectNextLockedBadge,
@@ -15,14 +16,13 @@ import { xpLevelProgress, MAX_LEVEL } from './xp.js';
 export const BADGE_FILTER_ALL = 'all';
 
 export function displayBadgeTitle(achievement, currency) {
-  if (achievement.category === 'money') return moneyBadgeTitle(achievement, currency);
-  return achievement.title;
+  return badgeDisplayTitle(achievement, currency);
 }
 
 function badgeCardHtml(s, state, now, escapeHtml, { featured = false } = {}) {
   const a = s.achievement;
   const title = escapeHtml(displayBadgeTitle(a, state.profile.currency));
-  const desc = escapeHtml(a.desc);
+  const desc = escapeHtml(badgeDisplayDesc(a));
   const pct = Math.round(s.progress.pct);
   const eta = escapeHtml(formatBadgeEta(s, state, now));
 
@@ -63,7 +63,7 @@ function nextUpCardHtml(next, state, now, escapeHtml) {
       <div class="badge-next-up-icon" aria-hidden="true">${a.icon}</div>
       <div class="badge-next-up-body">
         <h3 id="badge-next-up-title" class="badge-next-up-title pixel-label">${title}</h3>
-        <p class="badge-next-up-desc muted">${escapeHtml(a.desc)}</p>
+        <p class="badge-next-up-desc muted">${escapeHtml(badgeDisplayDesc(a))}</p>
         <div class="badge-progress-track lg"><div class="badge-progress-fill" style="width:${pct}%"></div></div>
         <p class="badge-progress-meta"><span class="badge-pct">${pct}%</span><span class="badge-eta">${eta}</span></p>
       </div>

@@ -66,16 +66,13 @@ function pickOnLadder(ladder, ideal, prev, maxInclusive = Infinity) {
 
 /** @returns {{ amount: number, text: string }} */
 export function formatTimebackLabel(minutes) {
-  if (minutes >= 525600) return { amount: 1, text: '1 year' };
-  if (minutes >= 43200) {
-    const mo = Math.round(minutes / 43200);
+  const dayMin = 1440;
+  const monthMin = 43200;
+  if (minutes >= 60 * dayMin) {
+    const mo = Math.round(minutes / monthMin);
     return { amount: mo, text: `${mo} month${mo === 1 ? '' : 's'}` };
   }
-  if (minutes >= 10080) {
-    const w = Math.round(minutes / 10080);
-    return { amount: w, text: `${w} week${w === 1 ? '' : 's'}` };
-  }
-  if (minutes >= 1440) {
+  if (minutes >= dayMin) {
     const d = Math.round(minutes / 1440);
     return { amount: d, text: `${d} day${d === 1 ? '' : 's'}` };
   }
@@ -87,13 +84,14 @@ export function formatTimebackLabel(minutes) {
 }
 
 export function timebackTitle(minutes, isYear = false) {
-  if (isYear) return '1 year back';
-  return `${formatTimebackLabel(minutes).text} back`;
+  const { text } = formatTimebackLabel(minutes);
+  return `${text} back`;
 }
 
 export function timebackDesc(minutes, isYear = false) {
-  if (isYear) return 'A year of life back from not smoking.';
-  return `${formatTimebackLabel(minutes).text} of life regained.`;
+  const { text } = formatTimebackLabel(minutes);
+  if (isYear) return `${text} of life regained in your first year.`;
+  return `${text} of life regained.`;
 }
 
 export function moneyTitle(amount, isYear = false) {

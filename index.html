@@ -12,8 +12,8 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=20" />
-  <link rel="stylesheet" href="css/pixel-theme.css?v=20" />
+  <link rel="stylesheet" href="css/styles.css?v=21" />
+  <link rel="stylesheet" href="css/pixel-theme.css?v=21" />
   <style>
     html.qt-native-android #btn-install-header,
     html.qt-native-android [data-install-ui],
@@ -21,7 +21,7 @@
       display: none !important;
     }
   </style>
-  <script>window.__QT_BUILD__ = '20';</script>
+  <script>window.__QT_BUILD__ = '21';</script>
   <script src="capacitor.js"></script>
   <script>
     (function () {
@@ -41,7 +41,7 @@
       if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=20';
+        s.src = 'js/sw-register.js?v=21';
         document.head.appendChild(s);
       }
     })();
@@ -134,7 +134,7 @@
 
       <section data-view="rank" class="view hidden">
         <h2 class="section-title">Personal ranking</h2>
-        <p class="section-sub muted">Climb the ladder with smoke-free time. Solo for now; scores are export-ready for a future leaderboard.</p>
+        <p class="section-sub muted">Climb the ladder with smoke-free time — top rank at one year.</p>
         <div class="rank-hero card">
           <div class="rank-hero-icon" id="rank-hero-icon">🌱</div>
           <h3 id="rank-hero-name">Rookie</h3>
@@ -145,7 +145,6 @@
           <p class="muted small">Next rank</p>
           <div class="progress-track lg"><div id="rank-hero-bar" class="progress-fill rank"></div></div>
           <p id="rank-hero-next" class="muted small"></p>
-          <p id="rank-hero-score" class="rank-score muted small"></p>
         </div>
         <h3 class="section-title">Rank ladder</h3>
         <div id="rank-ladder" class="rank-ladder"></div>
@@ -301,6 +300,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=20"></script>
+  <script type="module" src="js/bootstrap.js?v=21"></script>
 </body>
 </html>

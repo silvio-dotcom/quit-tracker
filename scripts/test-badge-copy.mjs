@@ -53,12 +53,18 @@ function assertTimebackCopy(p, a) {
     console.error(`${p.label}: ${a.id} desc mismatch`);
     process.exit(1);
   }
-  if (!isYear) {
-    const label = formatTimebackLabel(a.regainedMinutes).text;
-    if (!a.title.includes(label) || !a.desc.includes(label)) {
-      console.error(`${p.label}: ${a.id} title/desc must include "${label}"`);
-      process.exit(1);
-    }
+  const label = formatTimebackLabel(a.regainedMinutes).text;
+  if (!a.title.includes(label) || !a.desc.includes(label)) {
+    console.error(`${p.label}: ${a.id} title/desc must include "${label}"`);
+    process.exit(1);
+  }
+  if (isYear && !a.desc.includes('first year')) {
+    console.error(`${p.label}: ${a.id} year desc must mention first year`);
+    process.exit(1);
+  }
+  if (/year back/i.test(a.title)) {
+    console.error(`${p.label}: ${a.id} must not say year back`);
+    process.exit(1);
   }
 }
 

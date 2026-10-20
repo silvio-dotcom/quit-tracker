@@ -4,7 +4,13 @@ import {
   sortLockedBadgesByEta,
   estimateUnlockTime,
 } from './achievements.js';
-import { moneyBadgeTitle } from './achievements.js';
+import { badgeDisplayTitle } from './achievements.js';
+
+export function formatHealthMilestoneAt(title) {
+  const t = String(title || '').trim();
+  if (!t) return '';
+  return `at ${t}`;
+}
 
 export function formatCountdown(ms) {
   if (ms <= 0) return 'Now';
@@ -53,21 +59,20 @@ export function buildNextUpHtml(state, now, escapeHtml) {
   const badge = getNextBadge(state, now);
   const rows = [];
   if (health) {
+    const atLabel = formatHealthMilestoneAt(health.title);
     rows.push(`
-      <div class="next-up-row">
+      <div class="next-up-row next-up-row-health">
         <div class="next-up-row-head">
           <span class="next-up-tag">Health</span>
           <span class="next-up-countdown" aria-live="polite">${escapeHtml(formatCountdown(health.remainingMs))}</span>
         </div>
-        <p class="next-up-title">${escapeHtml(health.title)}</p>
+        <p class="next-up-health-benefit">${escapeHtml(health.displayBenefit)}</p>
+        <p class="next-up-health-at muted">${escapeHtml(atLabel)}</p>
         <div class="progress-track"><div class="progress-fill" style="width:${health.progress}%"></div></div>
       </div>`);
   }
   if (badge) {
-    const title =
-      badge.achievement.category === 'money'
-        ? moneyBadgeTitle(badge.achievement, state.profile.currency)
-        : badge.achievement.title;
+    const title = badgeDisplayTitle(badge.achievement, state.profile.currency);
     rows.push(`
       <div class="next-up-row">
         <div class="next-up-row-head">
