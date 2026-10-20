@@ -1,4 +1,4 @@
-const BUILD = '13';
+const BUILD = '14';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -17,6 +17,9 @@ const PRECACHE = [
   './js/install.js',
   './js/achievements.js',
   './js/ranks.js',
+  './js/next-up.js',
+  './js/milestone-alerts.js',
+  './js/share-card.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -68,6 +71,16 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (event.data?.type === 'SHOW_MILESTONE') {
+    const { title, body, tag } = event.data;
+    event.waitUntil(
+      self.registration.showNotification(title || 'Quit Tracker', {
+        body: body || '',
+        icon: new URL('icons/icon-192.png', self.location).href,
+        tag: tag || 'milestone',
+      })
+    );
   }
 });
 

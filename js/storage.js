@@ -13,6 +13,11 @@ export function normalizeState(parsed) {
     seenRanks: Array.isArray(parsed.seenRanks) ? parsed.seenRanks : [],
     achievementUnlocks: migrateAchievementUnlocks(parsed.achievementUnlocks, parsed.seenAchievements),
     badgeMigrationV9: Boolean(parsed.badgeMigrationV9),
+    seenMilestoneCelebrations: Array.isArray(parsed.seenMilestoneCelebrations)
+      ? parsed.seenMilestoneCelebrations
+      : [],
+    milestoneAlertsEnabled: Boolean(parsed.milestoneAlertsEnabled),
+    celebrationMigrationV14: Boolean(parsed.celebrationMigrationV14),
   };
 }
 

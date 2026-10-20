@@ -76,6 +76,8 @@ async function runCase(name, seedLocalStorage) {
   await page.locator('#btn-health-toggle').tap();
   if (name === 'fresh') {
     await page.waitForTimeout(200);
+    const nextUp = await page.locator('#next-up-card').count();
+    if (!nextUp) throw new Error('fresh: missing next-up card');
     const installHeader = await page.locator('#btn-install-header:not(.hidden)').count();
     if (!installHeader) throw new Error('fresh: header install button should show before installed');
     const rankNameColor = await page.evaluate(() => {
@@ -137,6 +139,8 @@ const legacy = JSON.stringify({
   seenAchievements: ['first-day'],
   seenRanks: ['rookie', 'fighter'],
   personalBestStreak: 5000,
+  celebrationMigrationV14: true,
+  seenMilestoneCelebrations: ['health:who-20m'],
 });
 
 const tenDays = JSON.stringify({
@@ -151,6 +155,8 @@ const tenDays = JSON.stringify({
   },
   seenAchievements: ['first-day'],
   seenRanks: ['rookie', 'fighter', 'survivor'],
+  celebrationMigrationV14: true,
+  seenMilestoneCelebrations: [],
 });
 
 await runCase('fresh', null);

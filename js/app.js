@@ -9,7 +9,17 @@ import {
   formatMoney,
   formatDayCount,
   formatStreakDisplay,
+  projectedMoneySaved,
+  MONEY_PROJECTION_DAYS,
 } from './stats.js';
+import { buildNextUpHtml } from './next-up.js';
+import {
+  processMilestoneUnlocks,
+  migrateCelebrationsV14,
+  setMilestoneAlertsEnabled,
+  MILESTONE_ALERTS_HELP,
+} from './milestone-alerts.js';
+import { shareProgressCard } from './share-card.js';
 import {
   BADGE_CATEGORIES,
   badgeStatuses,
@@ -113,26 +123,7 @@ function renderSetup() {
 
 function renderHealthHome(now = Date.now()) {
   const items = healthProgress(now, state.profile.quitDate);
-  const next = items.find((m) => !m.done);
   const recent = items.filter((m) => m.done).slice(-3).reverse();
-
-  const nextEl = $('#health-next-card');
-  if (nextEl) {
-    if (!state.profile.quitDate) {
-      nextEl.innerHTML = '<p class="muted">Complete setup to track health recovery.</p>';
-    } else if (next) {
-      nextEl.innerHTML = `
-        <div class="health-head">
-          <span class="health-title">Next: ${escapeHtml(next.title)}</span>
-          <span class="health-pct">${Math.round(next.progress)}%</span>
-        </div>
-        <p class="health-body">${escapeHtml(next.benefit)}</p>
-        <p class="health-source"><a href="${escapeAttr(next.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(next.source.name)}</a></p>
-        <div class="progress-track lg"><div class="progress-fill" style="width:${next.progress}%"></div></div>`;
-    } else {
-      nextEl.innerHTML = '<p class="muted">All listed milestones reached — incredible.</p>';
-    }
-  }
 
   const recentEl = $('#health-recent-list');
   if (recentEl) {
@@ -191,6 +182,9 @@ function renderRankPreview(now = Date.now()) {
 
 function renderDashboard() {
   const now = Date.now();
+  if (state.profile.quitDate && !state.celebrationMigrationV14) {
+    migrateCelebrationsV14(state, now, persist);
+  }
   const ms = msSinceQuit(state.profile, now);
   const dur = formatDuration(ms);
   const counter = $('#live-counter');
@@ -202,10 +196,21 @@ function renderDashboard() {
   }
   setText('#stat-cigs', cigarettesAvoided(state, now).toLocaleString());
   setText('#stat-money', formatMoney(moneySaved(state, now), state.profile.currency, CURRENCIES));
+  const projEl = $('#money-projections');
+  if (projEl) {
+    projEl.innerHTML = MONEY_PROJECTION_DAYS
+      .map(
+        ({ label, days }) =>
+          `<li>${label}: ${formatMoney(projectedMoneySaved(state, days), state.profile.currency, CURRENCIES)}</li>`
+      )
+      .join('');
+  }
   setText('#stat-streak', formatStreakDisplay(state, now));
+  const nextUp = $('#next-up-body');
+  if (nextUp) nextUp.innerHTML = buildNextUpHtml(state, now, escapeHtml);
   renderRankPreview(now);
   renderHealthHome(now);
-  checkNewAchievements(now);
+  processMilestoneUnlocks(state, now, toast, persist);
   checkNewRanks(now);
 }
 
@@ -309,6 +314,9 @@ function renderMore() {
     .map(([k, v]) => `<option value="${k}" ${p.currency === k ? 'selected' : ''}>${k}</option>`)
     .join('');
   setText('#stats-current', formatStreakDisplay(state));
+  const toggle = $('#toggle-milestone-alerts');
+  if (toggle) toggle.checked = Boolean(state.milestoneAlertsEnabled);
+  setText('#milestone-alerts-help', MILESTONE_ALERTS_HELP);
 }
 
 function openSetupWizard() {
@@ -324,18 +332,6 @@ function startOverAfterSmoking() {
   persist();
   renderDashboard();
   toast('Fresh start — you can do this.');
-}
-
-function checkNewAchievements(now) {
-  syncAchievementUnlocks(state, now);
-  const unlocked = unlockedAchievements(state, now);
-  const ids = unlocked.map((a) => a.id);
-  const fresh = ids.filter((id) => !(state.seenAchievements || []).includes(id));
-  if (!fresh.length) return;
-  state.seenAchievements = [...new Set([...(state.seenAchievements || []), ...fresh])];
-  persist();
-  const a = unlocked.find((x) => x.id === fresh[fresh.length - 1]);
-  if (a) toast(`${a.icon} Badge unlocked: ${displayBadgeTitle(a)}`);
 }
 
 function checkNewRanks(now = Date.now()) {
@@ -374,6 +370,22 @@ function bindEvents() {
   });
   $('#btn-start-over')?.addEventListener('click', startOverAfterSmoking);
   $('#btn-open-setup')?.addEventListener('click', openSetupWizard);
+  $('#btn-share-progress')?.addEventListener('click', async () => {
+    try {
+      const mode = await shareProgressCard(state);
+      toast(mode === 'shared' ? 'Shared!' : 'Image downloaded');
+    } catch {
+      toast('Could not share progress');
+    }
+  });
+  $('#toggle-milestone-alerts')?.addEventListener('change', async (e) => {
+    const perm = await setMilestoneAlertsEnabled(state, e.target.checked, persist);
+    if (e.target.checked && perm !== 'granted') {
+      e.target.checked = false;
+      toast('Notifications blocked — enable in browser settings to use alerts.');
+    }
+    renderMore();
+  });
 
   $('#setup-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -470,6 +482,8 @@ export function initApp() {
   bindEvents();
   initInstallUi();
   migrateBadgeNotificationsV9();
+  const now = Date.now();
+  migrateCelebrationsV14(state, now, persist);
   renderAll();
   startTicker();
   showView('home');

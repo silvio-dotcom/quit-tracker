@@ -45,10 +45,18 @@ function runNodeRoundTrip() {
 }
 
 async function dismissRankModals(page) {
-  for (let i = 0; i < 12; i++) {
-    if (!(await page.locator('#modal-rank-up.open').count())) return;
-    await page.locator('[data-close="modal-rank-up"]').click();
-    await page.waitForTimeout(280);
+  for (let i = 0; i < 24; i++) {
+    if (await page.locator('#modal-milestone.open').count()) {
+      await page.locator('[data-close="modal-milestone"]').click();
+      await page.waitForTimeout(350);
+      continue;
+    }
+    if (await page.locator('#modal-rank-up.open').count()) {
+      await page.locator('[data-close="modal-rank-up"]').click();
+      await page.waitForTimeout(280);
+      continue;
+    }
+    return;
   }
 }
 

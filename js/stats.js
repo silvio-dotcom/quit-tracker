@@ -95,6 +95,19 @@ export function formatMoney(amount, currency, CURRENCIES) {
   return `${sym}${amount.toFixed(2)}`;
 }
 
+/** Projected savings if smoke-free for `days` at cigsPerDay × days cigarettes. */
+export function projectedMoneySaved(state, days) {
+  const cpd = Number(state.profile.cigsPerDay) || 0;
+  const cigs = cpd * days;
+  return cigs * pricePerCig(state.profile);
+}
+
+export const MONEY_PROJECTION_DAYS = [
+  { label: '1 mo', days: 30 },
+  { label: '6 mo', days: 182 },
+  { label: '1 yr', days: 365 },
+];
+
 export function formatDayCount(days) {
   const n = Math.max(0, Math.floor(Number(days) || 0));
   return `${n} ${n === 1 ? 'day' : 'days'}`;
