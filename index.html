@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1419" />
+  <meta name="description" content="Silvio's personal smoke-free tracker — cravings, health, savings, and milestones." />
+  <title>Quit Tracker</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🌿</span>
+        <div>
+          <h1>Quit Tracker</h1>
+          <p class="tagline">Smoke-free &amp; stronger every minute</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section data-view="home" class="view">
+        <div class="hero-card">
+          <p class="hero-label">Smoke-free for</p>
+          <div id="live-counter" class="live-counter" aria-live="polite"></div>
+          <p id="next-health" class="next-health muted"></p>
+        </div>
+
+        <button type="button" id="rank-dashboard-card" class="rank-dashboard card" aria-label="View rank ladder">
+          <div class="rank-dashboard-top">
+            <span id="rank-dash-icon" class="rank-dash-icon">🌱</span>
+            <div class="rank-dash-text">
+              <span class="rank-dash-label">Personal rank</span>
+              <span id="rank-dash-name" class="rank-dash-name">Rookie</span>
+            </div>
+            <span id="rank-dash-pct" class="rank-dash-pct muted">0%</span>
+          </div>
+          <div class="progress-track lg"><div id="rank-dash-bar" class="progress-fill rank"></div></div>
+          <p id="rank-dash-next" class="rank-dash-next muted"></p>
+          <p id="rank-dash-streaks" class="rank-dash-streaks small muted"></p>
+        </button>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-label">Not smoked</span>
+            <span id="stat-cigs" class="stat-value">0</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Money saved</span>
+            <span id="stat-money" class="stat-value">$0.00</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Life regained</span>
+            <span id="stat-life" class="stat-value">0h</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Clean streak</span>
+            <span id="stat-streak" class="stat-value">0 days</span>
+          </article>
+        </div>
+
+        <div class="goal-card card">
+          <h2>Savings goal</h2>
+          <p id="goal-preview" class="muted">Set a savings goal in More.</p>
+          <div class="progress-track lg"><div id="goal-bar" class="progress-fill accent"></div></div>
+        </div>
+
+        <div class="reasons-card card">
+          <h2>Why I'm quitting</h2>
+          <div id="reasons-preview" class="reason-chips"></div>
+        </div>
+
+        <button type="button" id="btn-craving" class="btn craving-btn">I'm craving</button>
+        <button type="button" id="btn-log-slip" class="btn ghost full">Log a slip honestly</button>
+      </section>
+
+      <section data-view="rank" class="view hidden">
+        <h2 class="section-title">Personal ranking</h2>
+        <p class="section-sub muted">NoPuff-style ladder — climb with smoke-free time and cravings you resist. Solo for now; scores are export-ready for a future leaderboard.</p>
+        <div class="rank-hero card">
+          <div class="rank-hero-icon" id="rank-hero-icon">🌱</div>
+          <h3 id="rank-hero-name">Rookie</h3>
+          <p id="rank-hero-tag" class="muted"></p>
+          <p class="rank-streak-compare">
+            Streak: <strong id="rank-current-streak">0</strong> days
+            · Best: <strong id="rank-best-streak">0</strong> days
+          </p>
+          <p class="muted small">Next rank</p>
+          <div class="progress-track lg"><div id="rank-hero-bar" class="progress-fill rank"></div></div>
+          <p id="rank-hero-next" class="muted small"></p>
+          <p id="rank-hero-score" class="rank-score muted small"></p>
+        </div>
+        <h3 class="section-title">Rank ladder</h3>
+        <div id="rank-ladder" class="rank-ladder"></div>
+      </section>
+
+      <section data-view="health" class="view hidden">
+        <h2 class="section-title">Health recovery</h2>
+        <p class="section-sub muted">Timeline from public-health agencies; each item links to its source.</p>
+        <aside class="health-disclaimer card">
+          <strong>About this data</strong>
+          <p class="small muted">These milestones describe average benefits reported for people who quit smoking in population studies. They are general information, not medical advice, and your experience may differ. Talk to a clinician about your health.</p>
+        </aside>
+        <div id="health-list" class="health-list"></div>
+      </section>
+
+      <section data-view="badges" class="view hidden">
+        <h2 class="section-title">Achievements</h2>
+        <p id="badge-summary" class="section-sub muted"></p>
+        <div id="badge-grid" class="badge-grid"></div>
+      </section>
+
+      <section data-view="log" class="view hidden">
+        <h2 class="section-title">Craving log</h2>
+        <ul id="craving-log" class="log-list"></ul>
+        <h2 class="section-title">Slips</h2>
+        <ul id="slip-log" class="log-list"></ul>
+      </section>
+
+      <section data-view="charts" class="view hidden">
+        <h2 class="section-title">History</h2>
+        <p class="section-sub muted">Last 14 days · <span id="chart-streak-val"></span></p>
+        <div class="chart-card card">
+          <h3>Cravings per day</h3>
+          <canvas id="chart-cravings" height="140"></canvas>
+        </div>
+        <div class="chart-card card">
+          <h3>Cigarettes (slips) per day</h3>
+          <canvas id="chart-slips" height="140"></canvas>
+        </div>
+        <div class="chart-card card">
+          <h3>Money saved over time</h3>
+          <canvas id="chart-money" height="140"></canvas>
+        </div>
+      </section>
+
+      <section data-view="more" class="view hidden">
+        <h2 class="section-title">Settings</h2>
+        <form id="settings-form" class="card form-card">
+          <label>Quit date &amp; time<input type="datetime-local" id="settings-quit" required /></label>
+          <label>Cigarettes per day<input type="number" id="settings-cpd" min="1" max="100" required /></label>
+          <label>Cigarettes per pack<input type="number" id="settings-cpp" min="1" max="50" required /></label>
+          <label>Pack price<input type="number" id="settings-price" min="0" step="0.01" required /></label>
+          <label>Currency<select id="settings-currency"></select></label>
+          <button type="submit" class="btn">Save settings</button>
+          <button type="button" id="btn-reset-quit" class="btn ghost">Reset quit date to now</button>
+        </form>
+
+        <h2 class="section-title">Savings goal</h2>
+        <form id="goal-form" class="card form-card">
+          <label>What are you saving for?<input type="text" id="goal-name" placeholder="New headphones" /></label>
+          <label>Target amount<input type="number" id="goal-amount" min="0" step="1" /></label>
+          <button type="submit" class="btn">Save goal</button>
+        </form>
+
+        <h2 class="section-title">Reasons I'm quitting</h2>
+        <div id="reasons-editor" class="card form-card"></div>
+        <button type="button" id="btn-add-reason" class="btn ghost">Add reason</button>
+
+        <h2 class="section-title">Your stats</h2>
+        <div class="card">
+          <p>Longest clean streak: <strong id="stats-longest">0</strong></p>
+          <p>Cravings resisted: <strong id="stats-resisted">0</strong></p>
+        </div>
+
+        <h2 class="section-title">Backup</h2>
+        <div class="card row-actions">
+          <button type="button" id="btn-export" class="btn">Export JSON</button>
+          <label class="btn ghost file-label">
+            Import JSON
+            <input type="file" id="import-file" accept="application/json" hidden />
+          </label>
+        </div>
+        <p class="muted small">Data stays on this device. Export regularly so you never lose progress.</p>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main">
+      <button type="button" class="nav-btn active" data-nav="home" aria-label="Home">🏠<span>Home</span></button>
+      <button type="button" class="nav-btn" data-nav="rank" aria-label="Rank">🎖️<span>Rank</span></button>
+      <button type="button" class="nav-btn" data-nav="health" aria-label="Health">❤️<span>Health</span></button>
+      <button type="button" class="nav-btn" data-nav="badges" aria-label="Badges">🏆<span>Badges</span></button>
+      <button type="button" class="nav-btn" data-nav="charts" aria-label="Charts">📈<span>Charts</span></button>
+      <button type="button" class="nav-btn" data-nav="log" aria-label="Log">📋<span>Log</span></button>
+      <button type="button" class="nav-btn" data-nav="more" aria-label="More">⚙️<span>More</span></button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <div id="modal-rank-up" class="modal" aria-modal="true">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel rank-up-panel">
+        <div class="rank-up-burst" aria-hidden="true"></div>
+        <p class="rank-up-label">Rank up!</p>
+        <div id="rank-up-icon" class="rank-up-icon">🏅</div>
+        <h2 id="rank-up-title">Champion</h2>
+        <p id="rank-up-desc" class="muted center"></p>
+        <button type="button" class="btn full" data-close="modal-rank-up">Keep climbing</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-setup" class="modal" aria-modal="true">
+    <div class="modal-backdrop">
+      <div class="modal-panel">
+        <h2>Welcome, Silvio</h2>
+        <p class="muted">Set up your quit profile. You can change this anytime.</p>
+        <form id="setup-form" class="form-card">
+          <label>Your name<input type="text" id="setup-name" value="Silvio" /></label>
+          <label>Quit date &amp; time<input type="datetime-local" id="setup-quit" required /></label>
+          <label>Cigarettes per day (before quitting)<input type="number" id="setup-cpd" min="1" value="15" required /></label>
+          <label>Cigarettes per pack<input type="number" id="setup-cpp" min="1" value="20" required /></label>
+          <label>Pack price<input type="number" id="setup-price" min="0" step="0.01" value="12" required /></label>
+          <label>Currency<select id="setup-currency"></select></label>
+          <button type="submit" class="btn full">Start tracking</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-craving" class="modal" aria-modal="true">
+    <div class="modal-backdrop">
+      <div class="modal-panel">
+        <h2>Craving check-in</h2>
+        <p class="muted">Most cravings pass in 5–10 minutes. You've got this.</p>
+        <label>Intensity (1–5)<input type="range" id="craving-intensity" min="1" max="5" value="3" /></label>
+        <label>Trigger<select id="craving-trigger"></select></label>
+        <label>Note (optional)<textarea id="craving-note" rows="2" placeholder="What’s going on?"></textarea></label>
+        <button type="button" id="btn-breathe" class="btn full">Start breathing exercise</button>
+        <div class="row-actions">
+          <button type="button" id="btn-craving-resisted" class="btn">I resisted</button>
+          <button type="button" id="btn-craving-gave-in" class="btn ghost">I smoked</button>
+        </div>
+        <button type="button" class="btn text" data-close="modal-craving">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-breathing" class="modal" aria-modal="true">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel breathing-panel">
+        <div id="breath-ring" class="breath-ring">
+          <span id="breath-label">Breathe in</span>
+          <span id="breath-sub" class="muted">4s</span>
+        </div>
+        <p class="muted center">Box breathing · 4-4-4-4 · about 3 minutes</p>
+        <button type="button" id="btn-breath-done" class="btn full">I'm feeling better</button>
+        <button type="button" id="btn-breath-skip" class="btn ghost full">Back to craving log</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-slip" class="modal" aria-modal="true">
+    <div class="modal-backdrop">
+      <div class="modal-panel">
+        <h2>Log a slip</h2>
+        <p class="muted">This adjusts your stats — it doesn't erase your journey.</p>
+        <form id="slip-form" class="form-card">
+          <label>How many cigarettes?<input type="number" id="slip-count" min="1" value="1" required /></label>
+          <label>Note (optional)<textarea id="slip-note" rows="2"></textarea></label>
+          <button type="submit" class="btn full">Save slip</button>
+          <button type="button" class="btn text" data-close="modal-slip">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
