@@ -4,6 +4,7 @@ import {
   ACHIEVEMENT_IDS,
   LEGACY_ACHIEVEMENT_IDS,
   CURRENCIES,
+  TIME_BACK_MINUTES_PER_CIG,
 } from './constants.js';
 import {
   msSinceQuit,
@@ -13,6 +14,11 @@ import {
 } from './stats.js';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
+const MS_PER_MIN = 60 * 1000;
+
+export function timeRegainedMs(metrics) {
+  return metrics.cigarettes * TIME_BACK_MINUTES_PER_CIG * MS_PER_MIN;
+}
 
 export function migrateSeenAchievementIds(seen) {
   if (!Array.isArray(seen)) return [];
@@ -62,6 +68,8 @@ export function isBadgeUnlocked(achievement, metrics, state) {
       return metrics.cigarettes >= cigaretteTargetForBadge(achievement, state);
     case 'money':
       return metrics.money >= (achievement.amount ?? 0);
+    case 'timeback':
+      return timeRegainedMs(metrics) >= (achievement.regainedMinutes ?? 0) * MS_PER_MIN;
     default:
       return false;
   }
@@ -82,6 +90,10 @@ export function badgeProgress(achievement, metrics, state) {
     case 'money':
       current = metrics.money;
       target = achievement.amount ?? 1;
+      break;
+    case 'timeback':
+      current = timeRegainedMs(metrics);
+      target = (achievement.regainedMinutes ?? 1) * MS_PER_MIN;
       break;
     default:
       break;
@@ -132,6 +144,8 @@ export function badgeProgressLabel(achievement, metrics, state) {
       const fmt = (n) => `${sym}${n.toFixed(0)}`;
       return `${fmt(current)} of ${fmt(target)}`;
     }
+    case 'timeback':
+      return `${formatDurationShort(current)} / ${formatTimeTarget(target)} regained`;
     default:
       return '';
   }
@@ -162,7 +176,66 @@ export function estimateUnlockTime(achievement, state) {
     const cigsNeeded = (achievement.amount ?? 0) / ppc;
     return new Date(quit + msForCigaretteTarget(cigsNeeded, cpd)).toISOString();
   }
+  if (achievement.category === 'timeback') {
+    const cigsNeeded = (achievement.regainedMinutes ?? 0) / TIME_BACK_MINUTES_PER_CIG;
+    return new Date(quit + msForCigaretteTarget(cigsNeeded, cpd)).toISOString();
+  }
   return null;
+}
+
+export function badgeUnlockIso(status, state) {
+  if (!status.unlocked) return null;
+  return status.unlockAt || estimateUnlockTime(status.achievement, state);
+}
+
+export function badgeEtaMs(status, state, now = Date.now()) {
+  if (status.unlocked) return 0;
+  const iso = estimateUnlockTime(status.achievement, state);
+  if (!iso) return Number.POSITIVE_INFINITY;
+  return Math.max(0, new Date(iso).getTime() - now);
+}
+
+export function formatBadgeEta(status, state, now = Date.now()) {
+  if (status.unlocked) return '';
+  const { current, target } = status.progress;
+  if (status.achievement.category === 'money') {
+    const sym = CURRENCIES[state.profile.currency]?.symbol ?? '$';
+    const left = Math.max(0, target - current);
+    return `${sym}${Math.ceil(left)} to go`;
+  }
+  const eta = badgeEtaMs(status, state, now);
+  if (!Number.isFinite(eta)) return '—';
+  if (eta <= 0) return 'Now';
+  const d = Math.floor(eta / (24 * MS_PER_HOUR));
+  const h = Math.floor((eta % (24 * MS_PER_HOUR)) / MS_PER_HOUR);
+  const m = Math.floor((eta % MS_PER_HOUR) / MS_PER_MIN);
+  if (d) return `in ${d}d ${h}h`;
+  if (h) return `in ${h}h ${m}m`;
+  return `in ${m}m`;
+}
+
+export function selectNextLockedBadge(statuses, state, now = Date.now(), category = 'all') {
+  let locked = statuses.filter((s) => !s.unlocked);
+  if (category && category !== 'all') {
+    locked = locked.filter((s) => s.achievement.category === category);
+  }
+  if (!locked.length) return null;
+  locked.sort((a, b) => badgeEtaMs(a, state, now) - badgeEtaMs(b, state, now));
+  return locked[0];
+}
+
+export function sortEarnedBadgesNewest(items, state) {
+  return [...items].sort((a, b) => {
+    const at = badgeUnlockIso(a, state);
+    const bt = badgeUnlockIso(b, state);
+    const ta = at ? new Date(at).getTime() : 0;
+    const tb = bt ? new Date(bt).getTime() : 0;
+    return tb - ta;
+  });
+}
+
+export function sortLockedBadgesByEta(items, state, now = Date.now()) {
+  return [...items].sort((a, b) => badgeEtaMs(a, state, now) - badgeEtaMs(b, state, now));
 }
 
 export function formatUnlockDate(iso) {
@@ -196,14 +269,10 @@ export function badgeStatuses(state, now = Date.now()) {
   });
 }
 
-export function sortBadgesForDisplay(items) {
-  return [...items].sort((a, b) => {
-    if (a.unlocked !== b.unlocked) return a.unlocked ? 1 : -1;
-    if (!a.unlocked && !b.unlocked) return b.proximity - a.proximity;
-    const at = a.unlockAt ? new Date(a.unlockAt).getTime() : 0;
-    const bt = b.unlockAt ? new Date(b.unlockAt).getTime() : 0;
-    return bt - at;
-  });
+export function sortBadgesForDisplay(items, state, now = Date.now()) {
+  const earned = sortEarnedBadgesNewest(items.filter((s) => s.unlocked), state);
+  const locked = sortLockedBadgesByEta(items.filter((s) => !s.unlocked), state, now);
+  return [...earned, ...locked];
 }
 
 export function syncAchievementUnlocks(state, now = Date.now()) {

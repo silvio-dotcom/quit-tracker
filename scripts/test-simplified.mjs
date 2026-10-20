@@ -43,6 +43,17 @@ async function runCase(name, seedLocalStorage) {
   }
 
   await page.goto(base, { waitUntil: 'networkidle' });
+  if (seedLocalStorage) {
+    await page.evaluate(async () => {
+      const mod = await import(new URL('js/milestone-alerts.js', window.location.href).href);
+      const raw = JSON.parse(localStorage.getItem('quit-tracker-data-v1'));
+      if (!raw) return;
+      raw.seenMilestoneCelebrations = mod.allUnlockedCelebrationKeys(raw, Date.now());
+      raw.chipCelebrationMigrationV17 = true;
+      localStorage.setItem('quit-tracker-data-v1', JSON.stringify(raw));
+    });
+    await page.reload({ waitUntil: 'networkidle' });
+  }
   if (await page.locator('#modal-setup.open').count()) {
     await page.locator('#setup-form button[type=submit]').tap();
     await page.waitForTimeout(300);
@@ -102,8 +113,10 @@ async function runCase(name, seedLocalStorage) {
     await page.waitForTimeout(250);
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-badges-mobile.png', fullPage: false });
-    const sections = await page.locator('.badge-category').count();
-    if (sections < 3) throw new Error('fresh: expected 3 badge categories');
+    const filters = await page.locator('.badge-filter-chip').count();
+    if (filters < 4) throw new Error('fresh: expected badge filter chips');
+    const badgeNext = await page.locator('.badge-next-up').count();
+    if (!badgeNext) throw new Error('fresh: expected badge next-up card');
   }
 
   if (name === 'ten-days') {
@@ -112,8 +125,8 @@ async function runCase(name, seedLocalStorage) {
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-badges-10d-mobile.png', fullPage: false });
     const summary = await page.locator('#badge-summary').textContent();
-    if (!summary || !summary.includes('of')) throw new Error('ten-days: missing badge summary');
-    const unlocked = await page.locator('.badge.unlocked').count();
+    if (!summary || !summary.includes('/')) throw new Error('ten-days: missing badge summary');
+    const unlocked = await page.locator('.badge-earned').count();
     if (unlocked < 5) throw new Error(`ten-days: expected several unlocked badges, got ${unlocked}`);
   }
 

@@ -1,7 +1,7 @@
 import { healthProgress, msSinceQuit, formatDuration } from './stats.js';
 import {
   badgeStatuses,
-  sortBadgesForDisplay,
+  sortLockedBadgesByEta,
   estimateUnlockTime,
 } from './achievements.js';
 import { moneyBadgeTitle } from './achievements.js';
@@ -24,7 +24,7 @@ export function getNextHealthMilestone(state, now = Date.now()) {
 
 export function getNextBadge(state, now = Date.now()) {
   const statuses = badgeStatuses(state, now);
-  const locked = sortBadgesForDisplay(statuses.filter((s) => !s.unlocked));
+  const locked = sortLockedBadgesByEta(statuses.filter((s) => !s.unlocked), state, now);
   const next = locked[0];
   if (!next) return null;
   const unlockAt = estimateUnlockTime(next.achievement, state);
