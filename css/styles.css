@@ -205,6 +205,118 @@ body.modal-open {
   gap: 0;
 }
 
+.hero-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hero-time {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-chip-btn {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  margin: -4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-chip-mount {
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.hero-chip-btn.chip-animate .hero-chip-mount {
+  animation: chipFlipShine 1.1s ease-out;
+}
+
+@keyframes chipFlipShine {
+  0% {
+    transform: perspective(400px) rotateY(0deg) scale(1);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  }
+  35% {
+    transform: perspective(400px) rotateY(180deg) scale(1.08);
+    filter: drop-shadow(0 0 18px rgba(34, 197, 94, 0.55));
+  }
+  70% {
+    transform: perspective(400px) rotateY(360deg) scale(1.04);
+  }
+  100% {
+    transform: perspective(400px) rotateY(360deg) scale(1);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  }
+}
+
+.hero-chip-hint {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.chips-sheet-panel {
+  max-height: min(92vh, 720px);
+  display: flex;
+  flex-direction: column;
+}
+
+.chips-sheet-summary {
+  margin: 0 0 12px;
+}
+
+.chips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 8px;
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 2px 16px;
+  margin-bottom: 8px;
+}
+
+.chips-grid-item {
+  text-align: center;
+}
+
+.chips-grid-item.locked {
+  opacity: 0.72;
+}
+
+.chips-grid-art {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.chips-grid-art .chip-svg {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+}
+
+.chips-grid-label {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.chips-grid-date,
+.chips-grid-remaining {
+  display: block;
+  font-size: 0.6rem;
+  margin-top: 2px;
+}
+
 .hero-label {
   margin: 0;
   color: var(--muted);

@@ -18,6 +18,7 @@ export function normalizeState(parsed) {
       : [],
     milestoneAlertsEnabled: Boolean(parsed.milestoneAlertsEnabled),
     celebrationMigrationV14: Boolean(parsed.celebrationMigrationV14),
+    chipCelebrationMigrationV17: Boolean(parsed.chipCelebrationMigrationV17),
   };
 }
 

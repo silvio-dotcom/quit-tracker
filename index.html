@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=16" />
+  <link rel="stylesheet" href="css/styles.css?v=17" />
   <style>
     html.qt-native-android #btn-install-header,
     html.qt-native-android [data-install-ui],
@@ -40,7 +40,7 @@
       if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=16';
+        s.src = 'js/sw-register.js?v=17';
         document.head.appendChild(s);
       }
     })();
@@ -62,8 +62,16 @@
     <main class="main-content">
       <section data-view="home" class="view">
         <div class="hero-card">
-          <p class="hero-label">Smoke-free for</p>
-          <div id="live-counter" class="live-counter" aria-live="polite"></div>
+          <div class="hero-card-inner">
+            <div class="hero-time">
+              <p class="hero-label">Smoke-free for</p>
+              <div id="live-counter" class="live-counter" aria-live="polite"></div>
+            </div>
+            <button type="button" id="hero-chip-btn" class="hero-chip-btn" aria-label="My chips">
+              <div id="hero-chip-mount" class="hero-chip-mount"></div>
+              <span id="hero-chip-hint" class="hero-chip-hint hidden" aria-hidden="true"></span>
+            </button>
+          </div>
         </div>
 
         <button type="button" id="rank-dashboard-card" class="rank-dashboard card" aria-label="View rank ladder">
@@ -230,6 +238,17 @@
     </div>
   </div>
 
+  <div id="modal-chips" class="modal" aria-modal="true" aria-labelledby="chips-sheet-title">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel chips-sheet-panel">
+        <h2 id="chips-sheet-title">My chips</h2>
+        <p id="chips-sheet-summary" class="chips-sheet-summary muted small"></p>
+        <div id="chips-grid" class="chips-grid"></div>
+        <button type="button" class="btn full" data-close="modal-chips">Close</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-milestone" class="modal" aria-modal="true">
     <div class="modal-backdrop dark">
       <div class="modal-panel rank-up-panel">
@@ -273,6 +292,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=16"></script>
+  <script type="module" src="js/bootstrap.js?v=17"></script>
 </body>
 </html>

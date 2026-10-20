@@ -3,6 +3,8 @@ import { getCurrentRank, rankMetrics } from './ranks.js';
 import { CURRENCIES } from './constants.js';
 import { buildShareMessage, formatTimeBack } from './share-message.js';
 import { isNativePlatform } from './platform.js';
+import { highestEarnedChip } from './chips.js';
+import { drawChipOnCanvas } from './chip-art.js';
 
 const W = 900;
 const H = 1180;
@@ -54,6 +56,11 @@ export async function renderSharePng(state, now = Date.now()) {
   ctx.fillStyle = '#f3f6f9';
   ctx.font = 'bold 64px system-ui, sans-serif';
   ctx.fillText(dur, 72, 360);
+
+  const chip = highestEarnedChip(state, now);
+  if (chip) {
+    await drawChipOnCanvas(ctx, chip.tier, W - 72 - 110, 280, 110);
+  }
 
   const lines = [
     `Cigarettes not smoked: ${cigs.toLocaleString()}`,

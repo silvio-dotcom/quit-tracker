@@ -1,5 +1,6 @@
 import { HEALTH_MILESTONES } from './health-milestones.js';
 import { ACHIEVEMENTS, estimateUnlockTime, metricsForBadges, isBadgeUnlocked } from './achievements.js';
+import { upcomingChipNotifications } from './chips.js';
 
 export function notificationIdForKey(key) {
   let h = 5381;
@@ -43,6 +44,16 @@ export function upcomingMilestoneNotifications(state, now = Date.now()) {
       at,
       title: 'Badge unlocked',
       body: a.title,
+    });
+  }
+
+  for (const chip of upcomingChipNotifications(state, now)) {
+    out.push({
+      key: chip.key,
+      id: notificationIdForKey(chip.key),
+      at: chip.at,
+      title: chip.title,
+      body: chip.body,
     });
   }
 
