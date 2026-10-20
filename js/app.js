@@ -4,10 +4,8 @@ import {
   msSinceQuit,
   cigarettesAvoided,
   moneySaved,
-  lifeRegainedMinutes,
   formatDuration,
   currentStreakDays,
-  bestStreakDays,
   healthProgress,
   unlockedAchievements,
   formatMoney,
@@ -111,14 +109,6 @@ function renderSetup() {
     .join('');
 }
 
-function syncPersonalBest(now = Date.now()) {
-  const best = bestStreakDays(state, now);
-  if (best !== state.personalBestStreak) {
-    state.personalBestStreak = best;
-    persist();
-  }
-}
-
 function renderHealthHome(now = Date.now()) {
   const items = healthProgress(now, state.profile.quitDate);
   const next = items.find((m) => !m.done);
@@ -194,9 +184,7 @@ function renderRankPreview(now = Date.now()) {
       : 'You reached the top rank.';
   }
   const streaks = $('#rank-dash-streaks');
-  if (streaks) {
-    streaks.textContent = `Streak ${formatDayCount(metrics.streakDays)} · Personal best ${formatDayCount(metrics.bestStreakDays)}`;
-  }
+  if (streaks) streaks.textContent = `Current streak: ${formatDayCount(metrics.streakDays)}`;
 }
 
 function renderDashboard() {
@@ -212,14 +200,7 @@ function renderDashboard() {
   }
   setText('#stat-cigs', cigarettesAvoided(state, now).toLocaleString());
   setText('#stat-money', formatMoney(moneySaved(state, now), state.profile.currency, CURRENCIES));
-  const lifeMin = lifeRegainedMinutes(state, now);
-  const lifeH = Math.floor(lifeMin / 60);
-  const lifeD = Math.floor(lifeH / 24);
-  setText('#stat-life', lifeD > 0 ? `${lifeD}d ${lifeH % 24}h` : `${lifeH}h ${lifeMin % 60}m`);
   setText('#stat-streak', formatDayCount(currentStreakDays(state, now)));
-  setText('#stat-best-streak', formatDayCount(bestStreakDays(state, now)));
-
-  syncPersonalBest(now);
   renderRankPreview(now);
   renderHealthHome(now);
   checkNewAchievements(now);
@@ -228,7 +209,6 @@ function renderDashboard() {
 
 function renderRank() {
   const now = Date.now();
-  syncPersonalBest(now);
   const metrics = rankMetrics(state, now);
   const rank = getCurrentRank(metrics);
   const next = getNextRank(metrics);
@@ -239,7 +219,6 @@ function renderRank() {
   setText('#rank-hero-name', rank.name);
   setText('#rank-hero-tag', rank.tagline);
   setText('#rank-current-streak', formatDayCount(metrics.streakDays));
-  setText('#rank-best-streak', formatDayCount(metrics.bestStreakDays));
   setWidth('#rank-hero-bar', `${pct}%`);
   setText('#rank-hero-next', next ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}` : 'Top rank unlocked.');
   setText('#rank-hero-score', `Leaderboard score (local): ${payload.score}`);
@@ -290,7 +269,6 @@ function renderMore() {
   $('#settings-currency').innerHTML = Object.entries(CURRENCIES)
     .map(([k, v]) => `<option value="${k}" ${p.currency === k ? 'selected' : ''}>${k}</option>`)
     .join('');
-  setText('#stats-longest', formatDayCount(bestStreakDays(state)));
   setText('#stats-current', formatDayCount(currentStreakDays(state)));
 }
 
@@ -300,11 +278,8 @@ function openSetupWizard() {
 }
 
 function startOverAfterSmoking() {
-  const msg =
-    'This will reset your quit date to right now and start a fresh attempt. Your personal best streak is saved. Continue?';
+  const msg = 'This will reset your quit date to right now and start a fresh attempt. Continue?';
   if (!confirm(msg)) return;
-  const now = Date.now();
-  state.personalBestStreak = Math.max(state.personalBestStreak || 0, currentStreakDays(state, now));
   state.profile.quitDate = new Date().toISOString();
   state.seenRanks = ['rookie'];
   persist();

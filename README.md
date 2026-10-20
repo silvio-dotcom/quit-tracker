@@ -6,11 +6,11 @@ Personal quit-smoking tracker for **Silvio** — a static, mobile-first web app 
 
 ## Features
 
-- **Dashboard** — Live smoke-free timer, cigarettes avoided, money saved, life regained, current vs personal-best streak
+- **Dashboard** — Live smoke-free timer, cigarettes avoided, money saved, current streak
 - **Health on home** — Next sourced milestone with live progress, recently achieved milestones, expandable full WHO/CDC/NHS timeline with source links
 - **Personal ranking** — Rank ladder based on smoke-free time only; progress bar, rank-up celebration, exportable leaderboard score
 - **Achievements** — Time, savings, and streak badges
-- **Start over** — “I smoked” resets quit date to now (with confirm) while keeping your best streak
+- **Start over** — “I smoked” resets quit date to now (with confirm)
 - **Settings & backup** — Profile setup, export/import JSON, PWA offline support (build v5 cache recovery)
 
 ## Tech

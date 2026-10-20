@@ -3,13 +3,13 @@ import { STORAGE_KEY, defaultState } from './constants.js';
 export function normalizeState(parsed) {
   const base = defaultState();
   if (!parsed || typeof parsed !== 'object') return base;
+  const { personalBestStreak: _drop, ...legacy } = parsed;
   return {
     ...base,
-    ...parsed,
+    ...legacy,
     profile: { ...base.profile, ...(parsed.profile || {}) },
     seenAchievements: Array.isArray(parsed.seenAchievements) ? parsed.seenAchievements : [],
     seenRanks: Array.isArray(parsed.seenRanks) ? parsed.seenRanks : [],
-    personalBestStreak: Number(parsed.personalBestStreak) || 0,
   };
 }
 
@@ -17,7 +17,12 @@ export function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
-    return normalizeState(JSON.parse(raw));
+    const parsed = JSON.parse(raw);
+    const state = normalizeState(parsed);
+    if (parsed && typeof parsed === 'object' && 'personalBestStreak' in parsed) {
+      saveState(state);
+    }
+    return state;
   } catch {
     return defaultState();
   }

@@ -10,9 +10,6 @@ export const CURRENCIES = {
   AUD: { symbol: 'A$', label: 'Australian Dollar' },
 };
 
-/** Minutes of life regained per cigarette not smoked (commonly cited average). */
-export const MINUTES_PER_CIG_LIFE = 11;
-
 export const ACHIEVEMENTS = [
   { id: 'first-hour', type: 'time', ms: 60 * 60 * 1000, title: 'First hour', desc: 'One smoke-free hour.' },
   { id: 'first-day', type: 'time', ms: 24 * 60 * 60 * 1000, title: 'Day one', desc: '24 hours without smoking.' },
@@ -46,6 +43,5 @@ export function defaultState() {
     },
     seenAchievements: [],
     seenRanks: [],
-    personalBestStreak: 0,
   };
 }

@@ -1,4 +1,4 @@
-import { MINUTES_PER_CIG_LIFE, ACHIEVEMENTS } from './constants.js';
+import { ACHIEVEMENTS } from './constants.js';
 import { HEALTH_MILESTONES } from './health-milestones.js';
 
 /** Daily cigarette rate is spread over waking hours only (QuitNow-style). */
@@ -28,10 +28,6 @@ export function moneySaved(state, now = Date.now()) {
   return cigarettesAvoided(state, now) * pricePerCig(state.profile);
 }
 
-export function lifeRegainedMinutes(state, now = Date.now()) {
-  return cigarettesAvoided(state, now) * MINUTES_PER_CIG_LIFE;
-}
-
 export function formatDuration(ms) {
   if (ms <= 0) return { parts: [{ v: 0, u: 'sec' }], label: '0s' };
   const sec = Math.floor(ms / 1000);
@@ -59,10 +55,6 @@ export function currentStreakDays(state, now = Date.now()) {
   today.setHours(0, 0, 0, 0);
   if (today < quit) return 0;
   return Math.floor((today - quit) / 86400000) + 1;
-}
-
-export function bestStreakDays(state, now = Date.now()) {
-  return Math.max(state.personalBestStreak || 0, currentStreakDays(state, now));
 }
 
 export function healthProgress(now, quitDate) {
