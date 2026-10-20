@@ -13,18 +13,6 @@ export const CURRENCIES = {
 /** Minutes of life regained per cigarette not smoked (commonly cited average). */
 export const MINUTES_PER_CIG_LIFE = 11;
 
-export const CRAVING_TRIGGERS = [
-  'Stress',
-  'Coffee',
-  'Alcohol',
-  'After meals',
-  'Social',
-  'Boredom',
-  'Driving',
-  'Work break',
-  'Other',
-];
-
 export const ACHIEVEMENTS = [
   { id: 'first-hour', type: 'time', ms: 60 * 60 * 1000, title: 'First hour', desc: 'One smoke-free hour.' },
   { id: 'first-day', type: 'time', ms: 24 * 60 * 60 * 1000, title: 'Day one', desc: '24 hours without smoking.' },
@@ -41,15 +29,13 @@ export const ACHIEVEMENTS = [
   { id: 'money-25', type: 'money', amount: 25, title: '$25 saved', desc: 'Money back in your pocket.' },
   { id: 'money-100', type: 'money', amount: 100, title: '$100 saved', desc: 'Serious savings.' },
   { id: 'money-500', type: 'money', amount: 500, title: '$500 saved', desc: 'Half a grand kept.' },
-  { id: 'cravings-10', type: 'cravings', count: 10, title: 'Craving fighter', desc: '10 cravings logged and resisted.' },
-  { id: 'cravings-50', type: 'cravings', count: 50, title: 'Urge master', desc: '50 cravings resisted.' },
-  { id: 'streak-7', type: 'streak', days: 7, title: '7-day streak', desc: 'A week without a slip.' },
-  { id: 'streak-30', type: 'streak', days: 30, title: '30-day streak', desc: 'A month without a slip.' },
+  { id: 'streak-7', type: 'streak', days: 7, title: '7-day streak', desc: 'Seven days on this quit.' },
+  { id: 'streak-30', type: 'streak', days: 30, title: '30-day streak', desc: 'Thirty days on this quit.' },
 ];
 
 export function defaultState() {
   return {
-    version: 1,
+    version: 2,
     profile: {
       displayName: 'Silvio',
       quitDate: null,
@@ -58,10 +44,6 @@ export function defaultState() {
       packPrice: 12,
       currency: 'USD',
     },
-    reasons: [],
-    savingsGoal: { name: '', targetAmount: 0 },
-    cravings: [],
-    slips: [],
     seenAchievements: [],
     seenRanks: [],
     personalBestStreak: 0,

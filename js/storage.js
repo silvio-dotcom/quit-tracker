@@ -1,11 +1,23 @@
 import { STORAGE_KEY, defaultState } from './constants.js';
 
+export function normalizeState(parsed) {
+  const base = defaultState();
+  if (!parsed || typeof parsed !== 'object') return base;
+  return {
+    ...base,
+    ...parsed,
+    profile: { ...base.profile, ...(parsed.profile || {}) },
+    seenAchievements: Array.isArray(parsed.seenAchievements) ? parsed.seenAchievements : [],
+    seenRanks: Array.isArray(parsed.seenRanks) ? parsed.seenRanks : [],
+    personalBestStreak: Number(parsed.personalBestStreak) || 0,
+  };
+}
+
 export function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-    return { ...defaultState(), ...parsed, profile: { ...defaultState().profile, ...parsed.profile } };
+    return normalizeState(JSON.parse(raw));
   } catch {
     return defaultState();
   }
@@ -27,8 +39,7 @@ export function exportJson(state) {
 
 export function importJson(file) {
   return file.text().then((text) => {
-    const parsed = JSON.parse(text);
-    const merged = { ...defaultState(), ...parsed, profile: { ...defaultState().profile, ...parsed.profile } };
+    const merged = normalizeState(JSON.parse(text));
     saveState(merged);
     return merged;
   });

@@ -1,4 +1,4 @@
-const BUILD = '4';
+const BUILD = '5';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -6,15 +6,13 @@ const PRECACHE = [
   './index.html',
   `./css/styles.css?v=${BUILD}`,
   `./js/bootstrap.js?v=${BUILD}`,
-  `./js/version.js`,
+  './js/version.js',
   `./js/sw-register.js?v=${BUILD}`,
   `./js/app.js?v=${BUILD}`,
   './js/constants.js',
   './js/health-milestones.js',
   './js/storage.js',
   './js/stats.js',
-  './js/charts.js',
-  './js/breathing.js',
   './js/ranks.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
