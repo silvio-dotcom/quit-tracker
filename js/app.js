@@ -5,7 +5,6 @@ import {
   cigarettesAvoided,
   moneySaved,
   formatDuration,
-  currentStreakDays,
   healthProgress,
   formatMoney,
   formatDayCount,
