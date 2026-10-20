@@ -13,7 +13,6 @@ function stateWithQuitHoursAgo(hours, cigsPerDay) {
       packPrice: 12,
       currency: 'USD',
     },
-    personalBestStreak: 0,
   };
 }
 

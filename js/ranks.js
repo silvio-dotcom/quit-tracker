@@ -2,7 +2,7 @@
  * Personal rank ladder — smoke-free time only (future leaderboard-ready).
  */
 
-import { msSinceQuit, currentStreakDays, bestStreakDays, cigarettesAvoided } from './stats.js';
+import { msSinceQuit, currentStreakDays, cigarettesAvoided } from './stats.js';
 
 const H = 60 * 60 * 1000;
 const D = 24 * H;
@@ -24,8 +24,7 @@ export const RANK_LADDER = [
 export function rankMetrics(state, now = Date.now()) {
   const smokeFreeMs = msSinceQuit(state.profile, now);
   const streakDays = currentStreakDays(state, now);
-  const bestStreak = bestStreakDays(state, now);
-  return { smokeFreeMs, streakDays, bestStreakDays: bestStreak };
+  return { smokeFreeMs, streakDays };
 }
 
 export function currentRankIndex(metrics) {
@@ -67,7 +66,7 @@ export function leaderboardPayload(state, now = Date.now()) {
   const metrics = rankMetrics(state, now);
   const rank = getCurrentRank(metrics);
   const cigs = cigarettesAvoided(state, now);
-  const score = Math.floor(metrics.smokeFreeMs / H) + metrics.bestStreakDays * 10;
+  const score = Math.floor(metrics.smokeFreeMs / H);
   return {
     displayName: state.profile.displayName || 'Anonymous',
     rankId: rank.id,
@@ -76,7 +75,6 @@ export function leaderboardPayload(state, now = Date.now()) {
     score,
     smokeFreeMs: metrics.smokeFreeMs,
     currentStreakDays: metrics.streakDays,
-    bestStreakDays: metrics.bestStreakDays,
     cigarettesAvoidedEstimate: cigs,
     quitDate: state.profile.quitDate,
   };

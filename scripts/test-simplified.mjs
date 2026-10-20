@@ -60,11 +60,26 @@ async function runCase(name, seedLocalStorage) {
     if (!ok) throw new Error(`${name}: tab ${tab} failed`);
   }
 
+  const hasBestWord = await page.evaluate(() => /\bbest\b/i.test(document.body.innerText));
+  if (hasBestWord) throw new Error(`${name}: UI should not contain the word "best"`);
+
+  if (name === 'legacy') {
+    const stored = await page.evaluate(() => localStorage.getItem('quit-tracker-data-v1'));
+    if (stored && stored.includes('personalBestStreak')) {
+      throw new Error('legacy: personalBestStreak should be stripped from localStorage');
+    }
+    const bodyText = await page.evaluate(() => document.body.innerText);
+    if (bodyText.includes('5000')) throw new Error('legacy: bogus 5000-day value visible in UI');
+  }
+
   await page.locator('.nav-btn[data-nav="home"]').tap();
   await page.locator('#btn-health-toggle').tap();
   if (name === 'fresh') {
     await page.waitForTimeout(200);
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/home-simplified-mobile.png', fullPage: false });
+    await page.locator('.nav-btn[data-nav="rank"]').tap();
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-rank-mobile.png', fullPage: false });
   }
 
   await page.locator('.nav-btn[data-nav="more"]').tap();
@@ -97,7 +112,7 @@ const legacy = JSON.stringify({
   slips: [{ id: 's1', at: Date.now(), count: 2 }],
   seenAchievements: ['first-day'],
   seenRanks: ['rookie', 'fighter'],
-  personalBestStreak: 12,
+  personalBestStreak: 5000,
 });
 
 await runCase('fresh', null);
