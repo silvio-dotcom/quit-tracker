@@ -5,7 +5,7 @@
   "scripts": {
     "icons": "node scripts/generate-icons.mjs",
     "icons:android": "node scripts/generate-android-icons.mjs",
-    "test": "node scripts/test-money-projections.mjs && node scripts/test-cigarettes-avoided.mjs && node scripts/test-streak-days.mjs && node scripts/test-simplified.mjs && node scripts/test-datetime-local.mjs && node scripts/test-milestone-schedule.mjs",
+    "test": "node scripts/test-money-projections.mjs && node scripts/test-cigarettes-avoided.mjs && node scripts/test-streak-days.mjs && node scripts/test-simplified.mjs && node scripts/test-datetime-local.mjs && node scripts/test-milestone-schedule.mjs && node scripts/test-platform-native.mjs && node scripts/test-share-message.mjs",
     "www:sync": "node scripts/sync-www.mjs",
     "cap:sync": "npm run www:sync && npx cap sync android",
     "android:debug": "cd android && ./gradlew assembleDebug"
@@ -15,6 +15,7 @@
     "@capacitor/app": "^7.0.1",
     "@capacitor/core": "^7.2.0",
     "@capacitor/local-notifications": "^7.0.1",
+    "@capacitor/share": "^7.0.4",
     "@capacitor/status-bar": "^7.0.1"
   },
   "devDependencies": {

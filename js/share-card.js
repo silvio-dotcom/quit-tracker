@@ -1,9 +1,11 @@
 import { msSinceQuit, cigarettesAvoided, moneySaved, formatDuration, formatMoney } from './stats.js';
 import { getCurrentRank, rankMetrics } from './ranks.js';
 import { CURRENCIES } from './constants.js';
+import { buildShareMessage, formatTimeBack } from './share-message.js';
+import { isNativePlatform } from './platform.js';
 
 const W = 900;
-const H = 1120;
+const H = 1180;
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -27,7 +29,7 @@ export async function renderSharePng(state, now = Date.now()) {
   const cigs = cigarettesAvoided(state, now);
   const money = moneySaved(state, now);
   const cur = state.profile.currency || 'USD';
-  const sym = CURRENCIES[cur]?.symbol ?? '$';
+  const timeBack = formatTimeBack(cigs);
 
   ctx.fillStyle = '#0f1419';
   ctx.fillRect(0, 0, W, H);
@@ -56,6 +58,7 @@ export async function renderSharePng(state, now = Date.now()) {
   const lines = [
     `Cigarettes not smoked: ${cigs.toLocaleString()}`,
     `Money saved: ${formatMoney(money, cur, CURRENCIES)}`,
+    `Time back: ${timeBack.replace(' of my time back', '')}`,
   ];
   ctx.font = '32px system-ui, sans-serif';
   ctx.fillStyle = '#e2e8f0';
@@ -77,14 +80,46 @@ export async function renderSharePng(state, now = Date.now()) {
   });
 }
 
-export async function shareProgressCard(state, now = Date.now()) {
-  const blob = await renderSharePng(state, now);
+export async function shareProgressPayload(state, text, blob) {
   const file = new File([blob], 'quit-tracker-progress.png', { type: 'image/png' });
-  const title = 'My smoke-free progress';
-  if (navigator.share && navigator.canShare?.({ files: [file] })) {
-    await navigator.share({ title, files: [file] });
-    return 'shared';
+
+  if (navigator.share) {
+    try {
+      const base = { title: 'My smoke-free progress', text };
+      if (navigator.canShare?.({ ...base, files: [file] })) {
+        await navigator.share({ ...base, files: [file] });
+        return 'shared';
+      }
+      await navigator.share(base);
+      return 'shared';
+    } catch (err) {
+      if (err?.name === 'AbortError') return 'cancelled';
+    }
   }
+
+  if (isNativePlatform()) {
+    const Share = window.Capacitor?.Plugins?.Share;
+    if (Share?.share) {
+      try {
+        await Share.share({ title: 'My smoke-free progress', text, dialogTitle: 'Share my progress' });
+        return 'shared';
+      } catch {
+        /* fall through */
+      }
+    }
+  }
+
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'quit-tracker-progress.png';
+    a.click();
+    URL.revokeObjectURL(url);
+    return 'copy-download';
+  }
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -92,4 +127,17 @@ export async function shareProgressCard(state, now = Date.now()) {
   a.click();
   URL.revokeObjectURL(url);
   return 'download';
+}
+
+export async function copyShareText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+  return false;
+}
+
+export function prepareShareContent(state, now = Date.now()) {
+  const text = buildShareMessage(state, now);
+  return { text, render: () => renderSharePng(state, now) };
 }

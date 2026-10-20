@@ -1,4 +1,4 @@
-const BUILD = '15';
+const BUILD = '16';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -25,6 +25,8 @@ const PRECACHE = [
   './js/native-notifications.js',
   './js/native-shell.js',
   './js/back-handler.js',
+  './js/share-message.js',
+  './js/share-ui.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',

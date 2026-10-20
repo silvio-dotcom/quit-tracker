@@ -3,7 +3,8 @@
   "appName": "Quit Tracker",
   "webDir": "www",
   "android": {
-    "allowMixedContent": false
+    "allowMixedContent": false,
+    "appendUserAgent": "QuitTrackerAndroid"
   },
   "server": {
     "androidScheme": "https"

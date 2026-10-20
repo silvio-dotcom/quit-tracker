@@ -3,7 +3,7 @@ import { isNativePlatform } from './platform.js';
 /** Apply status bar + safe-area padding for edge-to-edge (API 35+). */
 export async function initNativeShell() {
   if (!isNativePlatform()) return;
-  document.documentElement.classList.add('native-capacitor');
+  document.documentElement.classList.add('qt-native-android', 'native-capacitor');
   document.body.classList.add('native-android');
 
   const StatusBar = window.Capacitor?.Plugins?.StatusBar;

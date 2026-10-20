@@ -20,7 +20,7 @@ import {
   MILESTONE_ALERTS_HELP,
   refreshMilestoneSchedules,
 } from './milestone-alerts.js';
-import { shareProgressCard } from './share-card.js';
+import { openSharePreview, bindSharePreviewUi } from './share-ui.js';
 import { registerPredictiveBack } from './back-handler.js';
 import { initNativeShell, onNativeAppActive } from './native-shell.js';
 import {
@@ -386,12 +386,12 @@ function bindEvents() {
   });
   $('#btn-start-over')?.addEventListener('click', startOverAfterSmoking);
   $('#btn-open-setup')?.addEventListener('click', openSetupWizard);
+  bindSharePreviewUi(() => state, toast);
   $('#btn-share-progress')?.addEventListener('click', async () => {
     try {
-      const mode = await shareProgressCard(state);
-      toast(mode === 'shared' ? 'Shared!' : 'Image downloaded');
+      await openSharePreview(state, toast);
     } catch {
-      toast('Could not share progress');
+      toast('Could not prepare share');
     }
   });
   $('#toggle-milestone-alerts')?.addEventListener('change', async (e) => {
@@ -497,7 +497,7 @@ function startTicker() {
 export function initApp() {
   bindEvents();
   initInstallUi();
-  initNativeShell();
+  initNativeShell().then(() => updateInstallUi());
   registerPredictiveBack({
     closeTopModal,
     getActiveTab,

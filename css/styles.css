@@ -439,6 +439,52 @@ body.modal-open {
   display: block;
 }
 
+.btn-with-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.share-preview-panel {
+  max-width: 360px;
+}
+
+.share-preview-image {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 12px auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.share-preview-text {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0 0 12px;
+  color: var(--text);
+  max-height: 180px;
+  overflow: auto;
+}
+
+.share-preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .btn.ghost {
   background: rgba(255, 255, 255, 0.06);
   color: var(--text);
