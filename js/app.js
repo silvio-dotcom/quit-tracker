@@ -9,6 +9,7 @@ import {
   healthProgress,
   formatMoney,
   formatDayCount,
+  formatStreakDisplay,
 } from './stats.js';
 import {
   BADGE_CATEGORIES,
@@ -183,7 +184,7 @@ function renderRankPreview(now = Date.now()) {
       : 'You reached the top rank.';
   }
   const streaks = $('#rank-dash-streaks');
-  if (streaks) streaks.textContent = `Current streak: ${formatDayCount(metrics.streakDays)}`;
+  if (streaks) streaks.textContent = `Current streak: ${formatStreakDisplay(state, now)}`;
 }
 
 function renderDashboard() {
@@ -199,7 +200,7 @@ function renderDashboard() {
   }
   setText('#stat-cigs', cigarettesAvoided(state, now).toLocaleString());
   setText('#stat-money', formatMoney(moneySaved(state, now), state.profile.currency, CURRENCIES));
-  setText('#stat-streak', formatDayCount(currentStreakDays(state, now)));
+  setText('#stat-streak', formatStreakDisplay(state, now));
   renderRankPreview(now);
   renderHealthHome(now);
   checkNewAchievements(now);
@@ -217,7 +218,7 @@ function renderRank() {
   setText('#rank-hero-icon', rank.icon);
   setText('#rank-hero-name', rank.name);
   setText('#rank-hero-tag', rank.tagline);
-  setText('#rank-current-streak', formatDayCount(metrics.streakDays));
+  setText('#rank-current-streak', formatStreakDisplay(state, now));
   setWidth('#rank-hero-bar', `${pct}%`);
   setText('#rank-hero-next', next ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}` : 'Top rank unlocked.');
   setText('#rank-hero-score', `Leaderboard score (local): ${payload.score}`);
@@ -305,7 +306,7 @@ function renderMore() {
   $('#settings-currency').innerHTML = Object.entries(CURRENCIES)
     .map(([k, v]) => `<option value="${k}" ${p.currency === k ? 'selected' : ''}>${k}</option>`)
     .join('');
-  setText('#stats-current', formatDayCount(currentStreakDays(state)));
+  setText('#stats-current', formatStreakDisplay(state));
 }
 
 function openSetupWizard() {
