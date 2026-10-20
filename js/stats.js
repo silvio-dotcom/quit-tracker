@@ -1,6 +1,10 @@
 import { HEALTH_MILESTONES } from './health-milestones.js';
 
-/** Daily cigarette rate is spread over waking hours only (QuitNow-style). */
+/**
+ * Cigarettes accrue only during waking hours (16h per 24h day), not while asleep.
+ * Equivalent rate over calendar time: cigsPerDay × (elapsed / 24h).
+ * Same as (waking hours elapsed) × (cigsPerDay / 16) with waking = elapsed × 16/24.
+ */
 export const WAKING_HOURS_PER_DAY = 16;
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
@@ -20,8 +24,15 @@ export function msSinceQuit(profile, now = Date.now()) {
 export function cigarettesAvoided(state, now = Date.now()) {
   const ms = msSinceQuit(state.profile, now);
   const perDay = Number(state.profile.cigsPerDay) || 0;
-  const perMs = perDay / (WAKING_HOURS_PER_DAY * MS_PER_HOUR);
-  return Math.max(0, Math.floor(ms * perMs));
+  if (!perDay) return 0;
+  return Math.max(0, Math.floor((ms * perDay) / MS_PER_DAY));
+}
+
+/** Milliseconds of smoke-free time to reach a cigarette count at the current daily rate. */
+export function msForCigaretteTarget(count, cigsPerDay) {
+  const cpd = Number(cigsPerDay) || 0;
+  if (!cpd || count <= 0) return 0;
+  return (count * MS_PER_DAY) / cpd;
 }
 
 export function moneySaved(state, now = Date.now()) {

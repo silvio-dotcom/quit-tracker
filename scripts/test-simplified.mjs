@@ -76,8 +76,8 @@ async function runCase(name, seedLocalStorage) {
   await page.locator('#btn-health-toggle').tap();
   if (name === 'fresh') {
     await page.waitForTimeout(200);
-    const installBanner = await page.locator('#install-home-banner:not(.hidden)').count();
-    if (!installBanner) throw new Error('fresh: install banner should show before installed');
+    const installHeader = await page.locator('#btn-install-header:not(.hidden)').count();
+    if (!installHeader) throw new Error('fresh: header install button should show before installed');
     const rankNameColor = await page.evaluate(() => {
       const el = document.querySelector('#rank-dash-name');
       if (!el) return null;

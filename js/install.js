@@ -49,7 +49,6 @@ export function updateInstallUi() {
   const standalone = isStandalonePwa();
   const showProminent = !standalone && !wasInstalledBefore();
 
-  setHidden($('#install-home-banner'), !showProminent);
   setHidden($('#btn-install-header'), !showProminent);
 
   const moreBtn = $('#btn-install-more');
@@ -112,7 +111,6 @@ export function initInstallUi() {
     updateInstallUi();
   });
 
-  $('#btn-install-home')?.addEventListener('click', onInstallTap);
   $('#btn-install-header')?.addEventListener('click', onInstallTap);
   $('#btn-install-more')?.addEventListener('click', onInstallTap);
   $$('[data-close="modal-ios-install"]').forEach((btn) => {
