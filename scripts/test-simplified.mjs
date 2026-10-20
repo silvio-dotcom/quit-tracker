@@ -77,9 +77,23 @@ async function runCase(name, seedLocalStorage) {
   if (name === 'fresh') {
     await page.waitForTimeout(200);
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/home-simplified-mobile.png', fullPage: false });
-    await page.locator('.nav-btn[data-nav="rank"]').tap();
-    await page.waitForTimeout(200);
-    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-rank-mobile.png', fullPage: false });
+    await page.locator('.nav-btn[data-nav="badges"]').tap();
+    await page.waitForTimeout(250);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-badges-mobile.png', fullPage: false });
+    const sections = await page.locator('.badge-category').count();
+    if (sections < 3) throw new Error('fresh: expected 3 badge categories');
+  }
+
+  if (name === 'ten-days') {
+    await page.locator('.nav-btn[data-nav="badges"]').tap();
+    await page.waitForTimeout(300);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-badges-10d-mobile.png', fullPage: false });
+    const summary = await page.locator('#badge-summary').textContent();
+    if (!summary || !summary.includes('of')) throw new Error('ten-days: missing badge summary');
+    const unlocked = await page.locator('.badge.unlocked').count();
+    if (unlocked < 5) throw new Error(`ten-days: expected several unlocked badges, got ${unlocked}`);
   }
 
   await page.locator('.nav-btn[data-nav="more"]').tap();
@@ -115,6 +129,21 @@ const legacy = JSON.stringify({
   personalBestStreak: 5000,
 });
 
+const tenDays = JSON.stringify({
+  version: 2,
+  profile: {
+    displayName: 'Silvio',
+    quitDate: new Date(Date.now() - 86400000 * 10).toISOString(),
+    cigsPerDay: 20,
+    cigsPerPack: 20,
+    packPrice: 12,
+    currency: 'USD',
+  },
+  seenAchievements: ['first-day'],
+  seenRanks: ['rookie', 'fighter', 'survivor'],
+});
+
 await runCase('fresh', null);
 await runCase('legacy', legacy);
+await runCase('ten-days', tenDays);
 console.log('all tests passed');

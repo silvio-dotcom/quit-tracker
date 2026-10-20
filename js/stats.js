@@ -1,4 +1,3 @@
-import { ACHIEVEMENTS } from './constants.js';
 import { HEALTH_MILESTONES } from './health-milestones.js';
 
 /** Daily cigarette rate is spread over waking hours only (QuitNow-style). */
@@ -67,28 +66,6 @@ export function healthProgress(now, quitDate) {
     if (done) pct = 100;
     else if (elapsed > prevMs && m.timeMs > prevMs) pct = ((elapsed - prevMs) / (m.timeMs - prevMs)) * 100;
     return { ...m, done, progress: Math.min(100, Math.max(0, pct)) };
-  });
-}
-
-export function unlockedAchievements(state, now = Date.now()) {
-  const ms = msSinceQuit(state.profile, now);
-  const cigs = cigarettesAvoided(state, now);
-  const money = moneySaved(state, now);
-  const streak = currentStreakDays(state, now);
-
-  return ACHIEVEMENTS.filter((a) => {
-    switch (a.type) {
-      case 'time':
-        return ms >= a.ms;
-      case 'cigs':
-        return cigs >= a.count;
-      case 'money':
-        return money >= a.amount;
-      case 'streak':
-        return streak >= a.days;
-      default:
-        return false;
-    }
   });
 }
 

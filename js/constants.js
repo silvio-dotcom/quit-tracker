@@ -10,29 +10,102 @@ export const CURRENCIES = {
   AUD: { symbol: 'A$', label: 'Australian Dollar' },
 };
 
+const M = 60 * 1000;
+const H = 60 * M;
+const D = 24 * H;
+const MO = 30 * D;
+const Y = 365 * D;
+
+/** @typedef {'time'|'cigs'|'money'} BadgeCategoryId */
+
+/**
+ * QuitNow-style badge definitions (single source of truth).
+ * @type {Array<{
+ *   id: string,
+ *   category: BadgeCategoryId,
+ *   icon: string,
+ *   title: string,
+ *   desc: string,
+ *   ms?: number,
+ *   count?: number,
+ *   packs?: number,
+ *   amount?: number,
+ * }>}
+ */
 export const ACHIEVEMENTS = [
-  { id: 'first-hour', type: 'time', ms: 60 * 60 * 1000, title: 'First hour', desc: 'One smoke-free hour.' },
-  { id: 'first-day', type: 'time', ms: 24 * 60 * 60 * 1000, title: 'Day one', desc: '24 hours without smoking.' },
-  { id: 'three-days', type: 'time', ms: 3 * 24 * 60 * 60 * 1000, title: '72 hours', desc: 'Nicotine largely cleared from your body.' },
-  { id: 'one-week', type: 'time', ms: 7 * 24 * 60 * 60 * 1000, title: 'One week', desc: 'A full week smoke-free.' },
-  { id: 'two-weeks', type: 'time', ms: 14 * 24 * 60 * 60 * 1000, title: 'Two weeks', desc: 'Habits are shifting.' },
-  { id: 'one-month', type: 'time', ms: 30 * 24 * 60 * 60 * 1000, title: 'One month', desc: 'A major milestone.' },
-  { id: 'three-months', type: 'time', ms: 90 * 24 * 60 * 60 * 1000, title: 'Three months', desc: 'Real momentum.' },
-  { id: 'six-months', type: 'time', ms: 180 * 24 * 60 * 60 * 1000, title: 'Six months', desc: 'Half a year free.' },
-  { id: 'one-year', type: 'time', ms: 365 * 24 * 60 * 60 * 1000, title: 'One year', desc: 'A full year as a non-smoker.' },
-  { id: 'cigs-100', type: 'cigs', count: 100, title: '100 avoided', desc: '100 cigarettes not smoked.' },
-  { id: 'cigs-500', type: 'cigs', count: 500, title: '500 avoided', desc: '500 cigarettes not smoked.' },
-  { id: 'cigs-1000', type: 'cigs', count: 1000, title: '1,000 avoided', desc: 'A thousand cigarettes skipped.' },
-  { id: 'money-25', type: 'money', amount: 25, title: '$25 saved', desc: 'Money back in your pocket.' },
-  { id: 'money-100', type: 'money', amount: 100, title: '$100 saved', desc: 'Serious savings.' },
-  { id: 'money-500', type: 'money', amount: 500, title: '$500 saved', desc: 'Half a grand kept.' },
-  { id: 'streak-7', type: 'streak', days: 7, title: '7-day streak', desc: 'Seven days on this quit.' },
-  { id: 'streak-30', type: 'streak', days: 30, title: '30-day streak', desc: 'Thirty days on this quit.' },
+  // —— Time smoke-free ——
+  { id: 'time-20m', category: 'time', icon: '💪', title: '20 minutes', desc: 'The hardest stretch — you did it.', ms: 20 * M },
+  { id: 'time-1h', category: 'time', icon: '⏱️', title: '1 hour', desc: 'One full hour smoke-free.', ms: H },
+  { id: 'time-6h', category: 'time', icon: '🌤️', title: '6 hours', desc: 'Half a work day without a cigarette.', ms: 6 * H },
+  { id: 'time-12h', category: 'time', icon: '🌙', title: '12 hours', desc: 'A half-day milestone.', ms: 12 * H },
+  { id: 'time-24h', category: 'time', icon: '🌅', title: '24 hours', desc: 'A full day as a non-smoker.', ms: D },
+  { id: 'time-3d', category: 'time', icon: '🔥', title: '3 days', desc: 'Nicotine is clearing out.', ms: 3 * D },
+  { id: 'time-7d', category: 'time', icon: '📅', title: '7 days', desc: 'One week smoke-free.', ms: 7 * D },
+  { id: 'time-14d', category: 'time', icon: '🛡️', title: '2 weeks', desc: 'Habits are starting to shift.', ms: 14 * D },
+  { id: 'time-1mo', category: 'time', icon: '🏅', title: '1 month', desc: 'A major milestone.', ms: MO },
+  { id: 'time-2mo', category: 'time', icon: '⭐', title: '2 months', desc: 'Two months of freedom.', ms: 2 * MO },
+  { id: 'time-3mo', category: 'time', icon: '💎', title: '3 months', desc: 'Real momentum.', ms: 3 * MO },
+  { id: 'time-6mo', category: 'time', icon: '🎯', title: '6 months', desc: 'Half a year smoke-free.', ms: 6 * MO },
+  { id: 'time-9mo', category: 'time', icon: '🚀', title: '9 months', desc: 'Nine months strong.', ms: 9 * MO },
+  { id: 'time-1y', category: 'time', icon: '🎉', title: '1 year', desc: 'A full year as a non-smoker.', ms: Y },
+  { id: 'time-2y', category: 'time', icon: '🏆', title: '2 years', desc: 'Two years smoke-free.', ms: 2 * Y },
+  { id: 'time-5y', category: 'time', icon: '👑', title: '5 years', desc: 'Five years — incredible.', ms: 5 * Y },
+
+  // —— Cigarettes avoided (16 waking-hour rate) ——
+  { id: 'cigs-1', category: 'cigs', icon: '🚭', title: 'First cigarette', desc: 'One cigarette not smoked.', count: 1 },
+  { id: 'cigs-10', category: 'cigs', icon: '🔟', title: '10 avoided', desc: 'Ten cigarettes skipped.', count: 10 },
+  { id: 'cigs-first-pack', category: 'cigs', icon: '📦', title: 'First pack', desc: 'A full pack avoided.', packs: 1 },
+  { id: 'cigs-50', category: 'cigs', icon: '🌿', title: '50 avoided', desc: 'Fifty cigarettes not smoked.', count: 50 },
+  { id: 'cigs-100', category: 'cigs', icon: '💯', title: '100 avoided', desc: 'A hundred cigarettes skipped.', count: 100 },
+  { id: 'cigs-5pack', category: 'cigs', icon: '📦', title: '5 packs', desc: 'Five packs avoided.', packs: 5 },
+  { id: 'cigs-10pack', category: 'cigs', icon: '🎁', title: '10 packs', desc: 'Ten packs not smoked.', packs: 10 },
+  { id: 'cigs-250', category: 'cigs', icon: '🚬', title: '250 avoided', desc: 'Two hundred fifty cigarettes.', count: 250 },
+  { id: 'cigs-500', category: 'cigs', icon: '🏔️', title: '500 avoided', desc: 'Five hundred cigarettes skipped.', count: 500 },
+  { id: 'cigs-1000', category: 'cigs', icon: '🌟', title: '1,000 avoided', desc: 'A thousand cigarettes avoided.', count: 1000 },
+  { id: 'cigs-5000', category: 'cigs', icon: '🔥', title: '5,000 avoided', desc: 'Five thousand — legendary.', count: 5000 },
+
+  // —— Money saved (profile currency) ——
+  { id: 'money-10', category: 'money', icon: '💵', title: '10 saved', desc: 'First savings milestone.', amount: 10 },
+  { id: 'money-25', category: 'money', icon: '🪙', title: '25 saved', desc: 'Money back in your pocket.', amount: 25 },
+  { id: 'money-50', category: 'money', icon: '💰', title: '50 saved', desc: 'Fifty kept.', amount: 50 },
+  { id: 'money-100', category: 'money', icon: '💸', title: '100 saved', desc: 'Serious savings.', amount: 100 },
+  { id: 'money-250', category: 'money', icon: '🏦', title: '250 saved', desc: 'A quarter grand.', amount: 250 },
+  { id: 'money-500', category: 'money', icon: '🎁', title: '500 saved', desc: 'Half a grand kept.', amount: 500 },
+  { id: 'money-1000', category: 'money', icon: '💎', title: '1,000 saved', desc: 'Four digits saved.', amount: 1000 },
+  { id: 'money-2500', category: 'money', icon: '🏆', title: '2,500 saved', desc: 'Major milestone.', amount: 2500 },
+  { id: 'money-5000', category: 'money', icon: '👑', title: '5,000 saved', desc: 'Five thousand saved.', amount: 5000 },
 ];
+
+export const BADGE_CATEGORIES = [
+  { id: 'time', label: 'Time smoke-free', emoji: '⏱️' },
+  { id: 'cigs', label: 'Cigarettes avoided', emoji: '🚭' },
+  { id: 'money', label: 'Money saved', emoji: '💰' },
+];
+
+/** Maps pre–v9 achievement ids to current ids; streak badges removed. */
+export const LEGACY_ACHIEVEMENT_IDS = {
+  'first-hour': 'time-1h',
+  'first-day': 'time-24h',
+  'three-days': 'time-3d',
+  'one-week': 'time-7d',
+  'two-weeks': 'time-14d',
+  'one-month': 'time-1mo',
+  'three-months': 'time-3mo',
+  'six-months': 'time-6mo',
+  'one-year': 'time-1y',
+  'cigs-100': 'cigs-100',
+  'cigs-500': 'cigs-500',
+  'cigs-1000': 'cigs-1000',
+  'money-25': 'money-25',
+  'money-100': 'money-100',
+  'money-500': 'money-500',
+};
+
+export const ACHIEVEMENT_IDS = new Set(ACHIEVEMENTS.map((a) => a.id));
 
 export function defaultState() {
   return {
-    version: 2,
+    version: 3,
     profile: {
       displayName: 'Silvio',
       quitDate: null,
@@ -43,5 +116,7 @@ export function defaultState() {
     },
     seenAchievements: [],
     seenRanks: [],
+    achievementUnlocks: {},
+    badgeMigrationV9: false,
   };
 }
