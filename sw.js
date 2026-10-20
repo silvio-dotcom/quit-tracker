@@ -1,10 +1,14 @@
-const CACHE_NAME = 'quit-tracker-v2';
+const BUILD = '4';
+const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
   './',
   './index.html',
-  './css/styles.css',
-  './js/app.js',
+  `./css/styles.css?v=${BUILD}`,
+  `./js/bootstrap.js?v=${BUILD}`,
+  `./js/version.js`,
+  `./js/sw-register.js?v=${BUILD}`,
+  `./js/app.js?v=${BUILD}`,
   './js/constants.js',
   './js/health-milestones.js',
   './js/storage.js',
@@ -19,12 +23,35 @@ const PRECACHE = [
 
 function isMutableAsset(url) {
   const path = url.pathname;
-  return path.endsWith('.html') || path.endsWith('.js') || path.endsWith('.css') || path.endsWith('/');
+  if (path.endsWith('/sw.js')) return true;
+  return (
+    path.endsWith('.html') ||
+    path.endsWith('.js') ||
+    path.endsWith('.css') ||
+    path.endsWith('/') ||
+    url.search.includes('v=')
+  );
+}
+
+function fetchNoStore(request) {
+  return fetch(new Request(request, { cache: 'no-store' }));
 }
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((cache) =>
+        Promise.all(
+          PRECACHE.map((path) => {
+            const url = new URL(path, self.location).href;
+            return fetchNoStore(url).then((response) => {
+              if (response.ok) return cache.put(url, response);
+            });
+          })
+        )
+      )
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -51,7 +78,7 @@ self.addEventListener('fetch', (event) => {
 
   if (isMutableAsset(url)) {
     event.respondWith(
-      fetch(event.request)
+      fetchNoStore(event.request)
         .then((response) => {
           if (response && response.status === 200) {
             const clone = response.clone();
@@ -67,7 +94,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).then((response) => {
+      return fetchNoStore(event.request).then((response) => {
         if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));

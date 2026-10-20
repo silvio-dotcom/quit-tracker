@@ -490,8 +490,12 @@ body.modal-open {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 6px 2px;
+  padding: 8px 4px;
+  min-height: 48px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .nav-btn span {
