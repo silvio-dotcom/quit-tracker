@@ -16,11 +16,13 @@ import { buildNextUpHtml } from './next-up.js';
 import {
   processMilestoneUnlocks,
   migrateCelebrationsV14,
+  migrateChipsV17,
   setMilestoneAlertsEnabled,
   MILESTONE_ALERTS_HELP,
   refreshMilestoneSchedules,
 } from './milestone-alerts.js';
 import { openSharePreview, bindSharePreviewUi } from './share-ui.js';
+import { renderHeroChip, bindChipsUi } from './chips-ui.js';
 import { registerPredictiveBack } from './back-handler.js';
 import { initNativeShell, onNativeAppActive } from './native-shell.js';
 import {
@@ -201,6 +203,9 @@ function renderDashboard() {
   if (state.profile.quitDate && !state.celebrationMigrationV14) {
     migrateCelebrationsV14(state, now, persist);
   }
+  if (state.profile.quitDate && !state.chipCelebrationMigrationV17) {
+    migrateChipsV17(state, now, persist);
+  }
   const ms = msSinceQuit(state.profile, now);
   const dur = formatDuration(ms);
   const counter = $('#live-counter');
@@ -227,6 +232,9 @@ function renderDashboard() {
   renderRankPreview(now);
   renderHealthHome(now);
   processMilestoneUnlocks(state, now, toast, persist);
+  const chipAnim = Boolean(window.__QT_CHIP_ANIM__);
+  if (chipAnim) window.__QT_CHIP_ANIM__ = false;
+  renderHeroChip(state, now, chipAnim);
   checkNewRanks(now);
 }
 
@@ -387,6 +395,7 @@ function bindEvents() {
   $('#btn-start-over')?.addEventListener('click', startOverAfterSmoking);
   $('#btn-open-setup')?.addEventListener('click', openSetupWizard);
   bindSharePreviewUi(() => state, toast);
+  bindChipsUi(() => state, escapeHtml);
   $('#btn-share-progress')?.addEventListener('click', async () => {
     try {
       await openSharePreview(state, toast);
@@ -508,6 +517,7 @@ export function initApp() {
   migrateBadgeNotificationsV9();
   const now = Date.now();
   migrateCelebrationsV14(state, now, persist);
+  migrateChipsV17(state, now, persist);
   renderAll();
   refreshMilestoneSchedules(state).catch(() => {});
   startTicker();

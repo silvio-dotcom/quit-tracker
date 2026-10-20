@@ -1,5 +1,6 @@
 import { healthProgress } from './stats.js';
 import { unlockedAchievements, syncAchievementUnlocks } from './achievements.js';
+import { earnedChipKeys, chipStatuses } from './chips.js';
 import { isNativePlatform } from './platform.js';
 import { ensureAndroidNotificationPermission, syncNativeMilestoneSchedule } from './native-notifications.js';
 
@@ -19,6 +20,7 @@ export function allUnlockedCelebrationKeys(state, now = Date.now()) {
   }
   syncAchievementUnlocks(state, now);
   unlockedAchievements(state, now).forEach((a) => keys.push(celebrationKey('badge', a.id)));
+  earnedChipKeys(state, now).forEach((k) => keys.push(k));
   return keys;
 }
 
@@ -116,6 +118,24 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
     }
   });
 
+  chipStatuses(state, now)
+    .filter((s) => s.earned)
+    .forEach((s) => {
+      const key = `chip:${s.tier.id}`;
+      if (!seen.has(key)) {
+        fresh.push({
+          key,
+          celebration: { icon: '🪙', title: 'Chip earned', subtitle: `Your ${s.tier.notifyLabel}` },
+          notify: {
+            title: 'Smoke-free chip earned',
+            body: `You earned your ${s.tier.notifyLabel}`,
+            tag: key,
+          },
+          chipAnim: true,
+        });
+      }
+    });
+
   if (!fresh.length) return;
 
   state.seenMilestoneCelebrations = [...seen, ...fresh.map((f) => f.key)];
@@ -129,6 +149,9 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
     });
   });
   drainCelebrationQueue();
+  if (fresh.some((f) => f.chipAnim)) {
+    window.__QT_CHIP_ANIM__ = true;
+  }
   if (fresh.length === 1) {
     toast(`${fresh[0].celebration.icon} ${fresh[0].celebration.subtitle}`);
   }
@@ -139,6 +162,16 @@ export function migrateCelebrationsV14(state, now, persist) {
   state.seenMilestoneCelebrations = allUnlockedCelebrationKeys(state, now);
   state.celebrationMigrationV14 = true;
   state.version = 4;
+  persist();
+}
+
+export function migrateChipsV17(state, now, persist) {
+  if (state.chipCelebrationMigrationV17) return;
+  const seen = new Set(state.seenMilestoneCelebrations || []);
+  earnedChipKeys(state, now).forEach((k) => seen.add(k));
+  state.seenMilestoneCelebrations = [...seen];
+  state.chipCelebrationMigrationV17 = true;
+  state.version = 5;
   persist();
 }
 
@@ -174,4 +207,4 @@ export async function refreshMilestoneSchedules(state) {
 }
 
 export const MILESTONE_ALERTS_HELP =
-  'Local alerts when a health milestone or badge unlocks. Uses this device only — no push server. On iPhone/iPad, notifications work only if Quit Tracker is installed to your Home Screen (iOS 16.4+). In a Safari tab, you will still see in-app celebrations. On Android (this app), alerts are scheduled on your device at each upcoming unlock time.';
+  'Local alerts when a health milestone, smoke-free chip, or badge unlocks. Uses this device only — no push server. On iPhone/iPad, notifications work only if Quit Tracker is installed to your Home Screen (iOS 16.4+). In a Safari tab, you will still see in-app celebrations. On Android (this app), alerts are scheduled on your device at each upcoming unlock time.';
