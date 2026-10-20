@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=17" />
+  <link rel="stylesheet" href="css/styles.css?v=18" />
   <style>
     html.qt-native-android #btn-install-header,
     html.qt-native-android [data-install-ui],
@@ -40,7 +40,7 @@
       if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=17';
+        s.src = 'js/sw-register.js?v=18';
         document.head.appendChild(s);
       }
     })();
@@ -68,8 +68,11 @@
               <div id="live-counter" class="live-counter" aria-live="polite"></div>
             </div>
             <button type="button" id="hero-chip-btn" class="hero-chip-btn" aria-label="My chips">
-              <div id="hero-chip-mount" class="hero-chip-mount"></div>
-              <span id="hero-chip-hint" class="hero-chip-hint hidden" aria-hidden="true"></span>
+              <div class="hero-chip-stack">
+                <div id="hero-chip-mount" class="hero-chip-mount"></div>
+                <p id="hero-chip-label" class="hero-chip-label pixel-label hidden"></p>
+                <span id="hero-chip-hint" class="hero-chip-hint hidden" aria-hidden="true"></span>
+              </div>
             </button>
           </div>
         </div>
@@ -292,6 +295,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=17"></script>
+  <script type="module" src="js/bootstrap.js?v=18"></script>
 </body>
 </html>
