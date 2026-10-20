@@ -4,7 +4,7 @@ import {
   sortLockedBadgesByEta,
   estimateUnlockTime,
 } from './achievements.js';
-import { moneyBadgeTitle } from './achievements.js';
+import { badgeDisplayTitle } from './achievements.js';
 
 export function formatCountdown(ms) {
   if (ms <= 0) return 'Now';
@@ -64,10 +64,7 @@ export function buildNextUpHtml(state, now, escapeHtml) {
       </div>`);
   }
   if (badge) {
-    const title =
-      badge.achievement.category === 'money'
-        ? moneyBadgeTitle(badge.achievement, state.profile.currency)
-        : badge.achievement.title;
+    const title = badgeDisplayTitle(badge.achievement, state.profile.currency);
     rows.push(`
       <div class="next-up-row">
         <div class="next-up-row-head">

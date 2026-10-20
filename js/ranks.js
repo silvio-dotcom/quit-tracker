@@ -1,11 +1,12 @@
 /**
- * Personal rank ladder — smoke-free time only (future leaderboard-ready).
+ * Personal rank ladder — smoke-free time only (capped at 1 year).
  */
 
 import { msSinceQuit, currentStreakDays, cigarettesAvoided } from './stats.js';
 
 const H = 60 * 60 * 1000;
 const D = 24 * H;
+const Y = 365 * D;
 
 export const RANK_LADDER = [
   { id: 'rookie', name: 'Rookie', icon: '🌱', tagline: 'Every journey starts here.', smokeFreeMs: 0 },
@@ -15,11 +16,12 @@ export const RANK_LADDER = [
   { id: 'guardian', name: 'Guardian', icon: '🏰', tagline: 'One week free.', smokeFreeMs: 7 * D },
   { id: 'champion', name: 'Champion', icon: '🏅', tagline: 'Two weeks.', smokeFreeMs: 14 * D },
   { id: 'veteran', name: 'Veteran', icon: '🎖️', tagline: 'One month.', smokeFreeMs: 30 * D },
-  { id: 'elite', name: 'Elite', icon: '💎', tagline: 'Three months.', smokeFreeMs: 90 * D },
+  { id: 'elite', name: 'Elite', icon: '💎', tagline: 'Two months.', smokeFreeMs: 60 * D },
   { id: 'master', name: 'Master', icon: '👑', tagline: 'Six months.', smokeFreeMs: 180 * D },
-  { id: 'legend', name: 'Legend', icon: '🌟', tagline: 'One year.', smokeFreeMs: 365 * D },
-  { id: 'immortal', name: 'Immortal', icon: '🔥', tagline: 'Five years smoke-free.', smokeFreeMs: 5 * 365 * D },
+  { id: 'legend', name: 'Legend', icon: '🌟', tagline: 'One full year smoke-free.', smokeFreeMs: Y },
 ];
+
+export const MAX_RANK_MS = Y;
 
 export function rankMetrics(state, now = Date.now()) {
   const smokeFreeMs = msSinceQuit(state.profile, now);
@@ -50,7 +52,7 @@ export function progressToNextRank(metrics) {
   const current = RANK_LADDER[currentRankIndex(metrics)].smokeFreeMs;
   const span = next.smokeFreeMs - current;
   if (span <= 0) return 100;
-  return Math.round(((metrics.smokeFreeMs - current) / span) * 100);
+  return Math.min(100, Math.max(0, Math.round(((metrics.smokeFreeMs - current) / span) * 100)));
 }
 
 export function rankLadderStatus(metrics) {
@@ -81,7 +83,7 @@ export function leaderboardPayload(state, now = Date.now()) {
 }
 
 export function formatSmokeFreeRequirement(ms) {
-  if (ms >= 365 * D) return `${Math.round(ms / (365 * D))} yr smoke-free`;
+  if (ms >= Y) return '1 year smoke-free';
   if (ms >= D) {
     const days = Math.round(ms / D);
     return `${days} ${days === 1 ? 'day' : 'days'} smoke-free`;

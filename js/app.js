@@ -36,7 +36,6 @@ import {
   progressToNextRank,
   rankMetrics,
   rankLadderStatus,
-  leaderboardPayload,
   nextRankHint,
   formatSmokeFreeRequirement,
   RANK_LADDER,
@@ -240,15 +239,17 @@ function renderRank() {
   const rank = getCurrentRank(metrics);
   const next = getNextRank(metrics);
   const pct = progressToNextRank(metrics);
-  const payload = leaderboardPayload(state, now);
-
   setText('#rank-hero-icon', rank.icon);
   setText('#rank-hero-name', rank.name);
   setText('#rank-hero-tag', rank.tagline);
   setText('#rank-current-streak', formatStreakDisplay(state, now));
   setWidth('#rank-hero-bar', `${pct}%`);
-  setText('#rank-hero-next', next ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}` : 'Top rank unlocked.');
-  setText('#rank-hero-score', `Leaderboard score (local): ${payload.score}`);
+  setText(
+    '#rank-hero-next',
+    next
+      ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}`
+      : 'Legend rank — one year smoke-free. You made it.'
+  );
 
   const ladder = $('#rank-ladder');
   if (ladder) {

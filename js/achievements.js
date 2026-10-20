@@ -5,7 +5,15 @@ import {
   CURRENCIES,
   TIME_BACK_MINUTES_PER_CIG,
 } from './constants.js';
-import { buildAchievementsForProfile, maxBadgeHorizonMs, BADGE_YEAR_MS } from './badge-year-scale.js';
+import {
+  buildAchievementsForProfile,
+  maxBadgeHorizonMs,
+  BADGE_YEAR_MS,
+  timebackTitle,
+  timebackDesc,
+  cigsTitle,
+  cigsPackTitle,
+} from './badge-year-scale.js';
 import {
   msSinceQuit,
   cigarettesAvoided,
@@ -160,6 +168,28 @@ export function moneyBadgeTitle(achievement, currency) {
   const amt = achievement.amount ?? 0;
   const label = amt >= 1000 ? amt.toLocaleString() : String(amt);
   return `${sym}${label} saved`;
+}
+
+/** Single source for UI copy (badges, next up, alerts, notifications). */
+export function badgeDisplayTitle(achievement, currency) {
+  switch (achievement.category) {
+    case 'money':
+      return moneyBadgeTitle(achievement, currency);
+    case 'timeback':
+      return timebackTitle(achievement.regainedMinutes ?? 0, achievement.id === 'timeback-year');
+    case 'cigs':
+      if (achievement.packs != null) return cigsPackTitle(achievement.packs, achievement.id);
+      return cigsTitle(achievement.count ?? 0, achievement.id);
+    default:
+      return achievement.title ?? '';
+  }
+}
+
+export function badgeDisplayDesc(achievement) {
+  if (achievement.category === 'timeback') {
+    return timebackDesc(achievement.regainedMinutes ?? 0, achievement.id === 'timeback-year');
+  }
+  return achievement.desc ?? '';
 }
 
 export function estimateUnlockTime(achievement, state) {

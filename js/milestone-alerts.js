@@ -1,5 +1,5 @@
 import { healthProgress } from './stats.js';
-import { unlockedAchievements, syncAchievementUnlocks } from './achievements.js';
+import { unlockedAchievements, syncAchievementUnlocks, badgeDisplayTitle } from './achievements.js';
 import { earnedChipKeys, chipStatuses } from './chips.js';
 import { isNativePlatform } from './platform.js';
 import { ensureAndroidNotificationPermission, syncNativeMilestoneSchedule } from './native-notifications.js';
@@ -114,10 +114,15 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
     if (!seen.has(key)) {
       fresh.push({
         key,
-        celebration: { icon: a.icon, title: 'Badge unlocked', subtitle: a.title, badgePop: true },
+        celebration: {
+          icon: a.icon,
+          title: 'Badge unlocked',
+          subtitle: badgeDisplayTitle(a, state.profile.currency),
+          badgePop: true,
+        },
         notify: {
           title: 'Badge unlocked',
-          body: a.title,
+          body: badgeDisplayTitle(a, state.profile.currency),
           tag: key,
         },
       });
