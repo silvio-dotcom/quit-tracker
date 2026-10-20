@@ -143,7 +143,7 @@ function renderHealthHome(now = Date.now()) {
       ? recent
           .map(
             (m) => `<li class="health-recent-item">
-          <span class="health-recent-title">✓ ${escapeHtml(m.title)}</span>
+          <span class="health-recent-title">✓ ${escapeHtml(m.benefit)}</span>
           <a class="health-source-inline" href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source.name)}</a>
         </li>`
           )
@@ -160,10 +160,10 @@ function renderHealthHome(now = Date.now()) {
         (m) => `
       <article class="health-item ${m.done ? 'done' : ''}">
         <div class="health-head">
-          <span class="health-title">${escapeHtml(m.title)}</span>
+          <span class="health-title">${escapeHtml(m.benefit)}</span>
           <span class="health-pct">${m.done ? '✓' : `${Math.round(m.progress)}%`}</span>
         </div>
-        <p class="health-body">${escapeHtml(m.benefit)}</p>
+        <p class="health-at muted small">at ${escapeHtml(m.title)}</p>
         <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(m.source.name)}</a></p>
         <div class="progress-track"><div class="progress-fill" style="width:${m.progress}%"></div></div>
       </article>`

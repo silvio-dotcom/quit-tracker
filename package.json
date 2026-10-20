@@ -5,7 +5,7 @@
   "scripts": {
     "icons": "node scripts/generate-icons.mjs",
     "icons:android": "node scripts/generate-android-icons.mjs",
-    "test": "node scripts/test-money-projections.mjs && node scripts/test-cigarettes-avoided.mjs && node scripts/test-streak-days.mjs && node scripts/test-simplified.mjs && node scripts/test-datetime-local.mjs && node scripts/test-milestone-schedule.mjs && node scripts/test-platform-native.mjs && node scripts/test-share-message.mjs && node scripts/test-chips.mjs && node scripts/test-badge-gamify.mjs && node scripts/test-badge-year-horizon.mjs && node scripts/test-badge-thresholds.mjs && node scripts/test-badge-copy.mjs && node scripts/test-xp-pacing.mjs && node scripts/test-timeback-titles.mjs && node scripts/test-rank-ladder.mjs",
+    "test": "node scripts/test-money-projections.mjs && node scripts/test-cigarettes-avoided.mjs && node scripts/test-streak-days.mjs && node scripts/test-simplified.mjs && node scripts/test-datetime-local.mjs && node scripts/test-milestone-schedule.mjs && node scripts/test-platform-native.mjs && node scripts/test-share-message.mjs && node scripts/test-chips.mjs && node scripts/test-badge-gamify.mjs && node scripts/test-badge-year-horizon.mjs && node scripts/test-badge-thresholds.mjs && node scripts/test-badge-copy.mjs && node scripts/test-xp-pacing.mjs && node scripts/test-timeback-titles.mjs && node scripts/test-rank-ladder.mjs && node scripts/test-next-up-health.mjs",
     "www:sync": "node scripts/sync-www.mjs",
     "cap:sync": "npm run www:sync && npx cap sync android",
     "android:debug": "cd android && ./gradlew assembleDebug"

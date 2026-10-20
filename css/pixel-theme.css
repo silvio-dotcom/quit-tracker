@@ -398,6 +398,38 @@ label,
   margin-left: auto;
 }
 
+.next-up-health-benefit {
+  font-family: var(--pixel-body);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin: 6px 0 4px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.next-up-health-at {
+  font-family: var(--pixel-display);
+  font-size: 0.4rem;
+  line-height: 1.5;
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+
+.health-at {
+  margin: 4px 0 8px;
+  font-size: 0.72rem;
+}
+
+.health-title {
+  font-family: var(--pixel-body);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  text-align: left;
+  flex: 1;
+}
+
 .badge-filter-chip {
   border-radius: 0;
   border: 3px solid var(--pixel-border);

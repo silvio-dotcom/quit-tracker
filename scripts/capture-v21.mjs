@@ -25,7 +25,8 @@ const srv = spawn('node', [path.join(repo, 'scripts/gh-pages-server.mjs'), serve
 await new Promise((r) => setTimeout(r, 450));
 
 const base = `http://127.0.0.1:${port}/quit-tracker/`;
-const MS_D = 24 * 60 * 60 * 1000;
+const MS_H = 60 * 60 * 1000;
+const MS_D = 24 * MS_H;
 const STORAGE_KEY = 'quit-tracker-data-v1';
 
 function seed(ms) {
@@ -100,6 +101,11 @@ await badgesP.locator('[data-badge-filter="timeback"]').click();
 await badgesP.waitForTimeout(400);
 await badgesP.screenshot({ path: path.join(out, 'v21-badges-timeback-300d.png'), fullPage: false });
 
+const home1d = await ctxPage(browser);
+await load(home1d, 39 * MS_H + 21 * MS_H / 60);
+await home1d.waitForTimeout(350);
+await home1d.screenshot({ path: path.join(out, 'v21-home-1d.png'), fullPage: false });
+
 const homeP = await ctxPage(browser);
 await load(homeP, 30 * MS_D);
 await homeP.waitForTimeout(350);
@@ -107,4 +113,4 @@ await homeP.screenshot({ path: path.join(out, 'v21-home-30d.png'), fullPage: fal
 
 await browser.close();
 srv.kill();
-console.log('saved v21-rank-ladder.png, v21-badges-timeback-300d.png, v21-home-30d.png');
+console.log('saved v21-rank-ladder.png, v21-badges-timeback-300d.png, v21-home-1d.png, v21-home-30d.png');
