@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { ACHIEVEMENTS } from '../js/constants.js';
+import { allBadgeTemplateIds } from '../js/achievements-catalog.js';
 import {
+  achievementsForState,
   badgeStatuses,
   selectNextLockedBadge,
   sortEarnedBadgesNewest,
@@ -24,13 +25,14 @@ const state1d = {
   achievementUnlocks: {},
 };
 
+const achievements = achievementsForState(state1d);
 const statuses = badgeStatuses(state1d, Date.now());
-if (statuses.length !== ACHIEVEMENTS.length) {
+if (statuses.length !== achievements.length) {
   console.error('badge status count mismatch');
   process.exit(1);
 }
 
-if (ACHIEVEMENTS.length < 50) {
+if (achievements.length < 50) {
   console.error('expected at least 50 badges');
   process.exit(1);
 }
@@ -75,4 +77,4 @@ if (prog.level < 1 || prog.into < 0 || prog.need !== xpForLevel(prog.level)) {
 }
 if (xp < 0) process.exit(1);
 
-console.log('badge gamify OK', ACHIEVEMENTS.length, 'badges');
+console.log('badge gamify OK', achievements.length, 'badges');

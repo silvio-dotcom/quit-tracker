@@ -94,7 +94,7 @@ export function renderBadgesScreen({
   );
   const unlockedTotal = statuses.filter((s) => s.unlocked).length;
   const xp = xpLevelProgress(state, now);
-  const xpPct = xp.need > 0 ? Math.min(100, (xp.into / xp.need) * 100) : 0;
+  const xpPct = xp.need > 0 ? Math.min(100, (xp.into / xp.need) * 100) : 100;
 
   const filters = [
     { id: BADGE_FILTER_ALL, label: 'All' },
@@ -118,13 +118,13 @@ export function renderBadgesScreen({
 
   return {
     summary: `${unlockedTotal} / ${statuses.length} earned`,
-    levelHtml: `<div class="badge-level-bar">
+    levelHtml: `<div class="badge-level-bar ${xp.maxed ? 'badge-level-max' : ''}">
       <div class="badge-level-head">
-        <span class="pixel-label">LV ${xp.level}</span>
+        <span class="pixel-label">LV ${xp.level}${xp.maxed ? ' MAX' : ''}</span>
         <span class="badge-level-title pixel-label">${escapeHtml(xp.title)}</span>
       </div>
       <div class="progress-track"><div class="progress-fill rank" style="width:${xpPct}%"></div></div>
-      <p class="badge-level-xp muted small">${xp.into} / ${xp.need} XP</p>
+      <p class="badge-level-xp muted small">${xp.maxed ? 'Level maxed — legend status' : `${xp.into} / ${xp.need} XP`}</p>
     </div>`,
     filterHtml,
     bodyHtml: `${nextUpCardHtml(next, state, now, escapeHtml)}
@@ -146,5 +146,6 @@ export function renderBadgesScreen({
 
 export function homeLevelPillHtml(state, now, escapeHtml) {
   const xp = xpLevelProgress(state, now);
-  return `<span class="home-level-pill pixel-label" title="${escapeHtml(xp.title)}">LV ${xp.level}</span>`;
+  const label = xp.maxed ? `LV ${xp.level} MAX` : `LV ${xp.level}`;
+  return `<span class="home-level-pill pixel-label" title="${escapeHtml(xp.title)}">${label}</span>`;
 }
