@@ -20,6 +20,7 @@ import {
   moneyBadgeTitle,
 } from './achievements.js';
 import { toDatetimeLocalValue, datetimeLocalNow, quitDateFromDatetimeLocal } from './datetime.js';
+import { initInstallUi, updateInstallUi } from './install.js';
 import {
   getCurrentRank,
   getNextRank,
@@ -60,6 +61,7 @@ function showView(name) {
   if (name === 'rank') renderRank();
   if (name === 'badges') renderBadges();
   if (name === 'more') renderMore();
+  updateInstallUi();
 }
 
 function openModal(id) {
@@ -91,6 +93,7 @@ function toast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3200);
 }
+window.__QT_TOAST__ = toast;
 
 function needsSetup() {
   return !state.profile.quitDate;
@@ -465,6 +468,7 @@ function startTicker() {
 
 export function initApp() {
   bindEvents();
+  initInstallUi();
   migrateBadgeNotificationsV9();
   renderAll();
   startTicker();
