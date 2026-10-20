@@ -1,0 +1,11 @@
+{
+  "appId": "io.github.silviodotcom.quittracker",
+  "appName": "Quit Tracker",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

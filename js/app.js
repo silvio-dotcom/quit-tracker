@@ -18,6 +18,7 @@ import {
   migrateCelebrationsV14,
   setMilestoneAlertsEnabled,
   MILESTONE_ALERTS_HELP,
+  refreshMilestoneSchedules,
 } from './milestone-alerts.js';
 import { shareProgressCard } from './share-card.js';
 import {
@@ -63,6 +64,7 @@ function setWidth(sel, width) {
 
 function persist() {
   saveState(state);
+  refreshMilestoneSchedules(state).catch(() => {});
 }
 
 function showView(name) {
@@ -485,6 +487,7 @@ export function initApp() {
   const now = Date.now();
   migrateCelebrationsV14(state, now, persist);
   renderAll();
+  refreshMilestoneSchedules(state).catch(() => {});
   startTicker();
   showView('home');
   window.__QT_APP_READY__ = true;

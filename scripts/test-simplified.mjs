@@ -48,9 +48,18 @@ async function runCase(name, seedLocalStorage) {
     await page.waitForTimeout(300);
   }
 
-  if (await page.locator('#modal-rank-up.open').count()) {
-    await page.locator('[data-close="modal-rank-up"]').tap();
-    await page.waitForTimeout(200);
+  for (let i = 0; i < 24; i++) {
+    if (await page.locator('#modal-milestone.open').count()) {
+      await page.locator('[data-close="modal-milestone"]').tap();
+      await page.waitForTimeout(350);
+      continue;
+    }
+    if (await page.locator('#modal-rank-up.open').count()) {
+      await page.locator('[data-close="modal-rank-up"]').tap();
+      await page.waitForTimeout(200);
+      continue;
+    }
+    break;
   }
 
   for (const tab of ['home', 'rank', 'badges', 'more']) {
@@ -154,9 +163,7 @@ const tenDays = JSON.stringify({
     currency: 'USD',
   },
   seenAchievements: ['first-day'],
-  seenRanks: ['rookie', 'fighter', 'survivor'],
-  celebrationMigrationV14: true,
-  seenMilestoneCelebrations: [],
+  seenRanks: ['rookie', 'fighter', 'survivor', 'warrior', 'champion'],
 });
 
 await runCase('fresh', null);

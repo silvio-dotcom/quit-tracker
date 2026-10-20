@@ -1,0 +1,24 @@
+{
+  "name": "quit-tracker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "icons": "node scripts/generate-icons.mjs",
+    "icons:android": "node scripts/generate-android-icons.mjs",
+    "test": "node scripts/test-money-projections.mjs && node scripts/test-cigarettes-avoided.mjs && node scripts/test-streak-days.mjs && node scripts/test-simplified.mjs && node scripts/test-datetime-local.mjs && node scripts/test-milestone-schedule.mjs",
+    "www:sync": "node scripts/sync-www.mjs",
+    "cap:sync": "npm run www:sync && npx cap sync android",
+    "android:debug": "cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.2.0",
+    "@capacitor/app": "^7.0.1",
+    "@capacitor/core": "^7.2.0",
+    "@capacitor/local-notifications": "^7.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.2.0",
+    "playwright": "^1.52.0",
+    "sharp": "^0.34.1"
+  }
+}

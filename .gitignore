@@ -1,2 +1,9 @@
 node_modules/
-package-lock.json
+www/
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+.capacitor/
+*.iml
+.idea/

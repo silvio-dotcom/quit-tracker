@@ -1,4 +1,4 @@
-const BUILD = '14';
+const BUILD = '15';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -20,6 +20,9 @@ const PRECACHE = [
   './js/next-up.js',
   './js/milestone-alerts.js',
   './js/share-card.js',
+  './js/platform.js',
+  './js/milestone-schedule.js',
+  './js/native-notifications.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
