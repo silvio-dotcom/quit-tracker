@@ -1,4 +1,5 @@
 import { STORAGE_KEY, defaultState } from './constants.js';
+import { migrateSeenAchievementIds, migrateAchievementUnlocks } from './achievements.js';
 
 export function normalizeState(parsed) {
   const base = defaultState();
@@ -8,8 +9,10 @@ export function normalizeState(parsed) {
     ...base,
     ...legacy,
     profile: { ...base.profile, ...(parsed.profile || {}) },
-    seenAchievements: Array.isArray(parsed.seenAchievements) ? parsed.seenAchievements : [],
+    seenAchievements: migrateSeenAchievementIds(parsed.seenAchievements),
     seenRanks: Array.isArray(parsed.seenRanks) ? parsed.seenRanks : [],
+    achievementUnlocks: migrateAchievementUnlocks(parsed.achievementUnlocks, parsed.seenAchievements),
+    badgeMigrationV9: Boolean(parsed.badgeMigrationV9),
   };
 }
 

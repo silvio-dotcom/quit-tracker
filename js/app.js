@@ -1,4 +1,4 @@
-import { CURRENCIES, ACHIEVEMENTS } from './constants.js';
+import { CURRENCIES } from './constants.js';
 import { loadState, saveState, exportJson, importJson } from './storage.js';
 import {
   msSinceQuit,
@@ -7,10 +7,18 @@ import {
   formatDuration,
   currentStreakDays,
   healthProgress,
-  unlockedAchievements,
   formatMoney,
   formatDayCount,
 } from './stats.js';
+import {
+  BADGE_CATEGORIES,
+  badgeStatuses,
+  sortBadgesForDisplay,
+  syncAchievementUnlocks,
+  unlockedAchievements,
+  formatUnlockDate,
+  moneyBadgeTitle,
+} from './achievements.js';
 import {
   getCurrentRank,
   getNextRank,
@@ -241,22 +249,59 @@ function renderRank() {
   renderRankPreview(now);
 }
 
+function displayBadgeTitle(achievement) {
+  if (achievement.category === 'money') return moneyBadgeTitle(achievement, state.profile.currency);
+  return achievement.title;
+}
+
 function renderBadges() {
   const now = Date.now();
-  const unlocked = new Set(unlockedAchievements(state, now).map((a) => a.id));
-  const grid = $('#badge-grid');
-  if (!grid) return;
-  grid.innerHTML = ACHIEVEMENTS
-    .map((a) => {
-      const on = unlocked.has(a.id);
-      return `<div class="badge ${on ? 'unlocked' : 'locked'}">
-        <div class="badge-icon">${on ? '🏅' : '🔒'}</div>
-        <div class="badge-title">${a.title}</div>
-        <div class="badge-desc">${a.desc}</div>
-      </div>`;
+  syncAchievementUnlocks(state, now);
+  const statuses = badgeStatuses(state, now);
+  const unlockedTotal = statuses.filter((s) => s.unlocked).length;
+  setText('#badge-summary', `${unlockedTotal} of ${statuses.length} badges unlocked`);
+
+  const root = $('#badge-sections');
+  if (!root) return;
+
+  root.innerHTML = BADGE_CATEGORIES
+    .map((cat) => {
+      const inCat = statuses.filter((s) => s.achievement.category === cat.id);
+      const sorted = sortBadgesForDisplay(inCat);
+      const unlockedInCat = inCat.filter((s) => s.unlocked).length;
+      const cards = sorted
+        .map((s) => {
+          const a = s.achievement;
+          const title = escapeHtml(displayBadgeTitle(a));
+          const desc = escapeHtml(a.desc);
+          const icon = s.unlocked ? a.icon : '🔒';
+          const progressBar = !s.unlocked
+            ? `<div class="badge-progress-track"><div class="badge-progress-fill" style="width:${s.progress.pct}%"></div></div>
+               <p class="badge-progress-label muted">${escapeHtml(s.progressLabel)}</p>`
+            : '';
+          const unlockedOn = s.unlocked && s.unlockAt
+            ? `<p class="badge-unlocked-date muted">Unlocked ${escapeHtml(formatUnlockDate(s.unlockAt))}</p>`
+            : s.unlocked
+              ? '<p class="badge-unlocked-date muted">Unlocked</p>'
+              : '';
+          return `<article class="badge ${s.unlocked ? 'unlocked' : 'locked'}">
+            <div class="badge-icon" aria-hidden="true">${icon}</div>
+            <div class="badge-title">${title}</div>
+            <div class="badge-desc">${desc}</div>
+            ${progressBar}
+            ${unlockedOn}
+          </article>`;
+        })
+        .join('');
+      return `<section class="badge-category" aria-labelledby="badge-cat-${cat.id}">
+        <div class="badge-category-head">
+          <h3 id="badge-cat-${cat.id}" class="badge-category-title">${cat.emoji} ${escapeHtml(cat.label)}</h3>
+          <span class="badge-category-count muted">${unlockedInCat} of ${inCat.length}</span>
+        </div>
+        <div class="badge-grid">${cards}</div>
+      </section>`;
     })
     .join('');
-  setText('#badge-summary', `${unlocked.size} / ${ACHIEVEMENTS.length} unlocked`);
 }
 
 function renderMore() {
@@ -288,14 +333,15 @@ function startOverAfterSmoking() {
 }
 
 function checkNewAchievements(now) {
+  syncAchievementUnlocks(state, now);
   const unlocked = unlockedAchievements(state, now);
   const ids = unlocked.map((a) => a.id);
   const fresh = ids.filter((id) => !(state.seenAchievements || []).includes(id));
   if (!fresh.length) return;
   state.seenAchievements = [...new Set([...(state.seenAchievements || []), ...fresh])];
   persist();
-  const a = ACHIEVEMENTS.find((x) => x.id === fresh[fresh.length - 1]);
-  if (a) toast(`Achievement: ${a.title}`);
+  const a = unlocked.find((x) => x.id === fresh[fresh.length - 1]);
+  if (a) toast(`${a.icon} Badge unlocked: ${displayBadgeTitle(a)}`);
 }
 
 function checkNewRanks(now = Date.now()) {
@@ -388,6 +434,17 @@ function bindEvents() {
   });
 }
 
+/** One-time: avoid toast storm for badges already earned before v9. */
+function migrateBadgeNotificationsV9(now = Date.now()) {
+  if (state.badgeMigrationV9) return;
+  syncAchievementUnlocks(state, now);
+  const unlockedIds = unlockedAchievements(state, now).map((a) => a.id);
+  state.seenAchievements = [...new Set([...(state.seenAchievements || []), ...unlockedIds])];
+  state.badgeMigrationV9 = true;
+  state.version = 3;
+  persist();
+}
+
 function renderAll() {
   renderDashboard();
   if (needsSetup()) {
@@ -405,6 +462,7 @@ function startTicker() {
 
 export function initApp() {
   bindEvents();
+  migrateBadgeNotificationsV9();
   renderAll();
   startTicker();
   showView('home');
