@@ -41,6 +41,15 @@ export const BASE_SMOKE_FREE_CHIPS = [
     palette: { inner: ['#fca5a5', '#dc2626'], rim: '#991b1b', text: '#450a0a' },
   },
   {
+    id: 'chip-2w',
+    label: '2 WEEKS',
+    shortLabel: '2 wk',
+    notifyLabel: '2-week chip',
+    ms: 14 * CHIP_D,
+    kind: 'chip',
+    palette: { inner: ['#f9a8d4', '#db2777'], rim: '#9d174d', text: '#500724' },
+  },
+  {
     id: 'chip-3w',
     label: '3 WEEKS',
     shortLabel: '3 wk',
@@ -59,6 +68,15 @@ export const BASE_SMOKE_FREE_CHIPS = [
     palette: { inner: ['#fde68a', '#f59e0b'], rim: '#b45309', text: '#451a03' },
   },
   {
+    id: 'chip-2mo',
+    label: '2 MONTHS',
+    shortLabel: '2 mo',
+    notifyLabel: '2-month chip',
+    ms: 60 * CHIP_D,
+    kind: 'chip',
+    palette: { inner: ['#5eead4', '#14b8a6'], rim: '#0f766e', text: '#134e4a' },
+  },
+  {
     id: 'chip-3mo',
     label: '3 MONTHS',
     shortLabel: '3 mo',
@@ -66,6 +84,15 @@ export const BASE_SMOKE_FREE_CHIPS = [
     ms: 90 * CHIP_D,
     kind: 'chip',
     palette: { inner: ['#86efac', '#22c55e'], rim: '#15803d', text: '#052e16' },
+  },
+  {
+    id: 'chip-4mo',
+    label: '4 MONTHS',
+    shortLabel: '4 mo',
+    notifyLabel: '4-month chip',
+    ms: 120 * CHIP_D,
+    kind: 'chip',
+    palette: { inner: ['#bef264', '#22d3ee'], rim: '#0891b2', text: '#164e63' },
   },
   {
     id: 'chip-6mo',
@@ -89,12 +116,16 @@ export const BASE_SMOKE_FREE_CHIPS = [
     id: 'chip-1y',
     label: '1 YEAR',
     shortLabel: '1 yr',
-    notifyLabel: '1-year medallion',
+    notifyLabel: '1-year star chip',
     ms: 365 * CHIP_D,
     kind: 'medallion',
     palette: { inner: ['#e8c49a', '#cd7f32'], rim: '#8b4513', text: '#3f220f' },
   },
 ];
+
+/** Final smoke-free chip tier (1 year); no yearly extensions beyond this. */
+export const MAX_CHIP_TIER = BASE_SMOKE_FREE_CHIPS[BASE_SMOKE_FREE_CHIPS.length - 1];
+export const MAX_CHIP_MS = MAX_CHIP_TIER.ms;
 
 export const BRONZE_MEDALLION_PALETTE = {
   inner: ['#e8c49a', '#cd7f32'],

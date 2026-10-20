@@ -1,31 +1,10 @@
-import { BASE_SMOKE_FREE_CHIPS, BRONZE_MEDALLION_PALETTE } from './constants.js';
-import { msSinceQuit } from './stats.js';
+import { BASE_SMOKE_FREE_CHIPS, MAX_CHIP_TIER, MAX_CHIP_MS } from './constants.js';
 
-const MS_DAY = 24 * 60 * 60 * 1000;
+export { MAX_CHIP_MS, MAX_CHIP_TIER };
 
-export function yearChipTier(years) {
-  return {
-    id: `chip-${years}y`,
-    label: `${years} YEARS`,
-    shortLabel: `${years} yr`,
-    notifyLabel: `${years}-year medallion`,
-    ms: years * 365 * MS_DAY,
-    kind: 'medallion',
-    palette: BRONZE_MEDALLION_PALETTE,
-  };
-}
-
-/** All tiers to show (base + yearly bronze from 2y up to maxYears). */
-export function allChipTiers(now = Date.now(), quitDate = null, maxExtraYears = 3) {
-  const tiers = [...BASE_SMOKE_FREE_CHIPS];
-  if (!quitDate) return tiers;
-  const elapsed = msSinceQuit({ quitDate }, now);
-  const currentYears = Math.floor(elapsed / (365 * MS_DAY));
-  const cap = Math.max(2, currentYears + maxExtraYears);
-  for (let y = 2; y <= cap; y++) {
-    tiers.push(yearChipTier(y));
-  }
-  return tiers;
+/** All chip tiers (fixed 12-step ladder through 1 year). */
+export function allChipTiers() {
+  return BASE_SMOKE_FREE_CHIPS;
 }
 
 export function chipEarnedAtMs(quitMs, tierMs) {
@@ -39,7 +18,7 @@ export function isChipEarned(quitMs, tierMs, now = Date.now()) {
 export function chipStatuses(state, now = Date.now()) {
   const quit = state.profile.quitDate ? new Date(state.profile.quitDate).getTime() : null;
   if (!quit) return [];
-  const tiers = allChipTiers(now, state.profile.quitDate);
+  const tiers = allChipTiers();
   return tiers.map((tier) => {
     const earned = isChipEarned(quit, tier.ms, now);
     const earnedAt = earned ? chipEarnedAtMs(quit, tier.ms) : null;
@@ -54,10 +33,15 @@ export function highestEarnedChip(state, now = Date.now()) {
   return statuses.reduce((a, b) => (b.tier.ms > a.tier.ms ? b : a));
 }
 
+export function isAtMaxChip(state, now = Date.now()) {
+  const top = highestEarnedChip(state, now);
+  return top?.tier.id === MAX_CHIP_TIER.id;
+}
+
 export function nextChipTarget(state, now = Date.now()) {
   const quit = state.profile.quitDate ? new Date(state.profile.quitDate).getTime() : null;
   if (!quit) return null;
-  const tiers = allChipTiers(now, state.profile.quitDate);
+  const tiers = allChipTiers();
   const next = tiers.find((t) => !isChipEarned(quit, t.ms, now));
   if (!next) return null;
   const elapsed = now - quit;
@@ -75,7 +59,7 @@ export function earnedChipKeys(state, now = Date.now()) {
 export function upcomingChipNotifications(state, now = Date.now()) {
   const quit = state.profile.quitDate ? new Date(state.profile.quitDate).getTime() : null;
   if (!quit) return [];
-  return allChipTiers(now, state.profile.quitDate)
+  return allChipTiers()
     .map((tier) => ({
       tier,
       at: chipEarnedAtMs(quit, tier.ms),

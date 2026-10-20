@@ -1,9 +1,11 @@
 import {
+  allChipTiers,
   highestEarnedChip,
   nextChipTarget,
   chipStatuses,
   formatChipRemaining,
   formatChipEarnedDate,
+  isAtMaxChip,
 } from './chips.js';
 import { renderPixelCoin } from './chip-art.js';
 import { BASE_SMOKE_FREE_CHIPS } from './constants.js';
@@ -27,7 +29,10 @@ export function heroChipMarkup(state, now = Date.now()) {
   }
   const earned = highestEarnedChip(state, now);
   if (earned) {
-    return renderPixelCoin(earned.tier, { size: coinSize, mode: 'earned' });
+    const max = isAtMaxChip(state, now);
+    const coin = renderPixelCoin(earned.tier, { size: coinSize, mode: 'earned', idleSpin: !max });
+    const maxBadge = max ? '<span class="hero-chip-max pixel-label">MAX</span>' : '';
+    return `${coin}${maxBadge}`;
   }
   const next = nextChipTarget(state, now);
   if (next) {
@@ -49,10 +54,12 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     window.setTimeout(() => mount.classList.remove('coin-pop'), 700);
   }
 
+  const maxChip = isAtMaxChip(state, now);
   const label = displayLabel(state, now);
   if (labelEl) {
-    labelEl.textContent = label;
+    labelEl.textContent = maxChip ? `${label} · MAX` : label;
     labelEl.classList.remove('hidden');
+    labelEl.classList.toggle('hero-chip-label--max', maxChip);
   }
 
   if (btn) {
@@ -60,19 +67,31 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     const next = nextChipTarget(state, now);
     btn.setAttribute(
       'aria-label',
-      earned ? `My chips: ${earned.tier.label} earned` : `Next chip: ${next?.tier.shortLabel ?? '24h'}`
+      maxChip
+        ? `My chips: ${earned.tier.label}, all chips earned`
+        : earned
+          ? `My chips: ${earned.tier.label} earned`
+          : `Next chip: ${next?.tier.shortLabel ?? '24h'}`
     );
+    btn.classList.toggle('hero-chip-btn--max', maxChip);
     btn.classList.remove('chip-animate');
   }
 
   const hint = $('#hero-chip-hint');
   if (hint) {
     const next = nextChipTarget(state, now);
-    if (!highestEarnedChip(state, now) && next) {
+    const earned = highestEarnedChip(state, now);
+    if (maxChip) {
+      hint.textContent = 'Complete';
+      hint.classList.remove('hidden');
+      hint.classList.add('hero-chip-hint--max');
+    } else if (!earned && next) {
       hint.textContent = formatChipRemaining(next.remainingMs);
       hint.classList.remove('hidden');
+      hint.classList.remove('hero-chip-hint--max');
     } else {
       hint.classList.add('hidden');
+      hint.classList.remove('hero-chip-hint--max');
     }
   }
 }
@@ -101,8 +120,10 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
       const meta = earned
         ? `<span class="chips-grid-date">${escapeHtml(formatChipEarnedDate(earnedAt))}</span>`
         : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} left</span>`;
+      const maxTag =
+        tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MAX</span>' : '';
       return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}">
-        <div class="chips-grid-art">${coin}</div>
+        <div class="chips-grid-art">${coin}${maxTag}</div>
         <p class="chips-grid-label pixel-label">${escapeHtml(tier.label)}</p>
         ${meta}
       </article>`;
@@ -112,11 +133,15 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
   if (summary) {
     const ms = msSinceQuit(state.profile, now);
     const top = highestEarnedChip(state, now);
-    summary.textContent = top
-      ? `Highest chip: ${top.tier.label}`
-      : ms > 0
-        ? 'Your first chip unlocks at 24 hours smoke-free.'
-        : '';
+    if (isAtMaxChip(state, now)) {
+      summary.textContent = `All ${allChipTiers().length} chips earned — MAX for your first year.`;
+    } else if (top) {
+      summary.textContent = `Highest chip: ${top.tier.label}`;
+    } else if (ms > 0) {
+      summary.textContent = 'Your first chip unlocks at 24 hours smoke-free.';
+    } else {
+      summary.textContent = '';
+    }
   }
 }
 
