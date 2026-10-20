@@ -66,7 +66,7 @@ export function buildNextUpHtml(state, now, escapeHtml) {
           <span class="next-up-tag">Health</span>
           <span class="next-up-countdown" aria-live="polite">${escapeHtml(formatCountdown(health.remainingMs))}</span>
         </div>
-        <p class="next-up-health-benefit">${escapeHtml(health.benefit)}</p>
+        <p class="next-up-health-benefit">${escapeHtml(health.displayBenefit)}</p>
         <p class="next-up-health-at muted">${escapeHtml(atLabel)}</p>
         <div class="progress-track"><div class="progress-fill" style="width:${health.progress}%"></div></div>
       </div>`);

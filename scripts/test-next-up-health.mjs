@@ -28,8 +28,13 @@ if (!next || next.id !== 'nhs-48h') {
 }
 
 const html = buildNextUpHtml(state, now, (s) => s);
-if (!html.includes(m48.benefit)) {
-  console.error('next-up HTML missing 48h benefit text');
+const display48 = m48.headline || m48.benefit;
+if (!html.includes(display48)) {
+  console.error('next-up HTML missing 48h display benefit');
+  process.exit(1);
+}
+if (html.includes('non-smoker. Your lungs')) {
+  console.error('next-up should use short headline, not long 48h benefit');
   process.exit(1);
 }
 if (!html.includes(formatHealthMilestoneAt(m48.title))) {

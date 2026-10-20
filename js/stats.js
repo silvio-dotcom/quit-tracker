@@ -1,4 +1,4 @@
-import { HEALTH_MILESTONES } from './health-milestones.js';
+import { HEALTH_MILESTONES, healthBenefitDisplay } from './health-milestones.js';
 
 /**
  * Cigarettes accrue only during waking hours (16h per 24h day), not while asleep.
@@ -86,7 +86,12 @@ export function healthProgress(now, quitDate) {
     let pct = 0;
     if (done) pct = 100;
     else if (elapsed > prevMs && m.timeMs > prevMs) pct = ((elapsed - prevMs) / (m.timeMs - prevMs)) * 100;
-    return { ...m, done, progress: Math.min(100, Math.max(0, pct)) };
+    return {
+      ...m,
+      done,
+      progress: Math.min(100, Math.max(0, pct)),
+      displayBenefit: healthBenefitDisplay(m),
+    };
   });
 }
 

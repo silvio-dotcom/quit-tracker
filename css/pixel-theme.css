@@ -405,7 +405,7 @@ label,
   margin: 6px 0 4px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
@@ -428,6 +428,10 @@ label,
   line-height: 1.35;
   text-align: left;
   flex: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .badge-filter-chip {
