@@ -57,8 +57,18 @@ await page.goto(base, { waitUntil: 'networkidle' });
 if (await page.locator('#modal-setup.open').count()) {
   await page.locator('#setup-form button[type=submit]').click();
 }
-if (await page.locator('#modal-rank-up.open').count()) {
-  await page.locator('[data-close="modal-rank-up"]').click();
+for (let i = 0; i < 8; i++) {
+  if (await page.locator('#modal-milestone.open').count()) {
+    await page.locator('[data-close="modal-milestone"]').click();
+    await page.waitForTimeout(300);
+    continue;
+  }
+  if (await page.locator('#modal-rank-up.open').count()) {
+    await page.locator('[data-close="modal-rank-up"]').click();
+    await page.waitForTimeout(200);
+    continue;
+  }
+  break;
 }
 await page.evaluate(() => window.scrollTo(0, 0));
 await page.waitForTimeout(400);
