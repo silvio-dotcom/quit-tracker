@@ -306,6 +306,7 @@ body.modal-open {
 .pixel-coin-spin {
   display: inline-flex;
   transform-origin: center center;
+  transform: scaleX(1);
   animation: coinIdleSpin 3s ease-in-out infinite;
 }
 

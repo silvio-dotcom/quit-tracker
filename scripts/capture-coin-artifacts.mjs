@@ -71,6 +71,8 @@ async function freezeCoinsFaceOn(page) {
   });
   await page.evaluate(() => {
     document.querySelectorAll('.pixel-coin-spin').forEach((el) => {
+      el.getAnimations?.().forEach((a) => a.cancel());
+      el.classList.remove('pixel-coin-spin');
       el.style.animation = 'none';
       el.style.transform = 'scaleX(1)';
     });
