@@ -633,26 +633,11 @@ export function initApp() {
   renderAll();
   startTicker();
   showView('home');
-
-  if ('serviceWorker' in navigator) {
-    const swUrl = new URL('../sw.js', import.meta.url);
-    const scope = new URL('../', import.meta.url);
-    navigator.serviceWorker.register(swUrl, { scope }).then((reg) => {
-      reg.update().catch(() => {});
-      reg.addEventListener('updatefound', () => {
-        const installing = reg.installing;
-        if (!installing) return;
-        installing.addEventListener('statechange', () => {
-          if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-            installing.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-      });
-    }).catch(() => {});
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    });
-  }
+  window.__QT_APP_READY__ = true;
 }
 
-document.addEventListener('DOMContentLoaded', initApp);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
