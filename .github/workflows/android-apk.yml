@@ -11,6 +11,9 @@ permissions:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      ANDROID_HOME: /usr/local/lib/android/sdk
     steps:
       - uses: actions/checkout@v4
 
@@ -29,10 +32,7 @@ jobs:
       - name: Generate icons
         run: npm run icons
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Prepare Android SDK (API 36/37)
+      - name: Prepare Android SDK (ubuntu preinstalled)
         run: bash scripts/prepare-android-sdk.sh
 
       - name: Ensure debug keystore
