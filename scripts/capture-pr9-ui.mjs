@@ -58,14 +58,13 @@ if (await page.locator('#modal-rank-up.open').count()) {
 }
 
 await page.evaluate(() => {
-  document.querySelector('#install-home-banner')?.classList.remove('hidden');
   document.querySelector('#btn-install-header')?.classList.remove('hidden');
 });
 await page.evaluate(() => window.scrollTo(0, 0));
 await page.waitForTimeout(300);
 await page.screenshot({ path: path.join(out, 'home-rank-install-mobile.png'), fullPage: false });
 
-await page.locator('#btn-install-home').click();
+await page.locator('#btn-install-header').click();
 await page.waitForTimeout(200);
 const iosOpen = await page.locator('#modal-ios-install.open').count();
 if (!iosOpen) {

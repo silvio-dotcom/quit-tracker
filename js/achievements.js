@@ -9,7 +9,7 @@ import {
   msSinceQuit,
   cigarettesAvoided,
   moneySaved,
-  WAKING_HOURS_PER_DAY,
+  msForCigaretteTarget,
 } from './stats.js';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
@@ -152,18 +152,15 @@ export function estimateUnlockTime(achievement, state) {
   }
   const cpd = Number(state.profile.cigsPerDay) || 0;
   if (!cpd) return null;
-  const perHour = cpd / WAKING_HOURS_PER_DAY;
   if (achievement.category === 'cigs') {
     const target = cigaretteTargetForBadge(achievement, state);
-    const hoursNeeded = target / perHour;
-    return new Date(quit + hoursNeeded * MS_PER_HOUR).toISOString();
+    return new Date(quit + msForCigaretteTarget(target, cpd)).toISOString();
   }
   if (achievement.category === 'money') {
     const ppc = (Number(state.profile.packPrice) || 0) / (Number(state.profile.cigsPerPack) || 20);
     if (!ppc) return null;
     const cigsNeeded = (achievement.amount ?? 0) / ppc;
-    const hoursNeeded = cigsNeeded / perHour;
-    return new Date(quit + hoursNeeded * MS_PER_HOUR).toISOString();
+    return new Date(quit + msForCigaretteTarget(cigsNeeded, cpd)).toISOString();
   }
   return null;
 }
