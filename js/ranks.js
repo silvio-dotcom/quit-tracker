@@ -84,8 +84,14 @@ export function leaderboardPayload(state, now = Date.now()) {
 
 export function formatSmokeFreeRequirement(ms) {
   if (ms >= 365 * D) return `${Math.round(ms / (365 * D))} yr smoke-free`;
-  if (ms >= D) return `${Math.round(ms / D)} days smoke-free`;
-  if (ms >= H) return `${Math.round(ms / H)} hrs smoke-free`;
+  if (ms >= D) {
+    const days = Math.round(ms / D);
+    return `${days} ${days === 1 ? 'day' : 'days'} smoke-free`;
+  }
+  if (ms >= H) {
+    const hrs = Math.round(ms / H);
+    return `${hrs} ${hrs === 1 ? 'hr' : 'hrs'} smoke-free`;
+  }
   return 'Starting rank';
 }
 

@@ -11,6 +11,7 @@ import {
   healthProgress,
   unlockedAchievements,
   formatMoney,
+  formatDayCount,
 } from './stats.js';
 import {
   getCurrentRank,
@@ -46,7 +47,8 @@ function toDatetimeLocalValue(iso) {
   if (!iso) return '';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toISOString().slice(0, 16);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function persist() {
@@ -193,7 +195,7 @@ function renderRankPreview(now = Date.now()) {
   }
   const streaks = $('#rank-dash-streaks');
   if (streaks) {
-    streaks.textContent = `Streak ${metrics.streakDays} days · Personal best ${metrics.bestStreakDays} days`;
+    streaks.textContent = `Streak ${formatDayCount(metrics.streakDays)} · Personal best ${formatDayCount(metrics.bestStreakDays)}`;
   }
 }
 
@@ -214,8 +216,8 @@ function renderDashboard() {
   const lifeH = Math.floor(lifeMin / 60);
   const lifeD = Math.floor(lifeH / 24);
   setText('#stat-life', lifeD > 0 ? `${lifeD}d ${lifeH % 24}h` : `${lifeH}h ${lifeMin % 60}m`);
-  setText('#stat-streak', `${currentStreakDays(state, now)} days`);
-  setText('#stat-best-streak', `${bestStreakDays(state, now)} days`);
+  setText('#stat-streak', formatDayCount(currentStreakDays(state, now)));
+  setText('#stat-best-streak', formatDayCount(bestStreakDays(state, now)));
 
   syncPersonalBest(now);
   renderRankPreview(now);
@@ -236,8 +238,8 @@ function renderRank() {
   setText('#rank-hero-icon', rank.icon);
   setText('#rank-hero-name', rank.name);
   setText('#rank-hero-tag', rank.tagline);
-  setText('#rank-current-streak', String(metrics.streakDays));
-  setText('#rank-best-streak', String(metrics.bestStreakDays));
+  setText('#rank-current-streak', formatDayCount(metrics.streakDays));
+  setText('#rank-best-streak', formatDayCount(metrics.bestStreakDays));
   setWidth('#rank-hero-bar', `${pct}%`);
   setText('#rank-hero-next', next ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}` : 'Top rank unlocked.');
   setText('#rank-hero-score', `Leaderboard score (local): ${payload.score}`);
@@ -288,8 +290,8 @@ function renderMore() {
   $('#settings-currency').innerHTML = Object.entries(CURRENCIES)
     .map(([k, v]) => `<option value="${k}" ${p.currency === k ? 'selected' : ''}>${k}</option>`)
     .join('');
-  setText('#stats-longest', `${bestStreakDays(state)} days`);
-  setText('#stats-current', `${currentStreakDays(state)} days`);
+  setText('#stats-longest', formatDayCount(bestStreakDays(state)));
+  setText('#stats-current', formatDayCount(currentStreakDays(state)));
 }
 
 function openSetupWizard() {

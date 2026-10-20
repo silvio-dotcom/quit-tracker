@@ -62,14 +62,18 @@ async function runCase(name, seedLocalStorage) {
 
   await page.locator('.nav-btn[data-nav="home"]').tap();
   await page.locator('#btn-health-toggle').tap();
+  if (name === 'fresh') {
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/home-simplified-mobile.png', fullPage: false });
+  }
+
   await page.locator('.nav-btn[data-nav="more"]').tap();
   await page.fill('#settings-cpd', '12');
   await page.locator('#settings-form button[type=submit]').tap();
-
+  await page.waitForTimeout(200);
   if (name === 'fresh') {
-    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/home-simplified-mobile.png', fullPage: true });
+    await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/more-settings-mobile.png', fullPage: false });
   }
-  await page.screenshot({ path: `/opt/cursor/artifacts/screenshots/more-settings-mobile.png`, fullPage: true });
 
   await browser.close();
   srv.kill();

@@ -100,3 +100,8 @@ export function formatMoney(amount, currency, CURRENCIES) {
   const sym = CURRENCIES[currency]?.symbol ?? '$';
   return `${sym}${amount.toFixed(2)}`;
 }
+
+export function formatDayCount(days) {
+  const n = Math.max(0, Math.floor(Number(days) || 0));
+  return `${n} ${n === 1 ? 'day' : 'days'}`;
+}
