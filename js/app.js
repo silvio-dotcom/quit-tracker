@@ -26,6 +26,7 @@ import {
   nextRankHints,
   formatRankRequirement,
   currentRankIndex,
+  RANK_LADDER,
 } from './ranks.js';
 
 export function getBasePath() {
@@ -41,6 +42,23 @@ let pendingCraving = null;
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
+
+function setText(sel, text) {
+  const el = $(sel);
+  if (el) el.textContent = text;
+}
+
+function setWidth(sel, width) {
+  const el = $(sel);
+  if (el) el.style.width = width;
+}
+
+function toDatetimeLocalValue(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toISOString().slice(0, 16);
+}
 
 function persist() {
   saveState(state);
@@ -72,9 +90,7 @@ function renderSetup() {
   $('#setup-name').value = p.displayName || 'Silvio';
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  $('#setup-quit').value = p.quitDate
-    ? new Date(p.quitDate).toISOString().slice(0, 16)
-    : now.toISOString().slice(0, 16);
+  $('#setup-quit').value = p.quitDate ? toDatetimeLocalValue(p.quitDate) : now.toISOString().slice(0, 16);
   $('#setup-cpd').value = p.cigsPerDay;
   $('#setup-cpp').value = p.cigsPerPack;
   $('#setup-price').value = p.packPrice;
@@ -140,9 +156,9 @@ function renderRankPreview(now = Date.now()) {
   const rank = getCurrentRank(metrics);
   const next = getNextRank(metrics);
   const pct = progressToNextRank(metrics);
-  $('#rank-dash-icon')?.textContent = rank.icon;
-  $('#rank-dash-name')?.textContent = rank.name;
-  $('#rank-dash-pct')?.textContent = next ? `${pct}%` : 'MAX';
+  setText('#rank-dash-icon', rank.icon);
+  setText('#rank-dash-name', rank.name);
+  setText('#rank-dash-pct', next ? `${pct}%` : 'MAX');
   const bar = $('#rank-dash-bar');
   if (bar) bar.style.width = `${pct}%`;
   const nextEl = $('#rank-dash-next');
@@ -166,16 +182,17 @@ function renderRank() {
   const pct = progressToNextRank(metrics);
   const payload = leaderboardPayload(state, now);
 
-  $('#rank-hero-icon')?.textContent = rank.icon;
-  $('#rank-hero-name')?.textContent = rank.name;
-  $('#rank-hero-tag')?.textContent = rank.tagline;
-  $('#rank-current-streak')?.textContent = String(metrics.streakDays);
-  $('#rank-best-streak')?.textContent = String(state.personalBestStreak || metrics.bestStreakDays);
-  $('#rank-hero-bar')?.style.width = `${pct}%`;
-  $('#rank-hero-next')?.textContent = next
-    ? `→ ${next.icon} ${next.name}: ${nextRankHints(metrics, next).join(' · ')}`
-    : 'Top rank unlocked.';
-  $('#rank-hero-score')?.textContent = `Leaderboard score (local): ${payload.score}`;
+  setText('#rank-hero-icon', rank.icon);
+  setText('#rank-hero-name', rank.name);
+  setText('#rank-hero-tag', rank.tagline);
+  setText('#rank-current-streak', String(metrics.streakDays));
+  setText('#rank-best-streak', String(state.personalBestStreak || metrics.bestStreakDays));
+  setWidth('#rank-hero-bar', `${pct}%`);
+  setText(
+    '#rank-hero-next',
+    next ? `→ ${next.icon} ${next.name}: ${nextRankHints(metrics, next).join(' · ')}` : 'Top rank unlocked.'
+  );
+  setText('#rank-hero-score', `Leaderboard score (local): ${payload.score}`);
 
   const ladder = $('#rank-ladder');
   if (ladder) {
@@ -219,9 +236,9 @@ function checkNewRanks(now = Date.now()) {
 }
 
 function showRankUp(rank) {
-  $('#rank-up-icon')?.textContent = rank.icon;
-  $('#rank-up-title')?.textContent = rank.name;
-  $('#rank-up-desc')?.textContent = rank.tagline;
+  setText('#rank-up-icon', rank.icon);
+  setText('#rank-up-title', rank.name);
+  setText('#rank-up-desc', rank.tagline);
   openModal('modal-rank-up');
 }
 
@@ -321,9 +338,15 @@ function renderLog() {
     : '<li class="muted">No slips logged — keep going.</li>';
 }
 
+function openSetupWizard() {
+  renderSetup();
+  openModal('modal-setup');
+}
+
 function renderMore() {
   const p = state.profile;
-  $('#settings-quit').value = p.quitDate ? new Date(p.quitDate).toISOString().slice(0, 16) : '';
+  const quitInput = $('#settings-quit');
+  if (quitInput) quitInput.value = toDatetimeLocalValue(p.quitDate);
   $('#settings-cpd').value = p.cigsPerDay;
   $('#settings-cpp').value = p.cigsPerPack;
   $('#settings-price').value = p.packPrice;
@@ -499,6 +522,8 @@ function bindEvents() {
     toast('Settings saved');
   });
 
+  $('#btn-open-setup')?.addEventListener('click', openSetupWizard);
+
   $('#btn-reset-quit')?.addEventListener('click', () => {
     if (!confirm('Reset quit date to now? Your logs stay; stats recalculate from the new date.')) return;
     state.profile.quitDate = new Date().toISOString();
@@ -612,7 +637,21 @@ export function initApp() {
   if ('serviceWorker' in navigator) {
     const swUrl = new URL('../sw.js', import.meta.url);
     const scope = new URL('../', import.meta.url);
-    navigator.serviceWorker.register(swUrl, { scope }).catch(() => {});
+    navigator.serviceWorker.register(swUrl, { scope }).then((reg) => {
+      reg.update().catch(() => {});
+      reg.addEventListener('updatefound', () => {
+        const installing = reg.installing;
+        if (!installing) return;
+        installing.addEventListener('statechange', () => {
+          if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+            installing.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
   }
 }
 
