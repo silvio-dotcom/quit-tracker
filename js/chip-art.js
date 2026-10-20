@@ -4,14 +4,52 @@
 
 const OUTLINE = '#1a1228';
 
+function parseHex(hex) {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.replace(/(.)/g, '$1$1') : h, 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function toHex({ r, g, b }) {
+  const c = (v) => Math.max(0, Math.min(255, Math.round(v)));
+  return `#${[c(r), c(g), c(b)].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** Darken + desaturate while keeping tier hue (locked state). */
+function lockedTint(hex, amount = 0.55) {
+  const { r, g, b } = parseHex(hex);
+  const lum = r * 0.299 + g * 0.587 + b * 0.114;
+  const grey = lum * 0.35;
+  return toHex({
+    r: r * (1 - amount) + grey * amount,
+    g: g * (1 - amount) + grey * amount,
+    b: b * (1 - amount) + grey * amount,
+  });
+}
+
 /** @param {import('./constants.js').BASE_SMOKE_FREE_CHIPS[0]} tier */
 function tierColors(tier, mode) {
-  if (mode === 'locked') {
-    return { outline: '#0f0f12', light: '#9ca3af', mid: '#6b7280', dark: '#4b5563', slot: '#374151' };
-  }
   const { inner, rim } = tier.palette;
-  return { outline: OUTLINE, light: inner[0], mid: inner[1], dark: rim, slot: rim };
+  if (mode === 'locked') {
+    return {
+      outline: '#121018',
+      light: lockedTint(inner[0], 0.45),
+      mid: lockedTint(inner[1], 0.58),
+      dark: lockedTint(rim, 0.65),
+      slot: lockedTint(rim, 0.72),
+      locked: true,
+    };
+  }
+  return { outline: OUTLINE, light: inner[0], mid: inner[1], dark: rim, slot: rim, locked: false };
 }
+
+/** Tiny pixel lock (bottom-right of coin grid). */
+const LOCK_OFFSETS = [
+  [0, 0], [1, 0], [2, 0],
+  [0, 1], [2, 1],
+  [0, 2], [1, 2], [2, 2],
+  [1, 3],
+];
 
 function insideEllipse(x, y, w, h) {
   const cx = (w - 1) / 2;
@@ -66,7 +104,7 @@ function starSet(w) {
 
 function buildCoinPixels(w, h, tier, mode) {
   const colors = tierColors(tier, mode);
-  const rects = [];
+  const grid = new Map();
   const star = tier.kind === 'medallion' ? starSet(w) : null;
 
   for (let y = 0; y < h; y++) {
@@ -82,10 +120,27 @@ function buildCoinPixels(w, h, tier, mode) {
       } else {
         fill = fillForPixel(x, y, w, colors);
       }
-      rects.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}"/>`);
+      grid.set(`${x},${y}`, fill);
     }
   }
-  return rects.join('');
+
+  if (colors.locked) {
+    const lx = w - 5;
+    const ly = h - 5;
+    const lockFill = '#e2e8f0';
+    for (const [dx, dy] of LOCK_OFFSETS) {
+      const px = lx + dx;
+      const py = ly + dy;
+      if (insideEllipse(px, py, w, h)) grid.set(`${px},${py}`, lockFill);
+    }
+  }
+
+  return [...grid.entries()]
+    .map(([key, fill]) => {
+      const [x, y] = key.split(',').map(Number);
+      return `<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}"/>`;
+    })
+    .join('');
 }
 
 /**

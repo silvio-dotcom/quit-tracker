@@ -57,6 +57,7 @@ async function preparePage(browser) {
       deviceScaleFactor: 3,
       isMobile: true,
       serviceWorkers: 'block',
+      reducedMotion: 'reduce',
     })
     .then((c) => c.newPage());
 }
@@ -86,7 +87,13 @@ async function loadApp(page, seed) {
     document.body.classList.remove('modal-open');
   });
   await page.waitForSelector('#hero-chip-mount .pixel-coin-svg');
-  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.evaluate(() => {
+    document.querySelectorAll('.pixel-coin-spin').forEach((el) => {
+      el.style.animation = 'none';
+      el.style.transform = 'scaleX(1)';
+    });
+    window.scrollTo(0, 0);
+  });
   await page.waitForTimeout(400);
 }
 

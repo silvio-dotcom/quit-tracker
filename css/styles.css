@@ -291,6 +291,10 @@ body.modal-open {
   padding: 4px;
 }
 
+.pixel-coin-frame--locked {
+  opacity: 0.82;
+}
+
 .pixel-coin-progress {
   position: absolute;
   inset: 0;
@@ -340,19 +344,14 @@ body.modal-open {
 
 @keyframes coinIdleSpin {
   0%,
+  80%,
   100% {
     transform: scaleX(1);
   }
-  12.5% {
-    transform: scaleX(0.18);
+  88% {
+    transform: scaleX(0.16);
   }
-  25% {
-    transform: scaleX(1);
-  }
-  37.5% {
-    transform: scaleX(0.18);
-  }
-  50% {
+  96% {
     transform: scaleX(1);
   }
 }
@@ -387,6 +386,7 @@ body.modal-open {
   .pixel-coin-spin,
   .hero-chip-mount.coin-pop .pixel-coin-spin {
     animation: none !important;
+    transform: scaleX(1) !important;
   }
 
   .coin-sparkle {
