@@ -1,5 +1,10 @@
 #!/usr/bin/env node
-import { buildNextUpHtml, getNextHealthMilestone, formatHealthMilestoneAt } from '../js/next-up.js';
+import {
+  buildNextUpHtml,
+  getNextHealthMilestone,
+  formatHealthMilestoneAt,
+  allFirstYearHealthMilestonesReached,
+} from '../js/next-up.js';
 import { HEALTH_MILESTONES } from '../js/health-milestones.js';
 
 const MS_H = 60 * 60 * 1000;
@@ -47,6 +52,34 @@ if (html.includes('next-up-health-benefit') === false || !html.includes('next-up
 }
 if (html.match(/next-up-title[^>]*>48 hours/)) {
   console.error('next-up should not use bare milestone time as main title');
+  process.exit(1);
+}
+
+const MS_D = 24 * MS_H;
+const at400d = {
+  profile: {
+    quitDate: new Date(now - 400 * MS_D).toISOString(),
+    cigsPerDay: 15,
+    cigsPerPack: 20,
+    packPrice: 12,
+    currency: 'USD',
+  },
+};
+if (!allFirstYearHealthMilestonesReached(at400d, now)) {
+  console.error('400d should complete first-year health milestones');
+  process.exit(1);
+}
+if (getNextHealthMilestone(at400d, now)) {
+  console.error('next health at 400d should be null (no 5y milestone)');
+  process.exit(1);
+}
+const html400 = buildNextUpHtml(at400d, now, (s) => s);
+if (html400.includes('5 years') || html400.includes('1426d')) {
+  console.error('next-up at 400d must not show long-term health countdown');
+  process.exit(1);
+}
+if (!html400.includes('All first-year health milestones reached')) {
+  console.error('next-up at 400d should show first-year complete copy');
   process.exit(1);
 }
 

@@ -13,6 +13,7 @@ import {
   MONEY_PROJECTION_DAYS,
 } from './stats.js';
 import { buildNextUpHtml } from './next-up.js';
+import { isLongTermHealthMilestone } from './health-milestones.js';
 import {
   processMilestoneUnlocks,
   migrateCelebrationsV14,
@@ -155,9 +156,10 @@ function renderHealthHome(now = Date.now()) {
   const toggle = $('#btn-health-toggle');
   if (full) {
     full.classList.toggle('hidden', !healthExpanded);
-    full.innerHTML = items
-      .map(
-        (m) => `
+    const nearTerm = items.filter((m) => !isLongTermHealthMilestone(m));
+    const longTerm = items.filter((m) => isLongTermHealthMilestone(m));
+
+    const renderNear = (m) => `
       <article class="health-item ${m.done ? 'done' : ''}">
         <div class="health-head">
           <span class="health-title">${escapeHtml(m.displayBenefit)}</span>
@@ -166,9 +168,23 @@ function renderHealthHome(now = Date.now()) {
         <p class="health-at muted small">at ${escapeHtml(m.title)}</p>
         <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(m.source.name)}</a></p>
         <div class="progress-track"><div class="progress-fill" style="width:${m.progress}%"></div></div>
-      </article>`
-      )
-      .join('');
+      </article>`;
+
+    const renderLong = (m) => `
+      <article class="health-item health-item--longterm ${m.done ? 'done' : ''}">
+        <div class="health-head">
+          <span class="health-title">${escapeHtml(m.displayBenefit)}</span>
+          <span class="health-pct">${m.done ? '✓' : ''}</span>
+        </div>
+        <p class="health-at muted small">at ${escapeHtml(m.title)}</p>
+        <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(m.source.name)}</a></p>
+      </article>`;
+
+    const longBlock = longTerm.length
+      ? `<h3 class="health-longterm-heading pixel-label">Long-term</h3>${longTerm.map(renderLong).join('')}`
+      : '';
+
+    full.innerHTML = `${nearTerm.map(renderNear).join('')}${longBlock}`;
   }
   if (toggle) toggle.textContent = healthExpanded ? 'Hide full timeline' : 'See all health milestones';
 }

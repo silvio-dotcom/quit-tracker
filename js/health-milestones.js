@@ -13,6 +13,13 @@ const Y = 365.25 * D;
 /** Max chars for compact UI (Next up + health list); longer `benefit` uses `headline`. */
 export const HEALTH_BENEFIT_INLINE_MAX = 70;
 
+/** Last milestone included in first-year Next up / progress UI (`who-1y`). */
+export const HEALTH_FIRST_YEAR_MS = 1 * Y;
+
+export function isLongTermHealthMilestone(milestone) {
+  return milestone.timeMs > HEALTH_FIRST_YEAR_MS;
+}
+
 /** @typedef {{ id: string, title: string, timeMs: number, benefit: string, headline?: string, source: { name: string, url: string } }} HealthMilestone */
 
 /** @type {HealthMilestone[]} */
