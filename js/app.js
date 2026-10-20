@@ -25,15 +25,8 @@ import { openSharePreview, bindSharePreviewUi } from './share-ui.js';
 import { renderHeroChip, bindChipsUi } from './chips-ui.js';
 import { registerPredictiveBack } from './back-handler.js';
 import { initNativeShell, onNativeAppActive } from './native-shell.js';
-import {
-  BADGE_CATEGORIES,
-  badgeStatuses,
-  sortBadgesForDisplay,
-  syncAchievementUnlocks,
-  unlockedAchievements,
-  formatUnlockDate,
-  moneyBadgeTitle,
-} from './achievements.js';
+import { renderBadgesScreen, homeLevelPillHtml, BADGE_FILTER_ALL } from './badges-screen.js';
+import { syncAchievementUnlocks, unlockedAchievements } from './achievements.js';
 import { toDatetimeLocalValue, datetimeLocalNow, quitDateFromDatetimeLocal } from './datetime.js';
 import { initInstallUi, updateInstallUi } from './install.js';
 import {
@@ -52,6 +45,7 @@ import {
 let state = loadState();
 let tickTimer = null;
 let healthExpanded = false;
+let badgeFilter = BADGE_FILTER_ALL;
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
@@ -235,6 +229,7 @@ function renderDashboard() {
   const chipAnim = Boolean(window.__QT_CHIP_ANIM__);
   if (chipAnim) window.__QT_CHIP_ANIM__ = false;
   renderHeroChip(state, now, chipAnim);
+  renderHomeLevel(now);
   checkNewRanks(now);
 }
 
@@ -272,59 +267,41 @@ function renderRank() {
   renderRankPreview(now);
 }
 
-function displayBadgeTitle(achievement) {
-  if (achievement.category === 'money') return moneyBadgeTitle(achievement, state.profile.currency);
-  return achievement.title;
-}
-
 function renderBadges() {
   const now = Date.now();
-  syncAchievementUnlocks(state, now);
-  const statuses = badgeStatuses(state, now);
-  const unlockedTotal = statuses.filter((s) => s.unlocked).length;
-  setText('#badge-summary', `${unlockedTotal} of ${statuses.length} badges unlocked`);
-
+  const levelEl = $('#badge-level-bar');
+  const summaryEl = $('#badge-summary');
+  const filtersEl = $('#badge-filters');
   const root = $('#badge-sections');
   if (!root) return;
 
-  root.innerHTML = BADGE_CATEGORIES
-    .map((cat) => {
-      const inCat = statuses.filter((s) => s.achievement.category === cat.id);
-      const sorted = sortBadgesForDisplay(inCat);
-      const unlockedInCat = inCat.filter((s) => s.unlocked).length;
-      const cards = sorted
-        .map((s) => {
-          const a = s.achievement;
-          const title = escapeHtml(displayBadgeTitle(a));
-          const desc = escapeHtml(a.desc);
-          const icon = s.unlocked ? a.icon : '🔒';
-          const progressBar = !s.unlocked
-            ? `<div class="badge-progress-track"><div class="badge-progress-fill" style="width:${s.progress.pct}%"></div></div>
-               <p class="badge-progress-label muted">${escapeHtml(s.progressLabel)}</p>`
-            : '';
-          const unlockedOn = s.unlocked && s.unlockAt
-            ? `<p class="badge-unlocked-date muted">Unlocked ${escapeHtml(formatUnlockDate(s.unlockAt))}</p>`
-            : s.unlocked
-              ? '<p class="badge-unlocked-date muted">Unlocked</p>'
-              : '';
-          return `<article class="badge ${s.unlocked ? 'unlocked' : 'locked'}">
-            <div class="badge-icon" aria-hidden="true">${icon}</div>
-            <div class="badge-title">${title}</div>
-            <div class="badge-desc">${desc}</div>
-            ${progressBar}
-            ${unlockedOn}
-          </article>`;
-        })
-        .join('');
-      return `<section class="badge-category" aria-labelledby="badge-cat-${cat.id}">
-        <div class="badge-category-head">
-          <h3 id="badge-cat-${cat.id}" class="badge-category-title">${cat.emoji} ${escapeHtml(cat.label)}</h3>
-          <span class="badge-category-count muted">${unlockedInCat} of ${inCat.length}</span>
-        </div>
-        <div class="badge-grid">${cards}</div>
-      </section>`;
-    })
-    .join('');
+  const view = renderBadgesScreen({
+    state,
+    now,
+    filter: badgeFilter,
+    escapeHtml,
+    onFilterChange: (id) => {
+      badgeFilter = id || BADGE_FILTER_ALL;
+      renderBadges();
+    },
+  });
+
+  if (levelEl) levelEl.innerHTML = view.levelHtml;
+  if (summaryEl) summaryEl.textContent = view.summary;
+  if (filtersEl) {
+    filtersEl.innerHTML = view.filterHtml;
+    view.bindFilters(filtersEl);
+  }
+  root.innerHTML = view.bodyHtml;
+}
+
+function renderHomeLevel(now = Date.now()) {
+  const el = $('#home-level-pill');
+  if (!el || !state.profile.quitDate) {
+    if (el) el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = homeLevelPillHtml(state, now, escapeHtml);
 }
 
 function renderMore() {

@@ -35,7 +35,7 @@ export async function postMilestoneNotification(title, body, tag) {
   }
 }
 
-function showCelebrationModal({ icon, title, subtitle }, onClose) {
+function showCelebrationModal({ icon, title, subtitle, badgePop }, onClose) {
   const modal = document.querySelector('#modal-milestone');
   const iconEl = document.querySelector('#milestone-celebration-icon');
   const titleEl = document.querySelector('#milestone-celebration-title');
@@ -45,7 +45,13 @@ function showCelebrationModal({ icon, title, subtitle }, onClose) {
     onClose();
     return;
   }
-  if (iconEl) iconEl.textContent = icon;
+  if (iconEl) {
+    iconEl.textContent = icon;
+    iconEl.classList.toggle('milestone-icon-pop', Boolean(badgePop));
+    if (badgePop) {
+      window.setTimeout(() => iconEl.classList.remove('milestone-icon-pop'), 700);
+    }
+  }
   if (titleEl) titleEl.textContent = title;
   if (subEl) subEl.textContent = subtitle;
   modal.classList.add('open');
@@ -108,7 +114,7 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
     if (!seen.has(key)) {
       fresh.push({
         key,
-        celebration: { icon: a.icon, title: 'Badge unlocked', subtitle: a.title },
+        celebration: { icon: a.icon, title: 'Badge unlocked', subtitle: a.title, badgePop: true },
         notify: {
           title: 'Badge unlocked',
           body: a.title,
