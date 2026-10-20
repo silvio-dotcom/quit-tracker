@@ -1,4 +1,4 @@
-const BUILD = '21';
+const BUILD = '22';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [

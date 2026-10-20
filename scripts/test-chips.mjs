@@ -5,11 +5,51 @@ import {
   isChipEarned,
   chipEarnedAtMs,
   allChipTiers,
+  isAtMaxChip,
+  MAX_CHIP_MS,
 } from '../js/chips.js';
 import { BASE_SMOKE_FREE_CHIPS } from '../js/constants.js';
 
 const MS_H = 60 * 60 * 1000;
 const MS_D = 24 * MS_H;
+
+const EXPECTED_IDS = [
+  'chip-24h',
+  'chip-3d',
+  'chip-1w',
+  'chip-2w',
+  'chip-3w',
+  'chip-1mo',
+  'chip-2mo',
+  'chip-3mo',
+  'chip-4mo',
+  'chip-6mo',
+  'chip-9mo',
+  'chip-1y',
+];
+
+const tiers = allChipTiers();
+if (tiers.length !== 12) {
+  console.error(`expected 12 chip tiers, got ${tiers.length}`);
+  process.exit(1);
+}
+if (tiers.map((t) => t.id).join(',') !== EXPECTED_IDS.join(',')) {
+  console.error('chip ladder ids/order mismatch');
+  process.exit(1);
+}
+if (BASE_SMOKE_FREE_CHIPS.length !== 12) {
+  console.error('BASE_SMOKE_FREE_CHIPS should have 12 entries');
+  process.exit(1);
+}
+const last = tiers[tiers.length - 1];
+if (last.ms !== MAX_CHIP_MS || last.ms !== 365 * MS_D) {
+  console.error('max chip must be 365 days only');
+  process.exit(1);
+}
+if (tiers.some((t) => t.ms > MAX_CHIP_MS)) {
+  console.error('no tier beyond 365d');
+  process.exit(1);
+}
 
 function stateAtDays(days) {
   const now = Date.now();
@@ -38,6 +78,13 @@ const at24h = { profile: { quitDate: new Date(Date.now() - 24 * MS_H).toISOStrin
 const hi24 = highestEarnedChip(at24h, Date.now());
 if (!hi24 || hi24.tier.id !== 'chip-24h') {
   console.error('expected 24h chip at boundary');
+  process.exit(1);
+}
+
+const at14d = stateAtDays(14);
+const hi14 = highestEarnedChip(at14d, Date.now());
+if (!hi14 || hi14.tier.id !== 'chip-2w') {
+  console.error('expected 2-week chip at 14 days');
   process.exit(1);
 }
 
@@ -70,16 +117,23 @@ if (!hi3d || hi3d.tier.id !== 'chip-3d') {
   process.exit(1);
 }
 
-const at2y = stateAtDays(365 * 2);
-const hi2y = highestEarnedChip(at2y, Date.now());
-if (!hi2y || hi2y.tier.id !== 'chip-2y') {
-  console.error('expected 2-year medallion at 2 years');
+const at400d = stateAtDays(400);
+const hi400 = highestEarnedChip(at400d, Date.now());
+if (!hi400 || hi400.tier.id !== 'chip-1y') {
+  console.error('expected 1-year chip at 400 days, not extra yearly tiers');
+  process.exit(1);
+}
+if (!isAtMaxChip(at400d, Date.now())) {
+  console.error('400d should be max chip state');
+  process.exit(1);
+}
+if (nextChipTarget(at400d, Date.now())) {
+  console.error('no next chip after 1 year');
   process.exit(1);
 }
 
-const tiers = allChipTiers(Date.now(), at2y.profile.quitDate);
-if (!tiers.some((t) => t.id === 'chip-2y')) {
-  console.error('tier list should include 2y');
+if (allChipTiers().some((t) => t.id === 'chip-2y' || t.id === 'chip-3y')) {
+  console.error('yearly extension chips must not exist');
   process.exit(1);
 }
 

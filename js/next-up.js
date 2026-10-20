@@ -1,4 +1,5 @@
 import { healthProgress, msSinceQuit } from './stats.js';
+import { HEALTH_FIRST_YEAR_MS } from './health-milestones.js';
 import {
   badgeStatuses,
   sortLockedBadgesByEta,
@@ -24,9 +25,19 @@ export function formatCountdown(ms) {
   return `${sec}s`;
 }
 
+function firstYearHealthItems(now, quitDate) {
+  return healthProgress(now, quitDate).filter((m) => m.timeMs <= HEALTH_FIRST_YEAR_MS);
+}
+
+export function allFirstYearHealthMilestonesReached(state, now = Date.now()) {
+  if (!state.profile.quitDate) return false;
+  const items = firstYearHealthItems(now, state.profile.quitDate);
+  return items.length > 0 && items.every((m) => m.done);
+}
+
 export function getNextHealthMilestone(state, now = Date.now()) {
   if (!state.profile.quitDate) return null;
-  const items = healthProgress(now, state.profile.quitDate);
+  const items = firstYearHealthItems(now, state.profile.quitDate);
   const next = items.find((m) => !m.done);
   if (!next) return null;
   const elapsed = msSinceQuit(state.profile, now);
@@ -70,6 +81,10 @@ export function buildNextUpHtml(state, now, escapeHtml) {
         <p class="next-up-health-at muted">${escapeHtml(atLabel)}</p>
         <div class="progress-track"><div class="progress-fill" style="width:${health.progress}%"></div></div>
       </div>`);
+  } else if (allFirstYearHealthMilestonesReached(state, now)) {
+    rows.push(
+      `<p class="next-up-health-complete muted small">${escapeHtml('All first-year health milestones reached')}</p>`
+    );
   }
   if (badge) {
     const title = badgeDisplayTitle(badge.achievement, state.profile.currency);

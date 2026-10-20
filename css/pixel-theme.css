@@ -422,6 +422,23 @@ label,
   font-size: 0.72rem;
 }
 
+.health-longterm-heading {
+  margin: 16px 0 10px;
+  font-size: 0.45rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.health-item--longterm .health-pct:empty {
+  display: none;
+}
+
+.next-up-health-complete {
+  margin: 0 0 10px;
+  padding: 8px 0 4px;
+  border-bottom: 2px dashed var(--pixel-border);
+}
+
 .health-title {
   font-family: var(--pixel-body);
   font-size: 0.82rem;

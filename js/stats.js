@@ -97,7 +97,13 @@ export function healthProgress(now, quitDate) {
 
 export function formatMoney(amount, currency, CURRENCIES) {
   const sym = CURRENCIES[currency]?.symbol ?? '$';
-  return `${sym}${amount.toFixed(2)}`;
+  const n = Number(amount) || 0;
+  const abs = Math.abs(n);
+  const formatted = abs.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${n < 0 ? '-' : ''}${sym}${formatted}`;
 }
 
 /** Projected savings if smoke-free for `days` at cigsPerDay × days cigarettes. */
