@@ -18,8 +18,11 @@ import {
   migrateCelebrationsV14,
   setMilestoneAlertsEnabled,
   MILESTONE_ALERTS_HELP,
+  refreshMilestoneSchedules,
 } from './milestone-alerts.js';
 import { shareProgressCard } from './share-card.js';
+import { registerPredictiveBack } from './back-handler.js';
+import { initNativeShell, onNativeAppActive } from './native-shell.js';
 import {
   BADGE_CATEGORIES,
   badgeStatuses,
@@ -63,6 +66,7 @@ function setWidth(sel, width) {
 
 function persist() {
   saveState(state);
+  refreshMilestoneSchedules(state).catch(() => {});
 }
 
 function showView(name) {
@@ -82,6 +86,18 @@ function openModal(id) {
 function closeModal(id) {
   $(`#${id}`)?.classList.remove('open');
   if (!document.querySelector('.modal.open')) document.body.classList.remove('modal-open');
+}
+
+function closeTopModal() {
+  const open = document.querySelector('.modal.open');
+  if (!open) return false;
+  open.classList.remove('open');
+  if (!document.querySelector('.modal.open')) document.body.classList.remove('modal-open');
+  return true;
+}
+
+function getActiveTab() {
+  return document.querySelector('.nav-btn.active')?.dataset.nav || 'home';
 }
 
 function escapeHtml(s) {
@@ -481,10 +497,19 @@ function startTicker() {
 export function initApp() {
   bindEvents();
   initInstallUi();
+  initNativeShell();
+  registerPredictiveBack({
+    closeTopModal,
+    getActiveTab,
+    goHome: () => showView('home'),
+    exitApp: () => window.Capacitor?.Plugins?.App?.exitApp?.(),
+  });
+  onNativeAppActive(() => refreshMilestoneSchedules(state).catch(() => {}));
   migrateBadgeNotificationsV9();
   const now = Date.now();
   migrateCelebrationsV14(state, now, persist);
   renderAll();
+  refreshMilestoneSchedules(state).catch(() => {});
   startTicker();
   showView('home');
   window.__QT_APP_READY__ = true;

@@ -15,7 +15,22 @@ Personal quit-smoking tracker for **Silvio** — a static, mobile-first web app 
 
 ## Tech
 
-Plain HTML, CSS, and ES modules — no build step. GitHub Pages serves the repo root; `.nojekyll` is included.
+Plain HTML, CSS, and ES modules for the PWA. **Capacitor** wraps the same assets for Android (`www/` is a sync copy for native only; GitHub Pages still serves the repo root). `.nojekyll` is included.
+
+### Android APK (personal sideload)
+
+After merge to `main`, CI publishes a debug-signed APK:
+
+**https://github.com/silvio-dotcom/quit-tracker/releases/download/latest-apk/quit-tracker.apk**
+
+The shared debug keystore in `android/quit-tracker-debug.keystore` is intentional so updates install over the previous APK without uninstalling — **personal use only**, not for Play Store.
+
+Local build:
+
+```bash
+npm ci && npm run icons && npm run cap:sync && npm run icons:android
+cd android && ./gradlew assembleDebug
+```
 
 ## Local preview
 

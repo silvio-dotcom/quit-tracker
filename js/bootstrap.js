@@ -1,4 +1,5 @@
 import { APP_BUILD } from './version.js';
+import { isNativePlatform } from './platform.js';
 
 const v = APP_BUILD;
 window.__QT_BUILD__ = v;
@@ -15,7 +16,7 @@ function scheduleRecoveryWatchdog() {
       if (sessionStorage.getItem(key)) return;
       sessionStorage.setItem(key, '1');
       try {
-        if ('serviceWorker' in navigator) {
+        if (!isNativePlatform() && 'serviceWorker' in navigator) {
           const regs = await navigator.serviceWorker.getRegistrations();
           await Promise.all(regs.map((r) => r.unregister()));
         }

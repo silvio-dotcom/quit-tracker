@@ -1,3 +1,5 @@
+import { isNativePlatform } from './platform.js';
+
 const INSTALLED_KEY = 'quit-tracker-installed';
 
 let deferredPrompt = null;
@@ -46,6 +48,11 @@ function wasInstalledBefore() {
 }
 
 export function updateInstallUi() {
+  if (isNativePlatform()) {
+    setHidden($('#btn-install-header'), true);
+    document.querySelectorAll('[data-install-ui]').forEach((el) => el.classList.add('hidden'));
+    return;
+  }
   const standalone = isStandalonePwa();
   const showProminent = !standalone && !wasInstalledBefore();
 
@@ -92,6 +99,10 @@ async function onInstallTap() {
 }
 
 export function initInstallUi() {
+  if (isNativePlatform()) {
+    updateInstallUi();
+    return;
+  }
   if (isStandalonePwa()) {
     updateInstallUi();
     return;

@@ -10,11 +10,22 @@
   <meta name="description" content="Silvio's personal smoke-free tracker — time, savings, health milestones, and ranks." />
   <title>Quit Tracker</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/styles.css?v=14" />
-  <script>window.__QT_BUILD__ = '14';</script>
-  <script src="js/sw-register.js?v=14"></script>
+  <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="css/styles.css?v=15" />
+  <script>window.__QT_BUILD__ = '15';</script>
+  <script src="capacitor.js"></script>
+  <script>
+    (function () {
+      var native = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+      window.__QT_NATIVE__ = native;
+      if (!native) {
+        var s = document.createElement('script');
+        s.src = 'js/sw-register.js?v=15';
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="app">
@@ -134,8 +145,8 @@
           <p id="milestone-alerts-help" class="muted small"></p>
         </div>
 
-        <h2 class="section-title">App</h2>
-        <div class="card row-actions">
+        <h2 class="section-title" data-install-ui>App</h2>
+        <div class="card row-actions" data-install-ui>
           <button type="button" id="btn-install-more" class="btn ghost full">Add to Home Screen</button>
         </div>
 
@@ -224,6 +235,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=14"></script>
+  <script type="module" src="js/bootstrap.js?v=15"></script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 import { healthProgress } from './stats.js';
 import { unlockedAchievements, syncAchievementUnlocks } from './achievements.js';
+import { isNativePlatform } from './platform.js';
+import { ensureAndroidNotificationPermission, syncNativeMilestoneSchedule } from './native-notifications.js';
 
 const celebrationQueue = [];
 let drainingCelebrations = false;
@@ -21,6 +23,7 @@ export function allUnlockedCelebrationKeys(state, now = Date.now()) {
 }
 
 export async function postMilestoneNotification(title, body, tag) {
+  if (isNativePlatform()) return;
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try {
     const reg = await navigator.serviceWorker.ready;
@@ -141,20 +144,34 @@ export function migrateCelebrationsV14(state, now, persist) {
 
 export async function setMilestoneAlertsEnabled(state, enabled, persist) {
   state.milestoneAlertsEnabled = enabled;
-  if (enabled && 'Notification' in window) {
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') {
-      state.milestoneAlertsEnabled = false;
-      persist();
-      return perm;
+  if (enabled) {
+    if (isNativePlatform()) {
+      const perm = await ensureAndroidNotificationPermission();
+      if (perm !== 'granted') {
+        state.milestoneAlertsEnabled = false;
+        persist();
+        return perm;
+      }
+    } else if ('Notification' in window) {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') {
+        state.milestoneAlertsEnabled = false;
+        persist();
+        return perm;
+      }
     }
-  } else if (!enabled) {
-    persist();
-    return Notification?.permission ?? 'default';
   }
   persist();
+  await syncNativeMilestoneSchedule(state);
+  if (isNativePlatform()) {
+    return state.milestoneAlertsEnabled ? 'granted' : 'denied';
+  }
   return Notification?.permission ?? 'default';
 }
 
+export async function refreshMilestoneSchedules(state) {
+  await syncNativeMilestoneSchedule(state);
+}
+
 export const MILESTONE_ALERTS_HELP =
-  'Local alerts when a health milestone or badge unlocks. Uses this device only — no push server. On iPhone/iPad, notifications work only if Quit Tracker is installed to your Home Screen (iOS 16.4+). In a Safari tab, you will still see in-app celebrations.';
+  'Local alerts when a health milestone or badge unlocks. Uses this device only — no push server. On iPhone/iPad, notifications work only if Quit Tracker is installed to your Home Screen (iOS 16.4+). In a Safari tab, you will still see in-app celebrations. On Android (this app), alerts are scheduled on your device at each upcoming unlock time.';

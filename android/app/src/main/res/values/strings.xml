@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Quit Tracker</string>
+    <string name="title_activity_main">Quit Tracker</string>
+    <string name="package_name">io.github.silviodotcom.quittracker</string>
+    <string name="custom_url_scheme">io.github.silviodotcom.quittracker</string>
+</resources>
