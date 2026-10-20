@@ -1,10 +1,11 @@
 import { msSinceQuit } from './stats.js';
 import { unlockedAchievements } from './achievements.js';
+import { BADGE_YEAR_MS } from './badge-year-scale.js';
 
 const MS_H = 60 * 60 * 1000;
-const XP_PER_HOUR = 0.14;
-const XP_PER_BADGE = 40;
-export const MAX_LEVEL = 10;
+const XP_PER_HOUR = 0.38;
+const XP_PER_BADGE = 72;
+export const MAX_LEVEL = 20;
 
 export const LEVEL_TITLES = [
   'PUFF DODGER',
@@ -17,6 +18,16 @@ export const LEVEL_TITLES = [
   'CLEAR SKY',
   'HEALTH HERO',
   'FREEDOM LEGEND',
+  'STREAK SAGE',
+  'MILESTONE MARIO',
+  'BOSS SLAYER',
+  'EXTRA LIFE',
+  'HIGH SCORE',
+  'PIXEL PHOENIX',
+  'FINAL BOSS',
+  'GAME CLEAR',
+  'LEGEND MODE',
+  'YEAR CHAMPION',
 ];
 
 export function totalXp(state, now = Date.now()) {
@@ -26,8 +37,9 @@ export function totalXp(state, now = Date.now()) {
   return Math.floor(hours * XP_PER_HOUR + badges * XP_PER_BADGE);
 }
 
+/** XP cost to advance from `level` to `level + 1` (quick early, slower later). */
 export function xpForLevel(level) {
-  return level * 85;
+  return Math.round(20 + level * 6 + level * level * 2.2);
 }
 
 export function xpToReachLevel(targetLevel) {
@@ -46,7 +58,7 @@ export function xpLevelProgress(state, now = Date.now()) {
     const need = xpForLevel(MAX_LEVEL);
     return {
       level: MAX_LEVEL,
-      title: 'MAX',
+      title: LEVEL_TITLES[MAX_LEVEL - 1] ?? 'MAX',
       into: need,
       need,
       totalXp: total,
@@ -64,4 +76,9 @@ export function xpLevelProgress(state, now = Date.now()) {
   const need = xpForLevel(level);
   const title = LEVEL_TITLES[(level - 1) % LEVEL_TITLES.length];
   return { level, title, into, need, totalXp: total, maxed: false };
+}
+
+/** Rough sanity: typical 15 cpd profile reaches max level near 1-year horizon. */
+export function msToTypicalMaxLevel() {
+  return BADGE_YEAR_MS;
 }

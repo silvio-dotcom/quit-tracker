@@ -194,7 +194,7 @@ export function estimateUnlockTime(achievement, state) {
 
 export function badgeUnlockIso(status, state) {
   if (!status.unlocked) return null;
-  return status.unlockAt || estimateUnlockTime(status.achievement, state);
+  return estimateUnlockTime(status.achievement, state) || status.unlockAt;
 }
 
 export function badgeEtaMs(status, state, now = Date.now()) {

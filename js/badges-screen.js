@@ -10,7 +10,7 @@ import {
   sortLockedBadgesByEta,
   formatBadgeEta,
 } from './achievements.js';
-import { xpLevelProgress } from './xp.js';
+import { xpLevelProgress, MAX_LEVEL } from './xp.js';
 
 export const BADGE_FILTER_ALL = 'all';
 
@@ -120,7 +120,7 @@ export function renderBadgesScreen({
     summary: `${unlockedTotal} / ${statuses.length} earned`,
     levelHtml: `<div class="badge-level-bar ${xp.maxed ? 'badge-level-max' : ''}">
       <div class="badge-level-head">
-        <span class="pixel-label">LV ${xp.level}${xp.maxed ? ' MAX' : ''}</span>
+        <span class="pixel-label">LV ${xp.level} / ${MAX_LEVEL}${xp.maxed ? ' MAX' : ''}</span>
         <span class="badge-level-title pixel-label">${escapeHtml(xp.title)}</span>
       </div>
       <div class="progress-track"><div class="progress-fill rank" style="width:${xpPct}%"></div></div>
@@ -146,6 +146,6 @@ export function renderBadgesScreen({
 
 export function homeLevelPillHtml(state, now, escapeHtml) {
   const xp = xpLevelProgress(state, now);
-  const label = xp.maxed ? `LV ${xp.level} MAX` : `LV ${xp.level}`;
+  const label = xp.maxed ? `LV ${xp.level} / ${MAX_LEVEL} MAX` : `LV ${xp.level} / ${MAX_LEVEL}`;
   return `<span class="home-level-pill pixel-label" title="${escapeHtml(xp.title)}">${label}</span>`;
 }

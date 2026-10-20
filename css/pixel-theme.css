@@ -385,6 +385,19 @@ label,
   background: #0f172a;
 }
 
+.next-up-row-head {
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.next-up-countdown {
+  font-family: var(--pixel-display);
+  font-size: 0.42rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
 .badge-filter-chip {
   border-radius: 0;
   border: 3px solid var(--pixel-border);
