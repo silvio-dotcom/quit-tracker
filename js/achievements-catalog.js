@@ -4,9 +4,8 @@ const D = 24 * H;
 const MO = 30 * D;
 const Y = 365 * D;
 
-/** @type {import('./constants.js').ACHIEVEMENTS} */
-export const ACHIEVEMENTS = [
-  // Time smoke-free (dense early + long-term)
+/** Time smoke-free badges (absolute; max 1 year). */
+export const TIME_ACHIEVEMENTS = [
   { id: 'time-5m', category: 'time', icon: '🕹️', title: '5 minutes', desc: 'First pixels of freedom.', ms: 5 * M },
   { id: 'time-10m', category: 'time', icon: '👾', title: '10 minutes', desc: 'Double digits smoke-free.', ms: 10 * M },
   { id: 'time-20m', category: 'time', icon: '💪', title: '20 minutes', desc: 'The hardest stretch — you did it.', ms: 20 * M },
@@ -29,54 +28,65 @@ export const ACHIEVEMENTS = [
   { id: 'time-6mo', category: 'time', icon: '🚀', title: '6 months', desc: 'Half a year smoke-free.', ms: 6 * MO },
   { id: 'time-9mo', category: 'time', icon: '🌈', title: '9 months', desc: 'Nine months strong.', ms: 9 * MO },
   { id: 'time-1y', category: 'time', icon: '🎉', title: '1 year', desc: 'A full year as a non-smoker.', ms: Y },
-  { id: 'time-2y', category: 'time', icon: '🏆', title: '2 years', desc: 'Two years smoke-free.', ms: 2 * Y },
-  { id: 'time-5y', category: 'time', icon: '👑', title: '5 years', desc: 'Five years — incredible.', ms: 5 * Y },
-
-  // Cigarettes avoided
-  { id: 'cigs-1', category: 'cigs', icon: '🚭', title: 'First cigarette', desc: 'One cigarette not smoked.', count: 1 },
-  { id: 'cigs-5', category: 'cigs', icon: '🕹️', title: '5 avoided', desc: 'A handful skipped.', count: 5 },
-  { id: 'cigs-10', category: 'cigs', icon: '🔟', title: '10 avoided', desc: 'Ten cigarettes skipped.', count: 10 },
-  { id: 'cigs-25', category: 'cigs', icon: '🎮', title: '25 avoided', desc: 'Quarter century of skips.', count: 25 },
-  { id: 'cigs-first-pack', category: 'cigs', icon: '📦', title: 'First pack', desc: 'A full pack avoided.', packs: 1 },
-  { id: 'cigs-50', category: 'cigs', icon: '🌿', title: '50 avoided', desc: 'Fifty cigarettes not smoked.', count: 50 },
-  { id: 'cigs-100', category: 'cigs', icon: '💯', title: '100 avoided', desc: 'A hundred cigarettes skipped.', count: 100 },
-  { id: 'cigs-200', category: 'cigs', icon: '🪙', title: '200 avoided', desc: 'Two hundred clear.', count: 200 },
-  { id: 'cigs-5pack', category: 'cigs', icon: '📦', title: '5 packs', desc: 'Five packs avoided.', packs: 5 },
-  { id: 'cigs-10pack', category: 'cigs', icon: '🎁', title: '10 packs', desc: 'Ten packs not smoked.', packs: 10 },
-  { id: 'cigs-250', category: 'cigs', icon: '🚬', title: '250 avoided', desc: 'Two hundred fifty cigarettes.', count: 250 },
-  { id: 'cigs-500', category: 'cigs', icon: '🏔️', title: '500 avoided', desc: 'Five hundred cigarettes skipped.', count: 500 },
-  { id: 'cigs-750', category: 'cigs', icon: '⛰️', title: '750 avoided', desc: 'Seven hundred fifty skipped.', count: 750 },
-  { id: 'cigs-1000', category: 'cigs', icon: '🌟', title: '1,000 avoided', desc: 'A thousand cigarettes avoided.', count: 1000 },
-  { id: 'cigs-1500', category: 'cigs', icon: '💫', title: '1,500 avoided', desc: 'Fifteen hundred not smoked.', count: 1500 },
-  { id: 'cigs-2500', category: 'cigs', icon: '🔥', title: '2,500 avoided', desc: 'Massive stack of skips.', count: 2500 },
-  { id: 'cigs-5000', category: 'cigs', icon: '🏰', title: '5,000 avoided', desc: 'Five thousand — legendary.', count: 5000 },
-
-  // Money saved (amount in profile currency)
-  { id: 'money-5', category: 'money', icon: '🪙', title: '5 saved', desc: 'First coins kept.', amount: 5 },
-  { id: 'money-10', category: 'money', icon: '💵', title: '10 saved', desc: 'First savings milestone.', amount: 10 },
-  { id: 'money-15', category: 'money', icon: '🎮', title: '15 saved', desc: 'Extra life for your wallet.', amount: 15 },
-  { id: 'money-25', category: 'money', icon: '🪙', title: '25 saved', desc: 'Money back in your pocket.', amount: 25 },
-  { id: 'money-50', category: 'money', icon: '💰', title: '50 saved', desc: 'Fifty kept.', amount: 50 },
-  { id: 'money-75', category: 'money', icon: '👾', title: '75 saved', desc: 'Seventy-five in the bank.', amount: 75 },
-  { id: 'money-100', category: 'money', icon: '💸', title: '100 saved', desc: 'Serious savings.', amount: 100 },
-  { id: 'money-150', category: 'money', icon: '🏦', title: '150 saved', desc: 'Growing stash.', amount: 150 },
-  { id: 'money-250', category: 'money', icon: '💎', title: '250 saved', desc: 'A quarter grand.', amount: 250 },
-  { id: 'money-500', category: 'money', icon: '🎁', title: '500 saved', desc: 'Half a grand kept.', amount: 500 },
-  { id: 'money-750', category: 'money', icon: '🌟', title: '750 saved', desc: 'Seven-fifty saved.', amount: 750 },
-  { id: 'money-1000', category: 'money', icon: '🏆', title: '1,000 saved', desc: 'Four digits saved.', amount: 1000 },
-  { id: 'money-2500', category: 'money', icon: '👑', title: '2,500 saved', desc: 'Major milestone.', amount: 2500 },
-  { id: 'money-5000', category: 'money', icon: '🚀', title: '5,000 saved', desc: 'Five thousand saved.', amount: 5000 },
-
-  // Time regained (6 min per cigarette)
-  { id: 'timeback-30m', category: 'timeback', icon: '⏳', title: '30 min back', desc: 'Half an hour of life regained.', regainedMinutes: 30 },
-  { id: 'timeback-1h', category: 'timeback', icon: '🕐', title: '1 hour back', desc: 'An hour returned to you.', regainedMinutes: 60 },
-  { id: 'timeback-3h', category: 'timeback', icon: '🕒', title: '3 hours back', desc: 'Three hours regained.', regainedMinutes: 180 },
-  { id: 'timeback-6h', category: 'timeback', icon: '🌤️', title: '6 hours back', desc: 'A quarter day back.', regainedMinutes: 360 },
-  { id: 'timeback-12h', category: 'timeback', icon: '🌙', title: '12 hours back', desc: 'Half a day regained.', regainedMinutes: 720 },
-  { id: 'timeback-1d', category: 'timeback', icon: '📆', title: '1 day back', desc: 'A full day of time back.', regainedMinutes: 1440 },
-  { id: 'timeback-3d', category: 'timeback', icon: '🗓️', title: '3 days back', desc: 'Three days regained.', regainedMinutes: 4320 },
-  { id: 'timeback-1w', category: 'timeback', icon: '📅', title: '1 week back', desc: 'A week of life returned.', regainedMinutes: 10080 },
-  { id: 'timeback-1mo', category: 'timeback', icon: '🏅', title: '1 month back', desc: 'A month regained.', regainedMinutes: 43200 },
-  { id: 'timeback-3mo', category: 'timeback', icon: '💎', title: '3 months back', desc: 'Three months of time back.', regainedMinutes: 129600 },
-  { id: 'timeback-1y', category: 'timeback', icon: '🎉', title: '1 year back', desc: 'A year of life regained.', regainedMinutes: 525600 },
 ];
+
+/** Scaled to 1-year cigarette projection (yearFraction 0–1). */
+export const CIGS_SPECS = [
+  { id: 'cigs-1', yearFraction: 0.004, icon: '🚭', title: 'First cigarette', desc: 'One cigarette not smoked.' },
+  { id: 'cigs-5', yearFraction: 0.012, icon: '🕹️', title: '5 avoided', desc: 'A handful skipped.' },
+  { id: 'cigs-10', yearFraction: 0.022, icon: '🔟', title: '10 avoided', desc: 'Ten cigarettes skipped.' },
+  { id: 'cigs-25', yearFraction: 0.04, icon: '🎮', title: '25 avoided', desc: 'Building momentum.' },
+  { id: 'cigs-first-pack', packFraction: 0.055, icon: '📦', title: 'First pack', desc: 'A full pack avoided.' },
+  { id: 'cigs-50', yearFraction: 0.08, icon: '🌿', title: '50 avoided', desc: 'Fifty cigarettes not smoked.' },
+  { id: 'cigs-100', yearFraction: 0.12, icon: '💯', title: '100 avoided', desc: 'A hundred cigarettes skipped.' },
+  { id: 'cigs-200', yearFraction: 0.17, icon: '🪙', title: '200 avoided', desc: 'Two hundred clear.' },
+  { id: 'cigs-5pack', packFraction: 0.22, icon: '📦', title: '5 packs', desc: 'Five packs avoided.' },
+  { id: 'cigs-10pack', packFraction: 0.3, icon: '🎁', title: '10 packs', desc: 'Ten packs not smoked.' },
+  { id: 'cigs-250', yearFraction: 0.38, icon: '🚬', title: '250 avoided', desc: 'Quarter thousand skipped.' },
+  { id: 'cigs-500', yearFraction: 0.48, icon: '🏔️', title: '500 avoided', desc: 'Five hundred cigarettes skipped.' },
+  { id: 'cigs-750', yearFraction: 0.58, icon: '⛰️', title: '750 avoided', desc: 'Seven fifty skipped.' },
+  { id: 'cigs-1000', yearFraction: 0.68, icon: '🌟', title: '1,000 avoided', desc: 'A thousand cigarettes avoided.' },
+  { id: 'cigs-1500', yearFraction: 0.78, icon: '💫', title: '1,500 avoided', desc: 'Fifteen hundred not smoked.' },
+  { id: 'cigs-2500', yearFraction: 0.88, icon: '🔥', title: '2,500 avoided', desc: 'Massive stack of skips.' },
+  { id: 'cigs-year', yearFraction: 1, icon: '🏰', title: 'Year count', desc: 'Your one-year cigarette total.' },
+];
+
+export const MONEY_SPECS = [
+  { id: 'money-5', yearFraction: 0.01, icon: '🪙', title: 'First savings', desc: 'First coins kept.' },
+  { id: 'money-10', yearFraction: 0.025, icon: '💵', title: '10 saved', desc: 'First savings milestone.' },
+  { id: 'money-15', yearFraction: 0.04, icon: '🎮', title: '15 saved', desc: 'Extra life for your wallet.' },
+  { id: 'money-25', yearFraction: 0.06, icon: '🪙', title: '25 saved', desc: 'Money back in your pocket.' },
+  { id: 'money-50', yearFraction: 0.09, icon: '💰', title: '50 saved', desc: 'Fifty kept.' },
+  { id: 'money-75', yearFraction: 0.13, icon: '👾', title: '75 saved', desc: 'Seventy-five in the bank.' },
+  { id: 'money-100', yearFraction: 0.17, icon: '💸', title: '100 saved', desc: 'Serious savings.' },
+  { id: 'money-150', yearFraction: 0.23, icon: '🏦', title: '150 saved', desc: 'Growing stash.' },
+  { id: 'money-250', yearFraction: 0.32, icon: '💎', title: '250 saved', desc: 'A quarter grand.' },
+  { id: 'money-500', yearFraction: 0.45, icon: '🎁', title: '500 saved', desc: 'Half a grand kept.' },
+  { id: 'money-750', yearFraction: 0.58, icon: '🌟', title: '750 saved', desc: 'Seven-fifty saved.' },
+  { id: 'money-1000', yearFraction: 0.7, icon: '🏆', title: '1,000 saved', desc: 'Four digits saved.' },
+  { id: 'money-2500', yearFraction: 0.85, icon: '👑', title: '2,500 saved', desc: 'Major milestone.' },
+  { id: 'money-year', yearFraction: 1, icon: '🚀', title: 'Year savings', desc: 'Your one-year money saved.' },
+];
+
+export const TIMEBACK_SPECS = [
+  { id: 'timeback-30m', yearFraction: 0.02, icon: '⏳', title: '30 min back', desc: 'Half an hour of life regained.' },
+  { id: 'timeback-1h', yearFraction: 0.05, icon: '🕐', title: '1 hour back', desc: 'An hour returned to you.' },
+  { id: 'timeback-3h', yearFraction: 0.1, icon: '🕒', title: '3 hours back', desc: 'Three hours regained.' },
+  { id: 'timeback-6h', yearFraction: 0.16, icon: '🌤️', title: '6 hours back', desc: 'A quarter day back.' },
+  { id: 'timeback-12h', yearFraction: 0.24, icon: '🌙', title: '12 hours back', desc: 'Half a day regained.' },
+  { id: 'timeback-1d', yearFraction: 0.32, icon: '📆', title: '1 day back', desc: 'A full day of time back.' },
+  { id: 'timeback-3d', yearFraction: 0.44, icon: '🗓️', title: '3 days back', desc: 'Three days regained.' },
+  { id: 'timeback-1w', yearFraction: 0.56, icon: '📅', title: '1 week back', desc: 'A week of life returned.' },
+  { id: 'timeback-1mo', yearFraction: 0.7, icon: '🏅', title: '1 month back', desc: 'A month regained.' },
+  { id: 'timeback-3mo', yearFraction: 0.85, icon: '💎', title: '3 months back', desc: 'Three months of time back.' },
+  { id: 'timeback-year', yearFraction: 1, icon: '🎉', title: '1 year back', desc: 'A year of life regained.' },
+];
+
+export function allBadgeTemplateIds() {
+  return [
+    ...TIME_ACHIEVEMENTS.map((a) => a.id),
+    ...CIGS_SPECS.map((a) => a.id),
+    ...MONEY_SPECS.map((a) => a.id),
+    ...TIMEBACK_SPECS.map((a) => a.id),
+  ];
+}

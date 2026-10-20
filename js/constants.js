@@ -119,9 +119,18 @@ const Y = 365 * D;
 
 /** @typedef {'time'|'cigs'|'money'|'timeback'} BadgeCategoryId */
 
-import { ACHIEVEMENTS } from './achievements-catalog.js';
+import { allBadgeTemplateIds } from './achievements-catalog.js';
+import { buildAchievementsForProfile } from './badge-year-scale.js';
 
-export { ACHIEVEMENTS };
+const DEFAULT_BADGE_PROFILE = {
+  quitDate: new Date(0).toISOString(),
+  cigsPerDay: 15,
+  cigsPerPack: 20,
+  packPrice: 12,
+  currency: 'USD',
+};
+
+export const ACHIEVEMENTS = buildAchievementsForProfile(DEFAULT_BADGE_PROFILE);
 
 export const BADGE_CATEGORIES = [
   { id: 'time', label: 'Time', emoji: '⏱️' },
@@ -149,7 +158,7 @@ export const LEGACY_ACHIEVEMENT_IDS = {
   'money-500': 'money-500',
 };
 
-export const ACHIEVEMENT_IDS = new Set(ACHIEVEMENTS.map((a) => a.id));
+export const ACHIEVEMENT_IDS = new Set(allBadgeTemplateIds());
 
 export function defaultState() {
   return {

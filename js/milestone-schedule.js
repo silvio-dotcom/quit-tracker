@@ -1,5 +1,5 @@
 import { HEALTH_MILESTONES } from './health-milestones.js';
-import { ACHIEVEMENTS, estimateUnlockTime, metricsForBadges, isBadgeUnlocked } from './achievements.js';
+import { achievementsForState, estimateUnlockTime, metricsForBadges, isBadgeUnlocked } from './achievements.js';
 import { upcomingChipNotifications } from './chips.js';
 
 export function notificationIdForKey(key) {
@@ -31,7 +31,7 @@ export function upcomingMilestoneNotifications(state, now = Date.now()) {
     });
   }
 
-  for (const a of ACHIEVEMENTS) {
+  for (const a of achievementsForState(state)) {
     if (isBadgeUnlocked(a, metrics, state)) continue;
     const iso = estimateUnlockTime(a, state);
     if (!iso) continue;

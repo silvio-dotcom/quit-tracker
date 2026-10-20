@@ -1,11 +1,11 @@
 import {
-  ACHIEVEMENTS,
   BADGE_CATEGORIES,
   ACHIEVEMENT_IDS,
   LEGACY_ACHIEVEMENT_IDS,
   CURRENCIES,
   TIME_BACK_MINUTES_PER_CIG,
 } from './constants.js';
+import { buildAchievementsForProfile, maxBadgeHorizonMs, BADGE_YEAR_MS } from './badge-year-scale.js';
 import {
   msSinceQuit,
   cigarettesAvoided,
@@ -18,6 +18,10 @@ const MS_PER_MIN = 60 * 1000;
 
 export function timeRegainedMs(metrics) {
   return metrics.cigarettes * TIME_BACK_MINUTES_PER_CIG * MS_PER_MIN;
+}
+
+export function achievementsForState(state) {
+  return buildAchievementsForProfile(state.profile || {});
 }
 
 export function migrateSeenAchievementIds(seen) {
@@ -161,38 +165,45 @@ export function moneyBadgeTitle(achievement, currency) {
 export function estimateUnlockTime(achievement, state) {
   const quit = state.profile.quitDate ? new Date(state.profile.quitDate).getTime() : null;
   if (!quit) return null;
+  const capAt = quit + BADGE_YEAR_MS;
   if (achievement.category === 'time') {
-    return new Date(quit + (achievement.ms ?? 0)).toISOString();
+    const at = Math.min(quit + (achievement.ms ?? 0), capAt);
+    return new Date(at).toISOString();
   }
   const cpd = Number(state.profile.cigsPerDay) || 0;
   if (!cpd) return null;
   if (achievement.category === 'cigs') {
     const target = cigaretteTargetForBadge(achievement, state);
-    return new Date(quit + msForCigaretteTarget(target, cpd)).toISOString();
+    const at = Math.min(quit + msForCigaretteTarget(target, cpd), capAt);
+    return new Date(at).toISOString();
   }
   if (achievement.category === 'money') {
     const ppc = (Number(state.profile.packPrice) || 0) / (Number(state.profile.cigsPerPack) || 20);
     if (!ppc) return null;
     const cigsNeeded = (achievement.amount ?? 0) / ppc;
-    return new Date(quit + msForCigaretteTarget(cigsNeeded, cpd)).toISOString();
+    const at = Math.min(quit + msForCigaretteTarget(cigsNeeded, cpd), capAt);
+    return new Date(at).toISOString();
   }
   if (achievement.category === 'timeback') {
     const cigsNeeded = (achievement.regainedMinutes ?? 0) / TIME_BACK_MINUTES_PER_CIG;
-    return new Date(quit + msForCigaretteTarget(cigsNeeded, cpd)).toISOString();
+    const at = Math.min(quit + msForCigaretteTarget(cigsNeeded, cpd), capAt);
+    return new Date(at).toISOString();
   }
   return null;
 }
 
 export function badgeUnlockIso(status, state) {
   if (!status.unlocked) return null;
-  return status.unlockAt || estimateUnlockTime(status.achievement, state);
+  return estimateUnlockTime(status.achievement, state) || status.unlockAt;
 }
 
 export function badgeEtaMs(status, state, now = Date.now()) {
   if (status.unlocked) return 0;
   const iso = estimateUnlockTime(status.achievement, state);
   if (!iso) return Number.POSITIVE_INFINITY;
-  return Math.max(0, new Date(iso).getTime() - now);
+  const raw = Math.max(0, new Date(iso).getTime() - now);
+  const cap = maxBadgeHorizonMs(state, now);
+  return Math.min(raw, cap);
 }
 
 export function formatBadgeEta(status, state, now = Date.now()) {
@@ -249,7 +260,7 @@ export function formatUnlockDate(iso) {
 
 export function unlockedAchievements(state, now = Date.now()) {
   const metrics = metricsForBadges(state, now);
-  return ACHIEVEMENTS.filter((a) => isBadgeUnlocked(a, metrics, state));
+  return achievementsForState(state).filter((a) => isBadgeUnlocked(a, metrics, state));
 }
 
 /**
@@ -258,7 +269,7 @@ export function unlockedAchievements(state, now = Date.now()) {
 export function badgeStatuses(state, now = Date.now()) {
   const metrics = metricsForBadges(state, now);
   const unlocks = state.achievementUnlocks || {};
-  return ACHIEVEMENTS.map((achievement) => {
+  return achievementsForState(state).map((achievement) => {
     const unlocked = isBadgeUnlocked(achievement, metrics, state);
     const progress = badgeProgress(achievement, metrics, state);
     const progressLabel = unlocked ? '' : badgeProgressLabel(achievement, metrics, state);
@@ -279,7 +290,7 @@ export function syncAchievementUnlocks(state, now = Date.now()) {
   const metrics = metricsForBadges(state, now);
   if (!state.achievementUnlocks) state.achievementUnlocks = {};
   let changed = false;
-  for (const a of ACHIEVEMENTS) {
+  for (const a of achievementsForState(state)) {
     if (!isBadgeUnlocked(a, metrics, state)) continue;
     if (!state.achievementUnlocks[a.id]) {
       state.achievementUnlocks[a.id] = estimateUnlockTime(a, state) || new Date(now).toISOString();
@@ -289,4 +300,4 @@ export function syncAchievementUnlocks(state, now = Date.now()) {
   return changed;
 }
 
-export { ACHIEVEMENTS, BADGE_CATEGORIES };
+export { BADGE_CATEGORIES, BADGE_YEAR_MS };
