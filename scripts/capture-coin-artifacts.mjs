@@ -62,6 +62,22 @@ async function preparePage(browser) {
     .then((c) => c.newPage());
 }
 
+async function freezeCoinsFaceOn(page) {
+  await page.addStyleTag({
+    content: `.pixel-coin-spin {
+      animation: none !important;
+      transform: scaleX(1) !important;
+    }`,
+  });
+  await page.evaluate(() => {
+    document.querySelectorAll('.pixel-coin-spin').forEach((el) => {
+      el.style.animation = 'none';
+      el.style.transform = 'scaleX(1)';
+    });
+  });
+  await page.waitForTimeout(120);
+}
+
 async function loadApp(page, seed) {
   await page.goto(base, { waitUntil: 'domcontentloaded' });
   await page.evaluate((d) => localStorage.setItem('quit-tracker-data-v1', JSON.stringify(d)), seed);
@@ -87,24 +103,20 @@ async function loadApp(page, seed) {
     document.body.classList.remove('modal-open');
   });
   await page.waitForSelector('#hero-chip-mount .pixel-coin-svg');
-  await page.evaluate(() => {
-    document.querySelectorAll('.pixel-coin-spin').forEach((el) => {
-      el.style.animation = 'none';
-      el.style.transform = 'scaleX(1)';
-    });
-    window.scrollTo(0, 0);
-  });
-  await page.waitForTimeout(400);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await freezeCoinsFaceOn(page);
 }
 
 const browser = await chromium.launch();
 
 const page1 = await preparePage(browser);
 await loadApp(page1, seedForSmokeFreeMs(26 * MS_H));
+await freezeCoinsFaceOn(page1);
 await page1.screenshot({ path: path.join(out, 'chips-coin-hero-1d.png'), fullPage: false });
 
 const page30 = await preparePage(browser);
 await loadApp(page30, seedForSmokeFreeMs(30 * MS_D));
+await freezeCoinsFaceOn(page30);
 await page30.screenshot({ path: path.join(out, 'chips-coin-hero-30d.png'), fullPage: false });
 
 const pageSheet = await preparePage(browser);
@@ -112,6 +124,7 @@ await loadApp(pageSheet, seedForSmokeFreeMs(26 * MS_H));
 await pageSheet.locator('#hero-chip-btn').click();
 await pageSheet.waitForSelector('#modal-chips.open');
 await pageSheet.waitForTimeout(350);
+await freezeCoinsFaceOn(pageSheet);
 await pageSheet.screenshot({ path: path.join(out, 'chips-coin-sheet.png'), fullPage: false });
 
 await browser.close();
