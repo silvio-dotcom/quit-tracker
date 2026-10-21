@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/widget_frame"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,10 +16,11 @@
 
         <ImageView
             android:id="@+id/widget_logo"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:contentDescription="@null"
-            android:src="@mipmap/ic_launcher" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/widget_logo" />
 
         <TextView
             android:id="@+id/widget_brand"
@@ -60,8 +62,13 @@
         android:id="@+id/widget_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingTop="6dp">
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.35" />
 
         <TextView
             android:id="@+id/widget_smoke_label"
@@ -76,7 +83,7 @@
             android:id="@+id/widget_smoke_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="3dp"
             android:fontFamily="@font/pressstart2p"
             android:maxLines="2"
             android:textColor="#f3f6f9"
@@ -86,7 +93,7 @@
             android:id="@+id/widget_money"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="5dp"
             android:fontFamily="@font/pressstart2p"
             android:maxLines="1"
             android:textColor="#22c55e"
@@ -101,10 +108,11 @@
 
             <ImageView
                 android:id="@+id/widget_coin"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:adjustViewBounds="true"
                 android:contentDescription="@null"
-                android:src="@drawable/widget_coin_inner" />
+                android:scaleType="fitCenter" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -132,5 +140,19 @@
                     android:textSize="6sp" />
             </LinearLayout>
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/widget_chip_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_bar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.65" />
     </LinearLayout>
 </LinearLayout>

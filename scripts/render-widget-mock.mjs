@@ -5,6 +5,7 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   highestEarnedChip,
   nextChipTarget,
@@ -14,21 +15,24 @@ import { moneySaved, msSinceQuit, formatDuration } from '../js/stats.js';
 import { formatMoney } from '../js/stats.js';
 import { CURRENCIES } from '../js/constants.js';
 import { xpLevelProgress } from '../js/xp.js';
+import { WIDGET_FIXTURE_PROFILE } from '../js/widget-compute.js';
+import { renderPixelCoin } from '../js/chip-art.js';
 
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = '/opt/cursor/artifacts';
+const drawable = path.join(repo, 'android/app/src/main/res/drawable-nodpi');
 fs.mkdirSync(out, { recursive: true });
 
 const MS_H = 60 * 60 * 1000;
 const MS_D = 24 * MS_H;
 
+const logoB64 = fs.readFileSync(path.join(drawable, 'widget_logo.png')).toString('base64');
+
 function stateAt(ms) {
   return {
     profile: {
       quitDate: new Date(Date.now() - ms).toISOString(),
-      cigsPerDay: 15,
-      cigsPerPack: 20,
-      packPrice: 12,
-      currency: 'USD',
+      ...WIDGET_FIXTURE_PROFILE,
     },
     seenAchievements: [],
   };
@@ -51,28 +55,45 @@ function widgetModel(msElapsed) {
   const money = formatMoney(moneySaved(state, now), 'USD', CURRENCIES);
   const xp = xpLevelProgress(state, now);
   const level = `LV ${xp.level}/${xp.maxed ? '20 MAX' : '20'}`;
+
   let chipLabel;
   let chipEta;
-  let rim = '#0e7490';
+  let chipProgress = 0;
+  let tierId = 'chip-24h';
   if (isAtMaxChip(state, now)) {
     chipLabel = '1 YEAR · MAX';
     chipEta = 'Complete';
-    rim = '#8b4513';
+    chipProgress = 100;
+    tierId = 'chip-1y';
   } else {
     const next = nextChipTarget(state, now);
-    const earned = highestEarnedChip(state, now);
     if (next) {
       chipLabel = `NEXT: ${next.tier.label}`;
       const h = Math.floor(next.remainingMs / MS_H);
       chipEta = h >= 24 ? `${Math.floor(h / 24)}d left` : `${h}h left`;
-      rim = next.tier.palette.rim;
-    } else if (earned) {
-      chipLabel = earned.tier.label;
+      chipProgress = Math.round(next.progress);
+      tierId = next.tier.id;
+    } else {
+      const earned = highestEarnedChip(state, now);
+      chipLabel = earned?.tier.label || '24 HRS';
       chipEta = '';
-      rim = earned.tier.palette.rim;
+      chipProgress = 100;
+      tierId = earned?.tier.id || 'chip-24h';
     }
   }
-  return { smoke, money, chipLabel, chipEta, rim, level };
+
+  const drawableName = `widget_coin_${tierId.replace(/-/g, '_')}.png`;
+  const coinPath = path.join(drawable, drawableName);
+  let coinHtml;
+  if (fs.existsSync(coinPath)) {
+    const b64 = fs.readFileSync(coinPath).toString('base64');
+    coinHtml = `<img src="data:image/png;base64,${b64}" width="28" height="28" style="image-rendering:pixelated" alt=""/>`;
+  } else {
+    const tier = nextChipTarget(state, now)?.tier || highestEarnedChip(state, now)?.tier;
+    coinHtml = tier ? renderPixelCoin(tier, { size: 56, mode: 'earned', idleSpin: false }) : '';
+  }
+
+  return { smoke, money, chipLabel, chipEta, chipProgress, level, coinHtml };
 }
 
 function htmlFor(model, w, h) {
@@ -82,25 +103,30 @@ function htmlFor(model, w, h) {
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh}
-  .w{width:${w}px;height:${h}px;background:#0f1419;border:3px solid #334155;box-shadow:4px 4px 0 #1e293b;padding:10px;font-family:'Press Start 2P',monospace;color:#f3f6f9;display:flex;flex-direction:column}
-  .head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .w{width:${w}px;height:${h}px;background:#0f1419;border:3px solid #334155;box-shadow:4px 4px 0 #1e293b;padding:8px 10px;font-family:'Press Start 2P',monospace;color:#f3f6f9;display:flex;flex-direction:column}
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
   .brand{color:#86efac;font-size:${compact ? 6 : 7}px;flex:1}
   .lv{font-size:6px;color:#22c55e;background:#1c242d;padding:3px 6px}
   .lbl{color:#64748b;font-size:6px}
-  .time{font-size:${compact ? 8 : 9}px;margin-top:4px;line-height:1.4}
-  .money{color:#22c55e;font-size:${compact ? 7 : 8}px;margin-top:8px}
-  .chiprow{display:flex;gap:8px;margin-top:${compact ? 6 : 8}px;align-items:center}
-  .coin{width:22px;height:22px;border-radius:50%;background:${model.rim};border:2px solid #1a1228;flex-shrink:0}
+  .time{font-size:${compact ? 8 : 9}px;margin-top:3px;line-height:1.4}
+  .money{color:#22c55e;font-size:${compact ? 7 : 8}px;margin-top:5px}
+  .chiprow{display:flex;gap:8px;margin-top:6px;align-items:center}
   .chip{font-size:${compact ? 6 : 7}px;line-height:1.35}
-  .eta{color:#86efac;font-size:6px;margin-top:3px}
+  .eta{color:#86efac;font-size:6px;margin-top:2px}
+  .prog{margin-top:8px;height:6px;background:#1c242d;border:1px solid #334155;position:relative}
+  .prog>span{display:block;height:100%;background:#22c55e;width:${model.chipProgress}%}
 </style></head><body>
 <div class="w">
-  <div class="head"><span style="width:14px;height:14px;background:#22c55e;border-radius:3px;display:inline-block"></span>
+  <div class="head"><img src="data:image/png;base64,${logoB64}" width="22" height="22" style="image-rendering:pixelated" alt=""/>
   <span class="brand">QUIT</span><span class="lv">${model.level}</span></div>
+  <div class="body">
   <div class="lbl">SMOKE-FREE</div>
   <div class="time">${model.smoke}</div>
   <div class="money">${model.money}</div>
-  <div class="chiprow"><div class="coin"></div><div><div class="chip">${model.chipLabel}</div><div class="eta">${model.chipEta}</div></div></div>
+  <div class="chiprow">${model.coinHtml}<div><div class="chip">${model.chipLabel}</div><div class="eta">${model.chipEta}</div></div></div>
+  <div class="prog"><span></span></div>
+  </div>
 </div></body></html>`;
 }
 

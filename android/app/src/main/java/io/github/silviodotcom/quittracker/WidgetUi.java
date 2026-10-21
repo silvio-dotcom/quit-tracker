@@ -48,6 +48,10 @@ public final class WidgetUi {
             views.setTextViewText(R.id.widget_money, model.money);
             views.setTextViewText(R.id.widget_chip_label, model.chipLabel);
             views.setTextViewText(R.id.widget_chip_eta, model.chipEta);
+            views.setProgressBar(R.id.widget_chip_progress, 100, model.chipProgress, false);
+            views.setViewVisibility(R.id.widget_chip_progress, View.VISIBLE);
+            int coinRes = WidgetComputer.coinDrawableRes(context, model.chipTierId);
+            views.setImageViewResource(R.id.widget_coin, coinRes);
 
             if (model.showLevel && model.levelPill != null) {
                 views.setViewVisibility(R.id.widget_level, View.VISIBLE);
@@ -55,8 +59,6 @@ public final class WidgetUi {
             } else {
                 views.setViewVisibility(R.id.widget_level, View.GONE);
             }
-
-            views.setInt(R.id.widget_coin, "setColorFilter", model.coinColor);
         }
 
         mgr.updateAppWidget(widgetId, views);

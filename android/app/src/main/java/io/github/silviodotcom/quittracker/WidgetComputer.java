@@ -1,7 +1,6 @@
 package io.github.silviodotcom.quittracker;
 
 import android.content.Context;
-import android.graphics.Color;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +37,8 @@ public final class WidgetComputer {
         public String money;
         public String chipLabel;
         public String chipEta;
-        public int coinColor = Color.parseColor("#94a3b8");
+        public int chipProgress;
+        public String chipTierId = "chip-24h";
         public String levelPill;
         public boolean showLevel;
     }
@@ -148,33 +148,42 @@ public final class WidgetComputer {
         }
 
         boolean atMax = highest != null && highest.ms >= MAX_CHIP_MS;
+        long prevMs = highest != null ? highest.ms : 0L;
         if (atMax) {
             m.chipLabel = "1 YEAR · MAX";
             m.chipEta = "Complete";
-            if (highest != null) {
-                try {
-                    m.coinColor = Color.parseColor(highest.rim);
-                } catch (Exception ignored) {}
-            }
+            m.chipProgress = 100;
+            m.chipTierId = "chip-1y";
         } else if (next != null) {
             m.chipLabel = "NEXT: " + next.label;
             long remain = next.ms - elapsed;
             m.chipEta = formatChipRemaining(remain);
-            try {
-                m.coinColor = Color.parseColor(next.rim);
-            } catch (Exception ignored) {}
+            m.chipTierId = next.id;
+            prevMs = highest != null ? highest.ms : 0L;
+            long span = next.ms - prevMs;
+            long into = elapsed - prevMs;
+            m.chipProgress = span > 0 ? (int) Math.min(100, (into * 100L) / span) : 0;
         } else if (highest != null) {
             m.chipLabel = highest.label;
             m.chipEta = "";
-            try {
-                m.coinColor = Color.parseColor(highest.rim);
-            } catch (Exception ignored) {}
+            m.chipTierId = highest.id;
+            m.chipProgress = 100;
         } else {
             m.chipLabel = "NEXT: 24 HRS";
             m.chipEta = formatChipRemaining(Math.max(0, MS_DAY - elapsed));
+            m.chipTierId = "chip-24h";
+            m.chipProgress = (int) Math.min(100, (elapsed * 100L) / MS_DAY);
         }
 
         return m;
+    }
+
+    public static int coinDrawableRes(Context context, String chipTierId) {
+        if (chipTierId == null || chipTierId.isEmpty()) chipTierId = "chip-24h";
+        String name = "widget_coin_" + chipTierId.replace('-', '_');
+        int id = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+        if (id != 0) return id;
+        return context.getResources().getIdentifier("widget_coin_chip_24h", "drawable", context.getPackageName());
     }
 
     static String formatChipRemaining(long ms) {

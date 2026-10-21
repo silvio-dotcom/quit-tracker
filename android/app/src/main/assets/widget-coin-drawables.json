@@ -1,0 +1,66 @@
+[
+  {
+    "id": "chip-24h",
+    "drawable": "widget_coin_chip_24h"
+  },
+  {
+    "id": "chip-2d",
+    "drawable": "widget_coin_chip_2d"
+  },
+  {
+    "id": "chip-3d",
+    "drawable": "widget_coin_chip_3d"
+  },
+  {
+    "id": "chip-4d",
+    "drawable": "widget_coin_chip_4d"
+  },
+  {
+    "id": "chip-5d",
+    "drawable": "widget_coin_chip_5d"
+  },
+  {
+    "id": "chip-6d",
+    "drawable": "widget_coin_chip_6d"
+  },
+  {
+    "id": "chip-1w",
+    "drawable": "widget_coin_chip_1w"
+  },
+  {
+    "id": "chip-2w",
+    "drawable": "widget_coin_chip_2w"
+  },
+  {
+    "id": "chip-3w",
+    "drawable": "widget_coin_chip_3w"
+  },
+  {
+    "id": "chip-1mo",
+    "drawable": "widget_coin_chip_1mo"
+  },
+  {
+    "id": "chip-2mo",
+    "drawable": "widget_coin_chip_2mo"
+  },
+  {
+    "id": "chip-3mo",
+    "drawable": "widget_coin_chip_3mo"
+  },
+  {
+    "id": "chip-4mo",
+    "drawable": "widget_coin_chip_4mo"
+  },
+  {
+    "id": "chip-6mo",
+    "drawable": "widget_coin_chip_6mo"
+  },
+  {
+    "id": "chip-9mo",
+    "drawable": "widget_coin_chip_9mo"
+  },
+  {
+    "id": "chip-1y",
+    "drawable": "widget_coin_chip_1y"
+  }
+]
