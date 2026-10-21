@@ -35,10 +35,16 @@ public final class WidgetComputer {
         public boolean configured;
         public String smokeTime;
         public String money;
-        public String chipLabel;
-        public String chipEta;
+        /** Earned chip tier id, or null when none yet. */
+        public String currentTierId;
+        public String currentLabel;
+        public boolean hasEarnedChip;
+        public boolean atMaxChip;
+        public boolean showNextRow;
+        public String nextTierId = "chip-24h";
+        public String nextLabel;
+        public String nextEta;
         public int chipProgress;
-        public String chipTierId = "chip-24h";
         public String levelPill;
         public boolean showLevel;
     }
@@ -148,30 +154,37 @@ public final class WidgetComputer {
         }
 
         boolean atMax = highest != null && highest.ms >= MAX_CHIP_MS;
-        long prevMs = highest != null ? highest.ms : 0L;
+        m.atMaxChip = atMax;
+        m.hasEarnedChip = highest != null;
         if (atMax) {
-            m.chipLabel = "1 YEAR · MAX";
-            m.chipEta = "Complete";
+            m.currentTierId = "chip-1y";
+            m.currentLabel = "MAX";
+            m.showNextRow = false;
+            m.nextLabel = "";
+            m.nextEta = "";
             m.chipProgress = 100;
-            m.chipTierId = "chip-1y";
-        } else if (next != null) {
-            m.chipLabel = "NEXT: " + next.label;
-            long remain = next.ms - elapsed;
-            m.chipEta = formatChipRemaining(remain);
-            m.chipTierId = next.id;
-            prevMs = highest != null ? highest.ms : 0L;
-            long span = next.ms - prevMs;
-            long into = elapsed - prevMs;
-            m.chipProgress = span > 0 ? (int) Math.min(100, (into * 100L) / span) : 0;
         } else if (highest != null) {
-            m.chipLabel = highest.label;
-            m.chipEta = "";
-            m.chipTierId = highest.id;
-            m.chipProgress = 100;
+            m.currentTierId = highest.id;
+            m.currentLabel = highest.label;
+            m.showNextRow = next != null;
+            if (next != null) {
+                m.nextTierId = next.id;
+                m.nextLabel = "NEXT: " + next.label;
+                m.nextEta = formatChipRemaining(next.ms - elapsed);
+                long prevMs = highest.ms;
+                long span = next.ms - prevMs;
+                long into = elapsed - prevMs;
+                m.chipProgress = span > 0 ? (int) Math.min(100, (into * 100L) / span) : 0;
+            } else {
+                m.chipProgress = 100;
+            }
         } else {
-            m.chipLabel = "NEXT: 24 HRS";
-            m.chipEta = formatChipRemaining(Math.max(0, MS_DAY - elapsed));
-            m.chipTierId = "chip-24h";
+            m.currentTierId = null;
+            m.currentLabel = "NO CHIP YET";
+            m.showNextRow = true;
+            m.nextTierId = "chip-24h";
+            m.nextLabel = "NEXT: 24 HRS";
+            m.nextEta = formatChipRemaining(Math.max(0, MS_DAY - elapsed));
             m.chipProgress = (int) Math.min(100, (elapsed * 100L) / MS_DAY);
         }
 
@@ -179,7 +192,9 @@ public final class WidgetComputer {
     }
 
     public static int coinDrawableRes(Context context, String chipTierId) {
-        if (chipTierId == null || chipTierId.isEmpty()) chipTierId = "chip-24h";
+        if (chipTierId == null || chipTierId.isEmpty()) {
+            return context.getResources().getIdentifier("widget_coin_slot_empty", "drawable", context.getPackageName());
+        }
         String name = "widget_coin_" + chipTierId.replace('-', '_');
         int id = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
         if (id != 0) return id;

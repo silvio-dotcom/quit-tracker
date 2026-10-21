@@ -24,6 +24,14 @@ function svgFromCoinHtml(html) {
   return match[0];
 }
 
+const slotHtml = renderPixelCoin(BASE_SMOKE_FREE_CHIPS[0], { size: 72, mode: 'locked', idleSpin: false });
+const slotSvg = svgFromCoinHtml(slotHtml);
+const slotPng = await sharp(Buffer.from(slotSvg), { density: 144 })
+  .resize(72, 72, { kernel: sharp.kernel.nearest })
+  .png()
+  .toBuffer();
+fs.writeFileSync(path.join(drawable, 'widget_coin_slot_empty.png'), slotPng);
+
 for (const tier of BASE_SMOKE_FREE_CHIPS) {
   const coinHtml = renderPixelCoin(tier, { size: 72, mode: 'earned', idleSpin: false });
   const svg = svgFromCoinHtml(coinHtml);
