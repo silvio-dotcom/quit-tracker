@@ -1,5 +1,6 @@
 import { STORAGE_KEY, defaultState } from './constants.js';
 import { migrateSeenAchievementIds, migrateAchievementUnlocks } from './achievements.js';
+import { syncWidgetSnapshot } from './widget-sync.js';
 
 export function normalizeState(parsed) {
   const base = defaultState();
@@ -39,6 +40,7 @@ export function loadState() {
 
 export function saveState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  syncWidgetSnapshot(state).catch(() => {});
 }
 
 export function exportJson(state) {

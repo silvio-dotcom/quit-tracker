@@ -25,6 +25,28 @@
 
         </activity>
 
+        <receiver
+            android:name=".QuitTrackerWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_description">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="io.github.silviodotcom.quittracker.WIDGET_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quit_tracker_info" />
+        </receiver>
+
+        <receiver
+            android:name=".WidgetBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
