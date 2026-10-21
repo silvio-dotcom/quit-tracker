@@ -12,10 +12,15 @@ import { BASE_SMOKE_FREE_CHIPS } from '../js/constants.js';
 
 const MS_H = 60 * 60 * 1000;
 const MS_D = 24 * MS_H;
+const CHIP_COUNT = 16;
 
 const EXPECTED_IDS = [
   'chip-24h',
+  'chip-2d',
   'chip-3d',
+  'chip-4d',
+  'chip-5d',
+  'chip-6d',
   'chip-1w',
   'chip-2w',
   'chip-3w',
@@ -29,16 +34,16 @@ const EXPECTED_IDS = [
 ];
 
 const tiers = allChipTiers();
-if (tiers.length !== 12) {
-  console.error(`expected 12 chip tiers, got ${tiers.length}`);
+if (tiers.length !== CHIP_COUNT) {
+  console.error(`expected ${CHIP_COUNT} chip tiers, got ${tiers.length}`);
   process.exit(1);
 }
 if (tiers.map((t) => t.id).join(',') !== EXPECTED_IDS.join(',')) {
   console.error('chip ladder ids/order mismatch');
   process.exit(1);
 }
-if (BASE_SMOKE_FREE_CHIPS.length !== 12) {
-  console.error('BASE_SMOKE_FREE_CHIPS should have 12 entries');
+if (BASE_SMOKE_FREE_CHIPS.length !== CHIP_COUNT) {
+  console.error(`BASE_SMOKE_FREE_CHIPS should have ${CHIP_COUNT} entries`);
   process.exit(1);
 }
 const last = tiers[tiers.length - 1];
@@ -71,6 +76,30 @@ if (!next || next.tier.id !== 'chip-24h') {
 }
 if (next.progress <= 0 || next.progress >= 100) {
   console.error('progress should be between 0 and 100 at 23h');
+  process.exit(1);
+}
+
+const at30h = { profile: { quitDate: new Date(Date.now() - 30 * MS_H).toISOString() } };
+const hi30 = highestEarnedChip(at30h, Date.now());
+if (!hi30 || hi30.tier.id !== 'chip-24h') {
+  console.error('expected 24h chip at 30h');
+  process.exit(1);
+}
+const next30 = nextChipTarget(at30h, Date.now());
+if (!next30 || next30.tier.id !== 'chip-2d') {
+  console.error('next chip at 30h should be 2d');
+  process.exit(1);
+}
+
+const at45d = stateAtDays(4.5);
+const hi45 = highestEarnedChip(at45d, Date.now());
+if (!hi45 || hi45.tier.id !== 'chip-4d') {
+  console.error('expected 4-day chip at 4.5 days');
+  process.exit(1);
+}
+const next45 = nextChipTarget(at45d, Date.now());
+if (!next45 || next45.tier.id !== 'chip-5d') {
+  console.error('next chip at 4.5 days should be 5d');
   process.exit(1);
 }
 
