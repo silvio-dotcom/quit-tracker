@@ -4,4 +4,6 @@
     <string name="title_activity_main">Quit Tracker</string>
     <string name="package_name">io.github.silviodotcom.quittracker</string>
     <string name="custom_url_scheme">io.github.silviodotcom.quittracker</string>
+    <string name="widget_description">Smoke-free time, savings, and next chip</string>
+    <string name="widget_empty">Open Quit Tracker to start</string>
 </resources>

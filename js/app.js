@@ -26,6 +26,7 @@ import { openSharePreview, bindSharePreviewUi } from './share-ui.js';
 import { renderHeroChip, bindChipsUi } from './chips-ui.js';
 import { registerPredictiveBack } from './back-handler.js';
 import { initNativeShell, onNativeAppActive } from './native-shell.js';
+import { syncWidgetSnapshot } from './widget-sync.js';
 import { renderBadgesScreen, homeLevelPillHtml, BADGE_FILTER_ALL } from './badges-screen.js';
 import { initPixelNavIcons } from './pixel-nav-icons.js';
 import { syncAchievementUnlocks, unlockedAchievements } from './achievements.js';
@@ -509,13 +510,17 @@ export function initApp() {
     goHome: () => showView('home'),
     exitApp: () => window.Capacitor?.Plugins?.App?.exitApp?.(),
   });
-  onNativeAppActive(() => refreshMilestoneSchedules(state).catch(() => {}));
+  onNativeAppActive(() => {
+    refreshMilestoneSchedules(state).catch(() => {});
+    syncWidgetSnapshot(state).catch(() => {});
+  });
   migrateBadgeNotificationsV9();
   const now = Date.now();
   migrateCelebrationsV14(state, now, persist);
   migrateChipsV17(state, now, persist);
   renderAll();
   refreshMilestoneSchedules(state).catch(() => {});
+  syncWidgetSnapshot(state, now).catch(() => {});
   startTicker();
   showView('home');
   window.__QT_APP_READY__ = true;
