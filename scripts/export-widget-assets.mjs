@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-import { chromium } from 'playwright';
+/**
+ * Rasterize widget coin art for Android (no Playwright — CI-safe).
+ */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import sharp from 'sharp';
 import { BASE_SMOKE_FREE_CHIPS } from '../js/constants.js';
 import { renderPixelCoin } from '../js/chip-art.js';
 
@@ -15,47 +18,37 @@ function chipDrawableName(id) {
   return `widget_coin_${id.replace(/-/g, '_')}`;
 }
 
-const browser = await chromium.launch();
+function svgFromCoinHtml(html) {
+  const match = html.match(/<svg[\s\S]*?<\/svg>/);
+  if (!match) throw new Error('coin SVG missing from renderPixelCoin output');
+  return match[0];
+}
 
 for (const tier of BASE_SMOKE_FREE_CHIPS) {
   const coinHtml = renderPixelCoin(tier, { size: 72, mode: 'earned', idleSpin: false });
-  const page = await browser.newPage({
-    viewport: { width: 120, height: 120 },
-    deviceScaleFactor: 1,
-  });
-  await page.setContent(
-    `<!DOCTYPE html><html><head><style>
-      html,body{margin:0;background:transparent}
-      body{display:flex;align-items:center;justify-content:center;width:120px;height:120px}
-      .pixel-coin-svg{image-rendering:pixelated}
-    </style></head><body>${coinHtml}</body></html>`
-  );
-  await page.waitForSelector('.pixel-coin-svg');
-  const box = await page.locator('.pixel-coin-frame').boundingBox();
-  if (!box) {
-    console.error('coin bbox missing', tier.id);
-    process.exit(1);
-  }
+  const svg = svgFromCoinHtml(coinHtml);
   const name = chipDrawableName(tier.id);
-  await page.locator('.pixel-coin-frame').screenshot({
-    path: path.join(drawable, `${name}.png`),
-    omitBackground: true,
-  });
-  await page.close();
+  const png = await sharp(Buffer.from(svg), { density: 144 })
+    .resize(72, 72, { kernel: sharp.kernel.nearest })
+    .png()
+    .toBuffer();
+  fs.writeFileSync(path.join(drawable, `${name}.png`), png);
 }
 
 const logoSrc = path.join(repo, 'icons/icon-192.png');
-const logoPage = await browser.newPage({ viewport: { width: 96, height: 96 }, deviceScaleFactor: 2 });
-const logoB64 = fs.readFileSync(logoSrc).toString('base64');
-await logoPage.setContent(`<!DOCTYPE html><html><head><style>
-  body{margin:0;width:96px;height:96px;display:flex;align-items:center;justify-content:center;background:#0f1419}
-  img{width:88px;height:88px;image-rendering:pixelated}
-</style></head><body><img src="data:image/png;base64,${logoB64}" alt=""/></body></html>`);
-await logoPage.waitForTimeout(100);
-await logoPage.screenshot({ path: path.join(drawable, 'widget_logo.png'), omitBackground: false });
-await logoPage.close();
-
-await browser.close();
+const logoBuf = await sharp(logoSrc).resize(88, 88, { kernel: sharp.kernel.nearest }).png().toBuffer();
+const widgetLogo = await sharp({
+  create: {
+    width: 96,
+    height: 96,
+    channels: 4,
+    background: { r: 15, g: 20, b: 25, alpha: 1 },
+  },
+})
+  .composite([{ input: logoBuf, left: 4, top: 4 }])
+  .png()
+  .toBuffer();
+fs.writeFileSync(path.join(drawable, 'widget_logo.png'), widgetLogo);
 
 const map = BASE_SMOKE_FREE_CHIPS.map((t) => ({ id: t.id, drawable: chipDrawableName(t.id) }));
 fs.writeFileSync(
