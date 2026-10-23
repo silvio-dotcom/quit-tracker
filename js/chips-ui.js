@@ -10,6 +10,8 @@ import {
 import { renderPixelCoin } from './chip-art.js';
 import { BASE_SMOKE_FREE_CHIPS } from './constants.js';
 import { msSinceQuit } from './stats.js';
+import { isChipHealthUnlockTier } from './chip-health-unlocks.js';
+import { showChipHealthUnlockModal } from './chip-health-unlock-ui.js';
 
 function $(sel) {
   return document.querySelector(sel);
@@ -122,7 +124,12 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
         : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} left</span>`;
       const maxTag =
         tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MAX</span>' : '';
-      return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}">
+      const healthTap = earned && isChipHealthUnlockTier(tier.id);
+      const tapAttrs = healthTap
+        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Health fact for ${escapeHtml(tier.label)}"`
+        : '';
+      const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';
+      return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}${healthClass}"${tapAttrs}>
         <div class="chips-grid-art">${coin}${maxTag}</div>
         <p class="chips-grid-label pixel-label">${escapeHtml(tier.label)}</p>
         ${meta}
@@ -145,6 +152,12 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
   }
 }
 
+function openHealthChipFromGrid(tierId) {
+  const tier = BASE_SMOKE_FREE_CHIPS.find((t) => t.id === tierId);
+  if (!tier) return;
+  showChipHealthUnlockModal(tier, () => {});
+}
+
 export function bindChipsUi(getState, escapeHtml) {
   $('#hero-chip-btn')?.addEventListener('click', () => {
     renderChipsSheet(getState(), Date.now(), escapeHtml);
@@ -152,6 +165,18 @@ export function bindChipsUi(getState, escapeHtml) {
   });
   $$('[data-close="modal-chips"]').forEach((btn) => {
     btn.addEventListener('click', closeChipsSheet);
+  });
+  $('#chips-grid')?.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-health-chip]');
+    if (!item) return;
+    openHealthChipFromGrid(item.dataset.healthChip);
+  });
+  $('#chips-grid')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const item = e.target.closest('[data-health-chip]');
+    if (!item) return;
+    e.preventDefault();
+    openHealthChipFromGrid(item.dataset.healthChip);
   });
 }
 

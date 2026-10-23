@@ -12,8 +12,8 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=26" />
-  <link rel="stylesheet" href="css/pixel-theme.css?v=26" />
+  <link rel="stylesheet" href="css/styles.css?v=27" />
+  <link rel="stylesheet" href="css/pixel-theme.css?v=27" />
   <style>
     html.qt-native-android #btn-install-header,
     html.qt-native-android [data-install-ui],
@@ -41,7 +41,7 @@
       if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=26';
+        s.src = 'js/sw-register.js?v=27';
         document.head.appendChild(s);
       }
     })();
@@ -269,6 +269,19 @@
     </div>
   </div>
 
+  <div id="modal-chip-health" class="modal" aria-modal="true" aria-labelledby="chip-health-title">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel rank-up-panel chip-health-unlock-panel">
+        <div class="rank-up-burst" aria-hidden="true"></div>
+        <p class="rank-up-label">Health milestone</p>
+        <div id="chip-health-art" class="chip-health-unlock-art" aria-hidden="true"></div>
+        <h2 id="chip-health-title">1 WEEK</h2>
+        <p id="chip-health-fact" class="chip-health-fact"></p>
+        <button type="button" class="btn full" data-close="modal-chip-health">Nice!</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-share-preview" class="modal" aria-modal="true" aria-labelledby="share-preview-title">
     <div class="modal-backdrop dark">
       <div class="modal-panel share-preview-panel">
@@ -300,6 +313,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=26"></script>
+  <script type="module" src="js/bootstrap.js?v=27"></script>
 </body>
 </html>

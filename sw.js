@@ -1,4 +1,4 @@
-const BUILD = '26';
+const BUILD = '27';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -12,6 +12,8 @@ const PRECACHE = [
   `./js/app.js?v=${BUILD}`,
   './js/constants.js',
   './js/health-milestones.js',
+  './js/chip-health-unlocks.js',
+  './js/chip-health-unlock-ui.js',
   './js/storage.js',
   './js/stats.js',
   './js/datetime.js',

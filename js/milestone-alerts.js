@@ -1,8 +1,10 @@
 import { healthProgress } from './stats.js';
 import { unlockedAchievements, syncAchievementUnlocks, badgeDisplayTitle } from './achievements.js';
 import { earnedChipKeys, chipStatuses } from './chips.js';
+import { isChipHealthUnlockTier, chipHealthFact } from './chip-health-unlocks.js';
 import { isNativePlatform } from './platform.js';
 import { ensureAndroidNotificationPermission, syncNativeMilestoneSchedule } from './native-notifications.js';
+import { showChipHealthUnlockModal } from './chip-health-unlock-ui.js';
 
 const celebrationQueue = [];
 let drainingCelebrations = false;
@@ -69,10 +71,15 @@ function drainCelebrationQueue() {
   if (drainingCelebrations || !celebrationQueue.length) return;
   drainingCelebrations = true;
   const item = celebrationQueue.shift();
-  showCelebrationModal(item.celebration, () => {
+  const onDone = () => {
     drainingCelebrations = false;
     drainCelebrationQueue();
-  });
+  };
+  if (item.chipHealthTier) {
+    showChipHealthUnlockModal(item.chipHealthTier, onDone);
+  } else {
+    showCelebrationModal(item.celebration, onDone);
+  }
   if (item.notify) {
     postMilestoneNotification(item.notify.title, item.notify.body, item.notify.tag);
   }
@@ -134,12 +141,16 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
     .forEach((s) => {
       const key = `chip:${s.tier.id}`;
       if (!seen.has(key)) {
+        const healthFact = isChipHealthUnlockTier(s.tier.id) ? chipHealthFact(s.tier.id) : null;
         fresh.push({
           key,
-          celebration: { icon: '🪙', title: 'Chip earned', subtitle: `Your ${s.tier.notifyLabel}` },
+          chipHealthTier: healthFact ? s.tier : null,
+          celebration: healthFact
+            ? null
+            : { icon: '🪙', title: 'Chip earned', subtitle: `Your ${s.tier.notifyLabel}` },
           notify: {
-            title: 'Smoke-free chip earned',
-            body: `You earned your ${s.tier.notifyLabel}`,
+            title: healthFact ? 'Health milestone' : 'Smoke-free chip earned',
+            body: healthFact || `You earned your ${s.tier.notifyLabel}`,
             tag: key,
           },
           chipAnim: true,
@@ -156,6 +167,7 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
   fresh.forEach((f) => {
     celebrationQueue.push({
       celebration: f.celebration,
+      chipHealthTier: f.chipHealthTier,
       notify: alertsOn ? f.notify : null,
     });
   });
@@ -164,7 +176,12 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
     window.__QT_CHIP_ANIM__ = true;
   }
   if (fresh.length === 1) {
-    toast(`${fresh[0].celebration.icon} ${fresh[0].celebration.subtitle}`);
+    const f = fresh[0];
+    if (f.chipHealthTier) {
+      toast(`💚 ${f.chipHealthTier.label}`);
+    } else if (f.celebration) {
+      toast(`${f.celebration.icon} ${f.celebration.subtitle}`);
+    }
   }
 }
 
