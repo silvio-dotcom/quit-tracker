@@ -116,7 +116,8 @@ public final class WidgetUi {
                 WidgetPixelBlocks.progressRow(context, textWidthPx, dpPx(context, 10), model.chipProgress)
             );
 
-            if (model.showLevel && model.levelPill != null) {
+            // 2×2 cells are too narrow for brand + level on one row (brand gets clipped).
+            if (model.showLevel && model.levelPill != null && !compact) {
                 views.setViewVisibility(R.id.widget_level, View.VISIBLE);
                 views.setImageViewBitmap(
                     R.id.widget_level,
