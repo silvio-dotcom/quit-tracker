@@ -24,7 +24,7 @@ export const BASE_SMOKE_FREE_CHIPS = [
   },
   {
     id: 'chip-2d',
-    label: '2 DIAS',
+    label: '2 DÍAS',
     shortLabel: '2 d',
     notifyLabel: 'medalla de 2 días',
     ms: 2 * CHIP_D,
@@ -33,7 +33,7 @@ export const BASE_SMOKE_FREE_CHIPS = [
   },
   {
     id: 'chip-3d',
-    label: '3 DIAS',
+    label: '3 DÍAS',
     shortLabel: '3 d',
     notifyLabel: 'medalla de 3 días',
     ms: 3 * CHIP_D,
@@ -42,7 +42,7 @@ export const BASE_SMOKE_FREE_CHIPS = [
   },
   {
     id: 'chip-4d',
-    label: '4 DIAS',
+    label: '4 DÍAS',
     shortLabel: '4 d',
     notifyLabel: 'medalla de 4 días',
     ms: 4 * CHIP_D,
@@ -51,7 +51,7 @@ export const BASE_SMOKE_FREE_CHIPS = [
   },
   {
     id: 'chip-5d',
-    label: '5 DIAS',
+    label: '5 DÍAS',
     shortLabel: '5 d',
     notifyLabel: 'medalla de 5 días',
     ms: 5 * CHIP_D,
@@ -60,7 +60,7 @@ export const BASE_SMOKE_FREE_CHIPS = [
   },
   {
     id: 'chip-6d',
-    label: '6 DIAS',
+    label: '6 DÍAS',
     shortLabel: '6 d',
     notifyLabel: 'medalla de 6 días',
     ms: 6 * CHIP_D,
@@ -150,7 +150,7 @@ export const BASE_SMOKE_FREE_CHIPS = [
   },
   {
     id: 'chip-1y',
-    label: '1 ANO',
+    label: '1 AÑO',
     shortLabel: '1 año',
     notifyLabel: 'medalla estrella de 1 año',
     ms: 365 * CHIP_D,

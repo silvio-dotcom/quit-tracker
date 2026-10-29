@@ -49,7 +49,7 @@ export async function renderSharePng(state, now = Date.now()) {
 
   ctx.fillStyle = '#f3f6f9';
   ctx.font = '28px "Press Start 2P", monospace';
-  ctx.fillText('DEJA FUMAR', 72, 120);
+  ctx.fillText('SIN HUMO', 72, 120);
   ctx.font = '16px system-ui, sans-serif';
   ctx.fillStyle = '#b8c6d6';
   ctx.fillText('Progreso sin fumar', 72, 155);
@@ -83,7 +83,7 @@ export async function renderSharePng(state, now = Date.now()) {
 
   ctx.fillStyle = '#8b9aab';
   ctx.font = '14px "Press Start 2P", monospace';
-  ctx.fillText('DEJA-FUMAR', 72, H - 72);
+  ctx.fillText('SIN-HUMO', 72, H - 72);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {

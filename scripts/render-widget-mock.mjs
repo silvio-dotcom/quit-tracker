@@ -54,7 +54,7 @@ function widgetModel(msElapsed) {
   const mins = dur.parts.find((p) => p.u === 'min');
   let smoke;
   if ((days?.v || 0) >= 1) {
-    smoke = `${days.v} ${days.v === 1 ? 'DIA' : 'DIAS'} ${hrs?.v || 0} H`;
+    smoke = `${days.v} ${days.v === 1 ? 'DÍA' : 'DÍAS'} ${hrs?.v || 0} H`;
   } else {
     smoke = `${hrs?.v || 0} H ${mins?.v || 0} MIN`;
   }
@@ -88,7 +88,7 @@ function widgetModel(msElapsed) {
   let nextTierId = 'chip-24h';
   if (showNext && next) {
     nextTierId = next.tier.id;
-    nextLabel = `SIG: ${next.tier.label}`;
+    nextLabel = `SIG.: ${next.tier.label}`;
     const h = Math.floor(next.remainingMs / MS_H);
     nextEta = h >= 24 ? `${Math.floor(h / 24)}d` : `${h}h`;
     progress = Math.round(next.progress);
@@ -143,10 +143,9 @@ function htmlFor(model, w, h) {
 </style></head><body>
 <div class="w">
   <div class="head"><img src="data:image/png;base64,${logoB64}" width="20" height="20" style="image-rendering:pixelated" alt=""/>
-  <span class="brand">DEJA</span><span class="lv">${model.level}</span></div>
+  <span class="brand">SIN HUMO</span><span class="lv">${model.level}</span></div>
   <div class="hero">
     <div class="stats">
-      <div class="lbl">SIN FUMAR</div>
       <div class="time">${model.smoke}</div>
       <div class="money">${model.money}</div>
     </div>

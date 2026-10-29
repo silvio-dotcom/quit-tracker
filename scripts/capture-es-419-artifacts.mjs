@@ -95,7 +95,48 @@ await page.waitForSelector('#modal-chip-health.open');
 await page.waitForTimeout(400);
 await page.screenshot({ path: path.join(out, 'health-card-es-419-1w.png'), fullPage: false });
 
+const MS_Y = 366 * MS_D;
+const yearSeed = {
+  ...seed,
+  profile: {
+    ...seed.profile,
+    quitDate: new Date(Date.now() - MS_Y).toISOString(),
+  },
+  seenMilestoneCelebrations: [],
+};
+await page.evaluate((d) => localStorage.setItem('quit-tracker-data-v1', JSON.stringify(d)), yearSeed);
+await page.goto(base, { waitUntil: 'networkidle' });
+await page.evaluate(async () => {
+  const mod = await import(new URL('js/milestone-alerts.js', window.location.href).href);
+  const raw = JSON.parse(localStorage.getItem('quit-tracker-data-v1'));
+  raw.seenMilestoneCelebrations = mod.allUnlockedCelebrationKeys(raw, Date.now());
+  raw.chipCelebrationMigrationV17 = true;
+  localStorage.setItem('quit-tracker-data-v1', JSON.stringify(raw));
+});
+await page.reload({ waitUntil: 'networkidle' });
+await page.waitForTimeout(800);
+await page.evaluate(() => {
+  document.querySelectorAll('.modal.open').forEach((m) => m.classList.remove('open'));
+  document.body.classList.remove('modal-open');
+});
+await page.locator('#hero-chip-btn').click();
+await page.waitForSelector('#modal-chips.open');
+await page.waitForSelector('#chips-grid .chips-grid-item');
+const label1y = await page.locator('#chips-grid .chips-grid-item:last-child .chips-grid-label').textContent();
+if (!label1y || !label1y.includes('AÑO')) {
+  console.error(`expected 1 AÑO on ladder, got: ${JSON.stringify(label1y)}`);
+  process.exit(1);
+}
+await page.evaluate(() => {
+  const panel = document.querySelector('.chips-sheet-panel');
+  if (panel) panel.scrollTop = panel.scrollHeight;
+});
+await page.waitForTimeout(300);
+await page.screenshot({ path: path.join(out, 'medallas-es-419-ladder.png'), fullPage: true });
+
 await browser.close();
 srv.kill();
 
-console.log('saved artifacts/home-es-419.png and health-card-es-419-1w.png');
+console.log(
+  'saved artifacts/home-es-419.png, health-card-es-419-1w.png, medallas-es-419-ladder.png',
+);

@@ -9,7 +9,7 @@
   },
   {
     "id": "chip-2d",
-    "label": "2 DIAS",
+    "label": "2 DÍAS",
     "shortLabel": "2 d",
     "ms": 172800000,
     "kind": "chip",
@@ -17,7 +17,7 @@
   },
   {
     "id": "chip-3d",
-    "label": "3 DIAS",
+    "label": "3 DÍAS",
     "shortLabel": "3 d",
     "ms": 259200000,
     "kind": "chip",
@@ -25,7 +25,7 @@
   },
   {
     "id": "chip-4d",
-    "label": "4 DIAS",
+    "label": "4 DÍAS",
     "shortLabel": "4 d",
     "ms": 345600000,
     "kind": "chip",
@@ -33,7 +33,7 @@
   },
   {
     "id": "chip-5d",
-    "label": "5 DIAS",
+    "label": "5 DÍAS",
     "shortLabel": "5 d",
     "ms": 432000000,
     "kind": "chip",
@@ -41,7 +41,7 @@
   },
   {
     "id": "chip-6d",
-    "label": "6 DIAS",
+    "label": "6 DÍAS",
     "shortLabel": "6 d",
     "ms": 518400000,
     "kind": "chip",
@@ -121,7 +121,7 @@
   },
   {
     "id": "chip-1y",
-    "label": "1 ANO",
+    "label": "1 AÑO",
     "shortLabel": "1 año",
     "ms": 31536000000,
     "kind": "medallion",
