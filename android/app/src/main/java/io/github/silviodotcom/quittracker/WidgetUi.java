@@ -93,22 +93,28 @@ public final class WidgetUi {
                 views.setViewVisibility(R.id.widget_next_row, View.VISIBLE);
                 int nextRes = WidgetComputer.coinDrawableRes(context, model.nextTierId);
                 views.setImageViewResource(R.id.widget_next_coin, nextRes);
+                String sigLine = model.nextLabel;
+                if (model.nextEta != null && !model.nextEta.isEmpty()) {
+                    sigLine = model.nextLabel + " · " + model.nextEta;
+                }
                 views.setImageViewBitmap(
                     R.id.widget_chip_label,
-                    WidgetPixelText.line(context, model.nextLabel, compact ? 6f : 7f, COLOR_CHIP, textWidthPx, scale)
+                    WidgetPixelText.line(context, sigLine, compact ? 6f : 7f, COLOR_CHIP, textWidthPx, scale)
                 );
-                views.setImageViewBitmap(
-                    R.id.widget_chip_eta,
-                    WidgetPixelText.line(context, model.nextEta, 6f, COLOR_ETA, textWidthPx, scale)
-                );
+                views.setImageViewBitmap(R.id.widget_chip_eta, WidgetPixelText.line(context, "", 6f, COLOR_ETA, 1, scale));
+                views.setViewVisibility(R.id.widget_chip_eta, View.GONE);
             } else {
                 views.setViewVisibility(R.id.widget_next_row, View.GONE);
                 views.setImageViewBitmap(R.id.widget_chip_label, WidgetPixelText.line(context, "", 6f, COLOR_CHIP, 1, scale));
                 views.setImageViewBitmap(R.id.widget_chip_eta, WidgetPixelText.line(context, "", 6f, COLOR_ETA, 1, scale));
             }
 
-            views.setProgressBar(R.id.widget_chip_progress, 100, model.chipProgress, false);
-            views.setViewVisibility(R.id.widget_chip_progress, View.VISIBLE);
+            views.setViewVisibility(R.id.widget_chip_progress, View.GONE);
+            views.setViewVisibility(R.id.widget_block_progress, View.VISIBLE);
+            views.setImageViewBitmap(
+                R.id.widget_block_progress,
+                WidgetPixelBlocks.progressRow(context, textWidthPx, dpPx(context, 10), model.chipProgress)
+            );
 
             if (model.showLevel && model.levelPill != null) {
                 views.setViewVisibility(R.id.widget_level, View.VISIBLE);
@@ -151,5 +157,9 @@ public final class WidgetUi {
     private static int widthPx(Context context, int widthDp) {
         float density = context.getResources().getDisplayMetrics().density;
         return Math.max(1, (int) (widthDp * density));
+    }
+
+    private static int dpPx(Context context, int dp) {
+        return Math.max(1, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()));
     }
 }

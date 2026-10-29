@@ -77,28 +77,23 @@ export function renderPlataformasStage(state, now = Date.now()) {
   if (!stage || !state.profile.quitDate) return;
   const earned = highestEarnedChip(state, now);
   const next = nextChipTarget(state, now);
+  const atMax = isAtMaxChip(state, now);
   const coinSize = 49;
-  let blocks = '';
-  if (earned && next) {
-    blocks = `<div class="qb u" aria-hidden="true"></div>
-      <div class="qb u plat-stage-coin-wrap" style="position:relative">
-        <div class="pop">${renderPixelCoin(earned.tier, { size: coinSize, mode: 'earned', idleSpin: false })}</div>
-      </div>
-      <div class="qb" aria-hidden="true">?</div>`;
-  } else if (earned && isAtMaxChip(state, now)) {
-    blocks = `<div class="qb u" aria-hidden="true"></div>
-      <div class="qb u plat-stage-coin-wrap" style="position:relative">
-        <div class="pop">${renderPixelCoin(earned.tier, { size: coinSize, mode: 'earned', idleSpin: false })}</div>
-      </div>
-      <div class="qb plat-castle" aria-hidden="true">★</div>`;
+  let coinHtml = '';
+  if (earned) {
+    coinHtml = renderPixelCoin(earned.tier, { size: coinSize, mode: 'earned', idleSpin: false });
   } else if (next) {
-    blocks = `<div class="qb u" aria-hidden="true"></div>
-      <div class="qb plat-stage-coin-wrap" style="position:relative">
-        <div class="pop">${renderPixelCoin(next.tier, { size: coinSize, mode: 'next', progress: next.progress })}</div>
-      </div>
-      <div class="qb" aria-hidden="true">?</div>`;
+    coinHtml = renderPixelCoin(next.tier, { size: coinSize, mode: 'next', progress: next.progress });
   }
-  stage.innerHTML = blocks;
+  const lastQ = atMax
+    ? '<div class="qb plat-castle" aria-hidden="true">★</div>'
+    : '<div class="qb" aria-hidden="true">?</div>';
+  stage.innerHTML = `<div class="plat-stage-coin">${coinHtml}</div>
+    <div class="plat-stage-blocks">
+      <div class="qb u" aria-hidden="true"></div>
+      <div class="qb u" aria-hidden="true"></div>
+      ${lastQ}
+    </div>`;
   const tag = $('#plat-medal-tag');
   if (tag) {
     if (earned) {

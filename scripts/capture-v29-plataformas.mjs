@@ -10,6 +10,7 @@ const port = 8793;
 const serveRoot = '/tmp/qt-v29-screens';
 const appRoot = path.join(serveRoot, 'quit-tracker');
 const out = path.join(repo, 'artifacts');
+const VP = { width: 412, height: 915 };
 
 fs.rmSync(serveRoot, { recursive: true, force: true });
 fs.mkdirSync(appRoot, { recursive: true });
@@ -36,7 +37,7 @@ const seed = {
     packPrice: 12,
     currency: 'USD',
   },
-  seenAchievements: [],
+  seenAchievements: ['first-day', 'three-days', 'one-week'],
   seenRanks: ['rookie', 'fighter', 'survivor', 'warrior', 'guardian'],
   achievementUnlocks: {},
   badgeMigrationV9: true,
@@ -74,7 +75,7 @@ async function load(page) {
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({
-  viewport: { width: 412, height: 915 },
+  viewport: VP,
   isMobile: true,
   locale: 'es-419',
   serviceWorkers: 'block',
@@ -82,8 +83,8 @@ const ctx = await browser.newContext({
 
 const home = await ctx.newPage();
 await load(home);
-await home.waitForSelector('#plat-hero-days');
-await home.waitForSelector('#plat-stage .pixel-coin-svg');
+await home.waitForSelector('#plat-hero-sub');
+await home.waitForSelector('#plat-stage .plat-stage-coin svg');
 const diasHud = await home.locator('#plat-hud-dias-label').innerHTML();
 if (!diasHud.includes('ia')) {
   console.error('HUD DÍAS missing pixel accent');
@@ -95,17 +96,25 @@ const rank = await ctx.newPage();
 await load(rank);
 await rank.locator('[data-nav="rank"]').click();
 await rank.waitForSelector('#rank-ladder .rank-row');
-await rank.screenshot({ path: path.join(out, 'v29-rango-plataformas.png'), fullPage: true });
+await rank.evaluate(() => window.scrollTo(0, 0));
+await rank.screenshot({ path: path.join(out, 'v29-rango-plataformas.png'), fullPage: false });
 
 const med = await ctx.newPage();
 await load(med);
 await med.locator('[data-nav="badges"]').click();
 await med.waitForSelector('#medallas-ladder .chips-grid-item');
-await med.screenshot({ path: path.join(out, 'v29-medallas-plataformas.png'), fullPage: true });
+await med.evaluate(() => window.scrollTo(0, 0));
+await med.screenshot({ path: path.join(out, 'v29-medallas-plataformas.png'), fullPage: false });
+await med.evaluate(() => {
+  const el = document.querySelector('#badge-sections');
+  if (el) el.scrollIntoView({ block: 'start' });
+});
+await med.waitForTimeout(300);
+await med.screenshot({ path: path.join(out, 'v29-medallas-plataformas-scroll.png'), fullPage: false });
 
 await browser.close();
 srv.kill();
 
 console.log(
-  'saved artifacts/v29-inicio-plataformas.png, v29-rango-plataformas.png, v29-medallas-plataformas.png',
+  'saved v29-inicio, v29-rango, v29-medallas (+ scroll) at 412x915',
 );

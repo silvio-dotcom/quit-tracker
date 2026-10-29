@@ -174,6 +174,16 @@
             android:layout_height="5dp"
             android:layout_marginTop="6dp"
             android:max="100"
-            android:progressDrawable="@drawable/widget_progress_bar" />
+            android:progressDrawable="@drawable/widget_progress_bar"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/widget_block_progress"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginTop="6dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="fitXY" />
     </LinearLayout>
 </LinearLayout>

@@ -104,6 +104,18 @@ body.plat-world .main-content {
     36px 8px 0 #fff, 40px 8px 0 #fff;
 }
 
+.plat-cloud--c {
+  left: 40px;
+  top: 130px;
+  width: 3px;
+  height: 3px;
+  box-shadow:
+    12px 0 0 #fff, 15px 0 0 #fff, 18px 0 0 #fff, 6px 3px 0 #fff, 9px 3px 0 #fff, 12px 3px 0 #fff,
+    15px 3px 0 #fff, 18px 3px 0 #fff, 21px 3px 0 #fff, 24px 3px 0 #fff, 3px 6px 0 #fff, 6px 6px 0 #fff,
+    9px 6px 0 #fff, 12px 6px 0 #fff, 15px 6px 0 #fff, 18px 6px 0 #fff, 21px 6px 0 #fff, 24px 6px 0 #fff,
+    27px 6px 0 #fff, 30px 6px 0 #fff;
+}
+
 .plat-hud {
   position: relative;
   z-index: 1;
@@ -131,7 +143,7 @@ body.plat-world .main-content {
   position: relative;
   z-index: 1;
   text-align: center;
-  margin-top: 24px;
+  margin-top: 30px;
   color: #fff;
 }
 
@@ -150,17 +162,53 @@ body.plat-world .main-content {
 .plat-hero .s {
   font: 600 18px var(--plat-body);
   margin-top: 10px;
+  margin-bottom: 8px;
   text-shadow: 2px 2px 0 var(--plat-sky-shadow);
+  min-height: 1.4em;
 }
 
-.plat-stage {
+.plat-stage-btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   position: relative;
   z-index: 1;
+}
+
+#plat-stage.plat-stage {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.plat-stage-coin {
+  height: 58px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 6px;
+  pointer-events: none;
+}
+
+.plat-stage-blocks {
   display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 0;
-  margin-top: 36px;
+}
+
+.plat-medal {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .plat-world .qb {
@@ -181,12 +229,13 @@ body.plat-world .main-content {
   color: transparent;
 }
 
+.plat-world .qb.plat-castle {
+  color: var(--plat-gold);
+  font-size: 16px;
+}
+
 .plat-world .pop {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 56px;
-  pointer-events: none;
+  display: none;
 }
 
 .plat-medal .tag {
@@ -429,10 +478,23 @@ body.plat-world .nav-btn .pixel-nav-icon {
   display: none;
 }
 
+body.plat-world .nav-btn .nav-label {
+  font: 600 15px var(--plat-body);
+  display: block;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+body.plat-world .main-content {
+  flex: 1;
+  overflow-x: hidden;
+}
+
 body.plat-world [data-view]:not([data-view='home']) {
-  padding: 12px 16px 100px;
+  padding: 12px 16px 130px;
   position: relative;
   z-index: 1;
+  min-height: 0;
 }
 
 body.plat-world [data-view]:not([data-view='home']) .section-title {
@@ -500,6 +562,189 @@ body.plat-world .chips-path-grid {
   gap: 8px;
   justify-content: center;
   padding: 8px 0 16px;
+}
+
+body.plat-world .rank-hero.card {
+  background: var(--plat-brick);
+  border: 4px solid #000;
+  color: #fff;
+  box-shadow: 4px 4px 0 var(--plat-sky-shadow);
+}
+
+body.plat-world .rank-hero h3,
+body.plat-world #rank-hero-name {
+  color: #fff !important;
+  text-shadow: 2px 2px 0 #000;
+}
+
+body.plat-world .rank-hero-tag,
+body.plat-world .rank-hero .muted,
+body.plat-world .rank-streak-compare {
+  color: var(--plat-gold-light) !important;
+}
+
+body.plat-world .rank-hero-icon {
+  filter: none;
+}
+
+body.plat-world .rank-ladder .rank-row {
+  background: rgba(255, 255, 255, 0.12);
+  border: 3px solid #000;
+  color: #fff;
+  padding: 10px 12px;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.25);
+}
+
+body.plat-world .rank-ladder .rank-row.unlocked {
+  background: var(--plat-gold-light);
+  color: #111;
+}
+
+body.plat-world .rank-ladder .rank-row.unlocked .rank-row-req {
+  color: #7a2b00;
+}
+
+body.plat-world .rank-ladder .rank-row.current {
+  background: var(--plat-gold);
+  color: #111;
+  outline: 3px solid #fff;
+}
+
+body.plat-world .rank-ladder .rank-row.locked {
+  opacity: 0.85;
+}
+
+body.plat-world .badge-filters .badge-filter-chip {
+  background: var(--plat-gold-light);
+  border: 2px solid #000;
+  color: #111;
+}
+
+body.plat-world .badge-filters .badge-filter-chip.active {
+  background: var(--plat-gold);
+}
+
+body.plat-world .badge,
+body.plat-world .badge-next-up {
+  background: var(--plat-gold-light);
+  border: 3px solid #000;
+  color: #111;
+  box-shadow: 3px 3px 0 var(--plat-sky-shadow);
+}
+
+body.plat-world .badge-title,
+body.plat-world .badge-next-up-title {
+  color: #111 !important;
+  font-family: var(--plat-body) !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+body.plat-world .badge-desc,
+body.plat-world .badge-next-up-desc {
+  color: #333 !important;
+  font-family: var(--plat-body) !important;
+}
+
+body.plat-world .badge-list-heading {
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--plat-sky-shadow);
+  font-family: var(--plat-body) !important;
+  font-weight: 700;
+}
+
+body.plat-world .badge-summary-count {
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--plat-sky-shadow);
+}
+
+body.plat-world [data-view]:not([data-view='home']) .section-sub {
+  color: var(--plat-gold-light);
+  text-shadow: 1px 1px 0 var(--plat-sky-shadow);
+}
+
+body.plat-world .rank-ladder .rank-row .rank-row-name {
+  color: #111 !important;
+  text-shadow: none !important;
+  font-family: var(--plat-body) !important;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+body.plat-world .rank-ladder .rank-row.locked {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+body.plat-world .rank-ladder .rank-row.locked .rank-row-name {
+  color: #fff !important;
+}
+
+body.plat-world .rank-ladder .rank-row.locked .rank-row-req {
+  color: var(--plat-gold-light) !important;
+}
+
+body.plat-world .rank-ladder .rank-row.unlocked .rank-row-req {
+  color: #7a2b00 !important;
+}
+
+body.plat-world .rank-ladder .rank-row.current .rank-row-name {
+  color: #111 !important;
+}
+
+body.plat-world .badge-level-bar {
+  background: rgba(0, 0, 0, 0.2);
+  border: 3px solid #000;
+  color: #fff;
+}
+
+body.plat-world .badge-level-bar .badge-level-title,
+body.plat-world .badge-level-bar .pixel-label {
+  color: #fff !important;
+  text-shadow: 1px 1px 0 #000;
+}
+
+body.plat-world .badge-level-bar .badge-level-xp {
+  color: var(--plat-gold-light) !important;
+}
+
+body.plat-world .badge-progress-track {
+  background: #7a2b00;
+  border: 2px solid #000;
+}
+
+body.plat-world .badge-progress-fill {
+  background: var(--plat-gold);
+}
+
+body.plat-world .chips-path-grid .chips-grid-label {
+  font-size: 0.5rem;
+  line-height: 1.35;
+}
+
+body.plat-world .form-card label,
+body.plat-world .form-card input,
+body.plat-world .form-card select {
+  color: #111;
+  font-family: var(--plat-body);
+}
+
+body.plat-world .chip-health-unlock-panel,
+body.plat-world .rank-up-panel,
+body.plat-world .share-preview-panel,
+body.plat-world .ios-install-panel {
+  background: var(--plat-gold-light);
+  color: #111;
+}
+
+body.plat-world .chip-health-fact,
+body.plat-world .rank-up-desc {
+  font-family: var(--plat-body);
+  font-size: 1rem;
+  color: #111;
+}
+
+body.plat-world .rank-up-label {
+  color: var(--plat-pipe);
 }
 
 .plat-unit-cig {

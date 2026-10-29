@@ -17,6 +17,16 @@ function $(sel) {
   return document.querySelector(sel);
 }
 
+function chipLabelHtml(label, escapeHtml) {
+  let s = escapeHtml(label);
+  s = s.replace(/DÍAS/g, 'D<span class="ia">I</span>AS');
+  s = s.replace(/DÍA/g, 'D<span class="ia">I</span>A');
+  if (s.includes('AÑO')) {
+    s = s.replace(/AÑO/g, '<span class="px-accent-word">AÑO</span>');
+  }
+  return s;
+}
+
 function displayLabel(state, now) {
   const earned = highestEarnedChip(state, now);
   if (earned) return earned.tier.label;
@@ -164,7 +174,7 @@ function renderChipsPathGrid(rootSel, state, now, escapeHtml) {
       const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';
       return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}${extraClass}${healthClass}"${tapAttrs}>
         <div class="chips-grid-art">${coin}${maxTag}</div>
-        <p class="chips-grid-label pixel-label">${escapeHtml(tier.label)}</p>
+        <p class="chips-grid-label pixel-label">${chipLabelHtml(tier.label, escapeHtml)}</p>
         ${meta}
       </article>`;
     })
