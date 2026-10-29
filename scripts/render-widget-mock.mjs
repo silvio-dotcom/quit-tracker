@@ -108,19 +108,39 @@ function renderHtml(outW, outH, logicalW, logicalH, model) {
 const M = ${payload};
 const S = M.S;
 
-function drawAccentI(ctx, x, baseline, size, color) {
-  const px = Math.max(1, size * 0.12);
+function drawAccentI(ctx, x, baseline, size, color, shadow) {
+  const px = Math.max(3, Math.round(size * 0.14));
   ctx.fillStyle = color;
-  const left = x + size * 0.38;
-  const top = baseline - size * 0.72;
+  const left = x + size * 0.35;
+  const top = baseline - size * 1.28;
+  if (shadow) {
+    ctx.fillStyle = shadow;
+    ctx.fillRect(left + S, top + S, px, px);
+    ctx.fillRect(left + px + S, top - px + S, px, px);
+  }
+  ctx.fillStyle = color;
   ctx.fillRect(left, top, px, px);
   ctx.fillRect(left + px, top - px, px, px);
 }
 
+function needsDiasAccent(text) {
+  return /DÍAS|DÍA|DIAS|DIA/.test(text);
+}
+
+function normalizeDiasWords(text) {
+  return text.replace(/DÍAS/g, 'DIAS').replace(/DÍA/g, 'DIA');
+}
+
+function isDiasAccentI(norm, i) {
+  if (i <= 0 || norm[i] !== 'I' || norm[i - 1] !== 'D') return false;
+  const n = norm[i + 1];
+  return n === 'A' || n === 'S';
+}
+
 function measureP2(ctx, text, size) {
   ctx.font = size + 'px P2';
-  if (text.includes('DÍAS') || text.includes('DÍA')) {
-    const norm = text.replace(/DÍAS/g, 'DIAS').replace(/DÍA/g, 'DIA');
+  if (needsDiasAccent(text)) {
+    const norm = normalizeDiasWords(text);
     let w = 0;
     for (let i = 0; i < norm.length; i++) w += ctx.measureText(norm[i]).width;
     return w;
@@ -131,20 +151,26 @@ function measureP2(ctx, text, size) {
 function drawP2(ctx, text, x, y, size, color, shadow) {
   ctx.font = size + 'px P2';
   ctx.textBaseline = 'alphabetic';
-  if (text.includes('DÍAS') || text.includes('DÍA')) {
-    const norm = text.replace(/DÍAS/g, 'DIAS').replace(/DÍA/g, 'DIA');
+  if (needsDiasAccent(text)) {
+    const norm = normalizeDiasWords(text);
     let cx = x;
     for (let i = 0; i < norm.length; i++) {
       const ch = norm[i];
-      if (shadow) { ctx.fillStyle = shadow; ctx.fillText(ch, cx + S, y + S); }
+      if (shadow) {
+        ctx.fillStyle = shadow;
+        ctx.fillText(ch, cx + S, y + S);
+      }
       ctx.fillStyle = color;
       ctx.fillText(ch, cx, y);
-      if (ch === 'I') drawAccentI(ctx, cx, y, size, color);
+      if (isDiasAccentI(norm, i)) drawAccentI(ctx, cx, y, size, color, shadow);
       cx += ctx.measureText(ch).width;
     }
     return;
   }
-  if (shadow) { ctx.fillStyle = shadow; ctx.fillText(text, x + S, y + S); }
+  if (shadow) {
+    ctx.fillStyle = shadow;
+    ctx.fillText(text, x + S, y + S);
+  }
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 }
@@ -227,31 +253,60 @@ async function paint() {
 
   y += 24 * S;
   const heroTop = y;
-  const coinCol = (M.compact ? 44 : 48) * S;
-  const coinX = M.outW - pad - coinCol;
-  const coinSize = (M.compact ? 36 : 40) * S;
-  const coinCenterX = coinX + coinCol / 2;
+  const coinCol = (M.compact ? 44 : 52) * S;
+  const coinCenterX = M.outW - pad - coinCol / 2;
+  const coinSize = (M.compact ? 24 : 38) * S;
+  const labelSize = (M.compact ? 5 : 6) * S;
+  const labelBaseline = heroTop + coinSize + 4 * S + labelSize;
+  const coinColBottom = labelBaseline + 6 * S;
 
   const sz = (M.compact ? 8 : 9) * S;
-  drawP2(ctx, M.smoke, pad, y + sz, sz, '#fff', '#1f3c8c');
-  y += sz + 5 * S;
-  drawP2(ctx, M.money, pad, y + 7 * S, (M.compact ? 7 : 8) * S, '#fce0a8', '#1f3c8c');
+  drawP2(ctx, M.smoke, pad, heroTop + sz, sz, '#fff', '#1f3c8c');
+  const moneyBaseline = heroTop + sz + 5 * S + (M.compact ? 7 : 8) * S;
+  drawP2(ctx, M.money, pad, moneyBaseline, (M.compact ? 7 : 8) * S, '#fce0a8', '#1f3c8c');
+  const leftBottom = moneyBaseline + 4 * S;
 
   const curCoin = await loadImg(M.currentCoinB64);
   if (curCoin) ctx.drawImage(curCoin, coinCenterX - coinSize / 2, heroTop, coinSize, coinSize);
-  const labelSize = (M.compact ? 5 : 6) * S;
-  const labelBaseline = heroTop + coinSize + 2 * S + labelSize;
   drawP2Centered(ctx, M.currentLabel, coinCenterX, labelBaseline, labelSize, '#f8b800', '#000');
 
+  const heroBottom = Math.max(leftBottom, coinColBottom);
+
+  const groundTop = M.outH - groundH - 4 * S;
+  const blockH = 8 * S;
+  const sigSize = (M.compact ? 5 : 6) * S;
+  const sigCoin = (M.compact ? 16 : 18) * S;
+
   if (M.showNext) {
-    y += 14 * S;
-    const nextRowY = y;
     const nextCoin = await loadImg(M.nextCoinB64);
-    const nextCoinSize = 18 * S;
-    if (nextCoin) ctx.drawImage(nextCoin, pad, nextRowY, nextCoinSize, nextCoinSize);
-    drawP2(ctx, M.sigLine, pad + 22 * S, nextRowY + 14 * S, (M.compact ? 5 : 6) * S, '#fff', '#1f3c8c');
-    y += 18 * S;
-    drawBlocks(ctx, pad, y, M.outW - pad * 2, 8 * S, M.progress);
+    if (M.compact) {
+      const sigRowTop = groundTop - sigCoin - 2 * S;
+      const sigBaseline = sigRowTop + sigCoin - 2 * S;
+      let blockTop = sigRowTop - blockH - 4 * S;
+      const minBlockTop = coinColBottom + 5 * S;
+      if (blockTop < minBlockTop) blockTop = minBlockTop;
+      if (blockTop + blockH > sigRowTop - 4 * S) {
+        throw new Error('compact layout overlap: blocks intersect sig row');
+      }
+      drawBlocks(ctx, pad, blockTop, M.outW - pad * 2, blockH, M.progress);
+      if (nextCoin) ctx.drawImage(nextCoin, pad, sigRowTop, sigCoin, sigCoin);
+      drawP2(ctx, M.sigLine, pad + (sigCoin + 4 * S), sigBaseline, sigSize, '#fff', '#1f3c8c');
+    } else {
+      let blockTop = groundTop - blockH - 2 * S;
+      const minBlockTop = coinColBottom + 18 * S;
+      if (blockTop < minBlockTop) blockTop = minBlockTop;
+      if (blockTop + blockH > groundTop - 2 * S) {
+        throw new Error('wide layout: block row would overlap ground');
+      }
+      const sigBaseline = blockTop - 5 * S;
+      const sigRowTop = sigBaseline - sigCoin + 4 * S;
+      if (sigRowTop < heroBottom + 3 * S) {
+        throw new Error('wide layout overlap: sig row intersects hero/coin column');
+      }
+      if (nextCoin) ctx.drawImage(nextCoin, pad, sigRowTop, sigCoin, sigCoin);
+      drawP2(ctx, M.sigLine, pad + 22 * S, sigBaseline, sigSize, '#fff', '#1f3c8c');
+      drawBlocks(ctx, pad, blockTop, M.outW - pad * 2, blockH, M.progress);
+    }
   }
 
   const px = ctx.getImageData(Math.floor(8 * S), Math.floor(8 * S), 1, 1).data;

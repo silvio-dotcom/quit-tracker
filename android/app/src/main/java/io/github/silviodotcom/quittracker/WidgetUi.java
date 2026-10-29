@@ -90,27 +90,37 @@ public final class WidgetUi {
             );
 
             if (model.showNextRow) {
-                views.setViewVisibility(R.id.widget_next_row, View.VISIBLE);
-                int nextRes = WidgetComputer.coinDrawableRes(context, model.nextTierId);
-                views.setImageViewResource(R.id.widget_next_coin, nextRes);
+                views.setViewVisibility(R.id.widget_block_progress, View.VISIBLE);
                 String sigLine = model.nextLabel;
                 if (model.nextEta != null && !model.nextEta.isEmpty()) {
                     sigLine = model.nextLabel + " · " + model.nextEta;
                 }
-                views.setImageViewBitmap(
-                    R.id.widget_chip_label,
-                    WidgetPixelText.line(context, sigLine, compact ? 6f : 7f, COLOR_CHIP, textWidthPx, scale)
-                );
-                views.setImageViewBitmap(R.id.widget_chip_eta, WidgetPixelText.line(context, "", 6f, COLOR_ETA, 1, scale));
-                views.setViewVisibility(R.id.widget_chip_eta, View.GONE);
+                int nextRes = WidgetComputer.coinDrawableRes(context, model.nextTierId);
+                float sigSp = compact ? 5f : 7f;
+
+                if (compact) {
+                    views.setViewVisibility(R.id.widget_next_row, View.GONE);
+                    views.setViewVisibility(R.id.widget_next_row_bottom, View.VISIBLE);
+                    views.setImageViewResource(R.id.widget_next_coin_bottom, nextRes);
+                    views.setImageViewBitmap(
+                        R.id.widget_chip_label_bottom,
+                        WidgetPixelText.line(context, sigLine, sigSp, COLOR_CHIP, textWidthPx, scale)
+                    );
+                } else {
+                    views.setViewVisibility(R.id.widget_next_row, View.VISIBLE);
+                    views.setViewVisibility(R.id.widget_next_row_bottom, View.GONE);
+                    views.setImageViewResource(R.id.widget_next_coin, nextRes);
+                    views.setImageViewBitmap(
+                        R.id.widget_chip_label,
+                        WidgetPixelText.line(context, sigLine, sigSp, COLOR_CHIP, textWidthPx, scale)
+                    );
+                }
             } else {
                 views.setViewVisibility(R.id.widget_next_row, View.GONE);
-                views.setImageViewBitmap(R.id.widget_chip_label, WidgetPixelText.line(context, "", 6f, COLOR_CHIP, 1, scale));
-                views.setImageViewBitmap(R.id.widget_chip_eta, WidgetPixelText.line(context, "", 6f, COLOR_ETA, 1, scale));
+                views.setViewVisibility(R.id.widget_next_row_bottom, View.GONE);
             }
 
             views.setViewVisibility(R.id.widget_chip_progress, View.GONE);
-            views.setViewVisibility(R.id.widget_block_progress, View.VISIBLE);
             views.setImageViewBitmap(
                 R.id.widget_block_progress,
                 WidgetPixelBlocks.progressRow(context, textWidthPx, dpPx(context, 10), model.chipProgress)

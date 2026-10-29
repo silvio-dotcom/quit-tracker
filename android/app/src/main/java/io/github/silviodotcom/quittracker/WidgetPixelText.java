@@ -27,10 +27,31 @@ public final class WidgetPixelText {
 
     public static Bitmap line(Context context, String text, float sp, int color, int maxWidthPx, float scale) {
         if (text == null) text = "";
-        if (text.contains("D\u00cdAS") || text.contains("D\u00cdA")) {
+        if (needsDiasAccent(text)) {
             return lineWithPixelDias(context, text, sp, color, maxWidthPx, scale);
         }
         return linePlain(context, text, sp, color, maxWidthPx, scale);
+    }
+
+    /** Matches web .ia / .pixel-accent-i (Press Start 2P Í reads as plain i). */
+    static boolean needsDiasAccent(String text) {
+        return text.contains("D\u00cdAS")
+            || text.contains("D\u00cdA")
+            || text.contains("DIAS")
+            || text.contains("DIA");
+    }
+
+    static String normalizeDiasWords(String text) {
+        return text.replace("D\u00cdAS", "DIAS").replace("D\u00cdA", "DIA");
+    }
+
+    static void drawPixelAccentOnI(Canvas canvas, Paint dot, float x, float baseline, float size, int color) {
+        float px = Math.max(3f, size * 0.14f);
+        dot.setColor(color);
+        float left = x + size * 0.35f;
+        float top = baseline - size * 1.28f;
+        canvas.drawRect(left, top, left + px, top + px, dot);
+        canvas.drawRect(left + px, top - px, left + px * 2f, top, dot);
     }
 
     private static TextPaint basePaint(Context context, float sp, float scale) {
@@ -53,32 +74,39 @@ public final class WidgetPixelText {
     /** D + pixel accent + AS/ A (Press Start 2P reads Í as lowercase). */
     private static Bitmap lineWithPixelDias(Context context, String text, float sp, int color, int maxWidthPx, float scale) {
         TextPaint paint = basePaint(context, sp, scale);
-        String normalized = text.replace("D\u00cdAS", "DIAS").replace("D\u00cdA", "DIA");
+        String normalized = normalizeDiasWords(text);
         float size = paint.getTextSize();
+        float accentPad = size * 0.45f;
         float w = paint.measureText(normalized);
         int bmpW = Math.max(1, Math.min(maxWidthPx, (int) Math.ceil(w + 2)));
-        int h = Math.max(1, (int) (size * 1.2f));
+        int h = Math.max(1, (int) Math.ceil(size * 1.15f + accentPad));
         Bitmap bmp = Bitmap.createBitmap(bmpW, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
         float x = 0;
-        float baseline = size;
+        float baseline = size + accentPad * 0.5f;
+        Paint dot = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dot.setAntiAlias(false);
         for (int i = 0; i < normalized.length(); i++) {
             char c = normalized.charAt(i);
             String s = String.valueOf(c);
             drawShadowedText(canvas, paint, s, x, baseline, color);
-            if (c == 'I') {
-                float px = Math.max(1f, size * 0.1f);
-                Paint dot = new Paint(Paint.ANTI_ALIAS_FLAG);
-                dot.setAntiAlias(false);
-                dot.setColor(color);
-                float left = x + size * 0.38f;
-                float top = baseline - size * 0.72f;
-                canvas.drawRect(left, top, left + px, top + px, dot);
-                canvas.drawRect(left + px, top - px, left + px * 2, top, dot);
+            if (c == 'I' && isDiasAccentI(normalized, i)) {
+                drawPixelAccentOnI(canvas, dot, x, baseline, size, color);
             }
             x += paint.measureText(s);
         }
         return bmp;
+    }
+
+    /** Accent the I in DIA / DIAS only (not every capital I in the string). */
+    private static boolean isDiasAccentI(String normalized, int i) {
+        if (i <= 0 || normalized.charAt(i) != 'I') return false;
+        if (normalized.charAt(i - 1) != 'D') return false;
+        if (i + 1 < normalized.length()) {
+            char n = normalized.charAt(i + 1);
+            return n == 'A' || n == 'S';
+        }
+        return normalized.regionMatches(i - 1, "DIA", 0, 3);
     }
 
     private static Bitmap linePlain(Context context, String text, float sp, int color, int maxWidthPx, float scale) {
