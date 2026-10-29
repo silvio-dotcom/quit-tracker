@@ -13,7 +13,8 @@ import { renderPixelCoin } from '../js/chip-art.js';
 import { BASE_SMOKE_FREE_CHIPS } from '../js/constants.js';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const out = '/opt/cursor/artifacts';
+const out = process.env.QT_ARTIFACTS_DIR || '/opt/cursor/artifacts';
+const repoArtifacts = path.join(repo, 'artifacts');
 const drawable = path.join(repo, 'android/app/src/main/res/drawable-nodpi');
 fs.mkdirSync(out, { recursive: true });
 
@@ -48,14 +49,14 @@ function widgetModel(msElapsed) {
   const now = Date.now();
   const elapsed = msSinceQuit(state.profile, now);
   const dur = formatDuration(elapsed);
-  const days = dur.parts.find((p) => p.u.startsWith('day'));
-  const hrs = dur.parts.find((p) => p.u.startsWith('hr'));
-  const mins = dur.parts.find((p) => p.u === 'min' || p.u === 'mins');
+  const days = dur.parts.find((p) => p.u.startsWith('día') || p.u === 'días');
+  const hrs = dur.parts.find((p) => p.u.startsWith('hora') || p.u === 'horas');
+  const mins = dur.parts.find((p) => p.u === 'min');
   let smoke;
   if ((days?.v || 0) >= 1) {
-    smoke = `${days.v} ${days.v === 1 ? 'DAY' : 'DAYS'} ${hrs?.v || 0} ${(hrs?.v || 0) === 1 ? 'HR' : 'HRS'}`;
+    smoke = `${days.v} ${days.v === 1 ? 'DIA' : 'DIAS'} ${hrs?.v || 0} H`;
   } else {
-    smoke = `${hrs?.v || 0} ${(hrs?.v || 0) === 1 ? 'HR' : 'HRS'} ${mins?.v || 0} MIN`;
+    smoke = `${hrs?.v || 0} H ${mins?.v || 0} MIN`;
   }
   const money = formatMoney(moneySaved(state, now), 'USD', CURRENCIES);
   const xp = xpLevelProgress(state, now);
@@ -75,7 +76,7 @@ function widgetModel(msElapsed) {
     currentLabel = earned.tier.label;
     currentTierId = earned.tier.id;
   } else {
-    currentLabel = 'NO CHIP YET';
+    currentLabel = 'SIN MEDALLA';
     currentTierId = 'chip-24h';
     currentLocked = true;
   }
@@ -87,9 +88,9 @@ function widgetModel(msElapsed) {
   let nextTierId = 'chip-24h';
   if (showNext && next) {
     nextTierId = next.tier.id;
-    nextLabel = `NEXT: ${next.tier.label}`;
+    nextLabel = `SIG: ${next.tier.label}`;
     const h = Math.floor(next.remainingMs / MS_H);
-    nextEta = h >= 24 ? `${Math.floor(h / 24)}d left` : `${h}h left`;
+    nextEta = h >= 24 ? `${Math.floor(h / 24)}d` : `${h}h`;
     progress = Math.round(next.progress);
   }
 
@@ -142,10 +143,10 @@ function htmlFor(model, w, h) {
 </style></head><body>
 <div class="w">
   <div class="head"><img src="data:image/png;base64,${logoB64}" width="20" height="20" style="image-rendering:pixelated" alt=""/>
-  <span class="brand">QUIT</span><span class="lv">${model.level}</span></div>
+  <span class="brand">DEJA</span><span class="lv">${model.level}</span></div>
   <div class="hero">
     <div class="stats">
-      <div class="lbl">SMOKE-FREE</div>
+      <div class="lbl">SIN FUMAR</div>
       <div class="time">${model.smoke}</div>
       <div class="money">${model.money}</div>
     </div>
@@ -171,7 +172,7 @@ const browser = await chromium.launch();
 for (const sc of scenarios) {
   const model = widgetModel(sc.ms);
   for (const sz of sizes) {
-    const name = `v26-widget-${sz.suffix}-${sc.tag}.png`;
+    const name = `v28-widget-${sz.suffix}-${sc.tag}.png`;
     const page = await browser.newPage({ viewport: { width: sz.w + 80, height: sz.h + 80 }, deviceScaleFactor: 3 });
     await page.setContent(htmlFor(model, sz.w, sz.h));
     await page.waitForTimeout(150);
@@ -181,7 +182,9 @@ for (const sc of scenarios) {
 }
 await browser.close();
 
-const previewSrc = path.join(out, 'v26-widget-4x2-45d.png');
+const previewSrc = path.join(out, 'v28-widget-4x2-45d.png');
+fs.mkdirSync(repoArtifacts, { recursive: true });
 fs.copyFileSync(previewSrc, path.join(drawable, 'widget_preview.png'));
-fs.copyFileSync(previewSrc, path.join(out, 'v26-widget-preview.png'));
-console.log('saved v26 widget mocks + widget_preview.png');
+fs.copyFileSync(previewSrc, path.join(out, 'v28-widget-preview.png'));
+fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-es-419-mock.png'));
+console.log('saved v28 widget mocks + widget_preview.png + artifacts/widget-es-419-mock.png');

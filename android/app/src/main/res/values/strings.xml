@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Quit Tracker</string>
-    <string name="title_activity_main">Quit Tracker</string>
+    <string name="app_name">Dejar de fumar</string>
+    <string name="title_activity_main">Dejar de fumar</string>
     <string name="package_name">io.github.silviodotcom.quittracker</string>
     <string name="custom_url_scheme">io.github.silviodotcom.quittracker</string>
-    <string name="widget_description">Smoke-free time, savings, and next chip</string>
-    <string name="widget_empty">Open Quit Tracker to start</string>
+    <string name="widget_description">Tiempo sin fumar, ahorro y próxima medalla</string>
+    <string name="widget_empty">Abre Dejar de fumar para empezar</string>
 </resources>

@@ -6,7 +6,7 @@ import { chipHealthFact } from './chip-health-unlocks.js';
  * @param {() => void} onClose
  * @param {'en'|'es'} [locale]
  */
-export function showChipHealthUnlockModal(tier, onClose, locale = 'en') {
+export function showChipHealthUnlockModal(tier, onClose, locale = 'es') {
   const modal = document.querySelector('#modal-chip-health');
   const artEl = document.querySelector('#chip-health-art');
   const titleEl = document.querySelector('#chip-health-title');

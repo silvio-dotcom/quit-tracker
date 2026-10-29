@@ -49,10 +49,10 @@ export async function renderSharePng(state, now = Date.now()) {
 
   ctx.fillStyle = '#f3f6f9';
   ctx.font = '28px "Press Start 2P", monospace';
-  ctx.fillText('QUIT TRACKER', 72, 120);
+  ctx.fillText('DEJA FUMAR', 72, 120);
   ctx.font = '16px system-ui, sans-serif';
   ctx.fillStyle = '#b8c6d6';
-  ctx.fillText('Smoke-free progress', 72, 155);
+  ctx.fillText('Progreso sin fumar', 72, 155);
 
   ctx.fillStyle = '#22c55e';
   ctx.font = '22px "Press Start 2P", monospace';
@@ -69,9 +69,9 @@ export async function renderSharePng(state, now = Date.now()) {
   }
 
   const lines = [
-    `Cigarettes not smoked: ${cigs.toLocaleString()}`,
-    `Money saved: ${formatMoney(money, cur, CURRENCIES)}`,
-    `Time back: ${timeBack.replace(' of my time back', '')}`,
+    `Cigarrillos sin fumar: ${cigs.toLocaleString('es-419')}`,
+    `Dinero ahorrado: ${formatMoney(money, cur, CURRENCIES)}`,
+    `Tiempo recuperado: ${timeBack.replace(' de mi tiempo recuperado', '')}`,
   ];
   ctx.font = '22px system-ui, sans-serif';
   ctx.fillStyle = '#e2e8f0';
@@ -83,7 +83,7 @@ export async function renderSharePng(state, now = Date.now()) {
 
   ctx.fillStyle = '#8b9aab';
   ctx.font = '14px "Press Start 2P", monospace';
-  ctx.fillText('QUIT-TRACKER', 72, H - 72);
+  ctx.fillText('DEJA-FUMAR', 72, H - 72);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -98,7 +98,7 @@ export async function shareProgressPayload(state, text, blob) {
 
   if (navigator.share) {
     try {
-      const base = { title: 'My smoke-free progress', text };
+      const base = { title: 'Mi progreso sin fumar', text };
       if (navigator.canShare?.({ ...base, files: [file] })) {
         await navigator.share({ ...base, files: [file] });
         return 'shared';
@@ -114,7 +114,7 @@ export async function shareProgressPayload(state, text, blob) {
     const Share = window.Capacitor?.Plugins?.Share;
     if (Share?.share) {
       try {
-        await Share.share({ title: 'My smoke-free progress', text, dialogTitle: 'Share my progress' });
+        await Share.share({ title: 'Mi progreso sin fumar', text, dialogTitle: 'Compartir mi progreso' });
         return 'shared';
       } catch {
         /* fall through */

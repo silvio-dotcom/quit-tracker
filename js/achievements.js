@@ -20,6 +20,7 @@ import {
   moneySaved,
   msForCigaretteTarget,
 } from './stats.js';
+import { formatLocaleDate, formatLocaleNumber } from './locale.js';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_MIN = 60 * 1000;
@@ -135,13 +136,13 @@ function formatTimeTarget(ms) {
   const mo = Math.floor((sec % (365 * 24 * 3600)) / (30 * 24 * 3600));
   const d = Math.floor((sec % (30 * 24 * 3600)) / 86400);
   const h = Math.floor((sec % 86400) / 3600);
-  if (y) return `${y} ${y === 1 ? 'year' : 'years'}`;
-  if (mo) return `${mo} ${mo === 1 ? 'month' : 'months'}`;
-  if (d) return `${d} ${d === 1 ? 'day' : 'days'}`;
-  if (h) return `${h} ${h === 1 ? 'hour' : 'hours'}`;
+  if (y) return `${y} ${y === 1 ? 'año' : 'años'}`;
+  if (mo) return `${mo} ${mo === 1 ? 'mes' : 'meses'}`;
+  if (d) return `${d} ${d === 1 ? 'día' : 'días'}`;
+  if (h) return `${h} ${h === 1 ? 'hora' : 'horas'}`;
   const m = Math.floor((sec % 3600) / 60);
-  if (m) return `${m} ${m === 1 ? 'minute' : 'minutes'}`;
-  return `${sec} sec`;
+  if (m) return `${m} ${m === 1 ? 'minuto' : 'minutos'}`;
+  return `${sec} seg`;
 }
 
 export function badgeProgressLabel(achievement, metrics, state) {
@@ -150,14 +151,14 @@ export function badgeProgressLabel(achievement, metrics, state) {
     case 'time':
       return `${formatDurationShort(current)} / ${formatTimeTarget(target)}`;
     case 'cigs':
-      return `${Math.floor(current).toLocaleString()} / ${Math.floor(target).toLocaleString()} cigarettes`;
+      return `${Math.floor(current).toLocaleString('es-419')} / ${Math.floor(target).toLocaleString('es-419')} cigarrillos`;
     case 'money': {
       const sym = CURRENCIES[metrics.currency]?.symbol ?? '$';
       const fmt = (n) => `${sym}${n.toFixed(0)}`;
-      return `${fmt(current)} of ${fmt(target)}`;
+      return `${fmt(current)} de ${fmt(target)}`;
     }
     case 'timeback':
-      return `${formatDurationShort(current)} / ${formatTimeTarget(target)} regained`;
+      return `${formatDurationShort(current)} / ${formatTimeTarget(target)} recuperados`;
     default:
       return '';
   }
@@ -166,8 +167,8 @@ export function badgeProgressLabel(achievement, metrics, state) {
 export function moneyBadgeTitle(achievement, currency) {
   const sym = CURRENCIES[currency]?.symbol ?? '$';
   const amt = achievement.amount ?? 0;
-  const label = amt >= 1000 ? amt.toLocaleString() : String(amt);
-  return `${sym}${label} saved`;
+  const label = amt >= 1000 ? formatLocaleNumber(amt) : String(amt);
+  return `${sym}${label} ahorrados`;
 }
 
 /** Single source for UI copy (badges, next up, alerts, notifications). */
@@ -242,17 +243,17 @@ export function formatBadgeEta(status, state, now = Date.now()) {
   if (status.achievement.category === 'money') {
     const sym = CURRENCIES[state.profile.currency]?.symbol ?? '$';
     const left = Math.max(0, target - current);
-    return `${sym}${Math.ceil(left)} to go`;
+    return `${sym}${Math.ceil(left)} restantes`;
   }
   const eta = badgeEtaMs(status, state, now);
   if (!Number.isFinite(eta)) return '—';
-  if (eta <= 0) return 'Now';
+  if (eta <= 0) return 'Ahora';
   const d = Math.floor(eta / (24 * MS_PER_HOUR));
   const h = Math.floor((eta % (24 * MS_PER_HOUR)) / MS_PER_HOUR);
   const m = Math.floor((eta % MS_PER_HOUR) / MS_PER_MIN);
-  if (d) return `in ${d}d ${h}h`;
-  if (h) return `in ${h}h ${m}m`;
-  return `in ${m}m`;
+  if (d) return `en ${d}d ${h}h`;
+  if (h) return `en ${h}h ${m}m`;
+  return `en ${m}m`;
 }
 
 export function selectNextLockedBadge(statuses, state, now = Date.now(), category = 'all') {
@@ -281,11 +282,7 @@ export function sortLockedBadgesByEta(items, state, now = Date.now()) {
 
 export function formatUnlockDate(iso) {
   if (!iso) return '';
-  try {
-    return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch {
-    return '';
-  }
+  return formatLocaleDate(iso, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export function unlockedAchievements(state, now = Date.now()) {

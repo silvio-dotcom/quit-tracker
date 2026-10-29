@@ -38,7 +38,7 @@ if (!html.includes(display48)) {
   console.error('next-up HTML missing 48h display benefit');
   process.exit(1);
 }
-if (html.includes('non-smoker. Your lungs')) {
+if (html.includes('monóxido de carbono baja al nivel')) {
   console.error('next-up should use short headline, not long 48h benefit');
   process.exit(1);
 }
@@ -74,11 +74,11 @@ if (getNextHealthMilestone(at400d, now)) {
   process.exit(1);
 }
 const html400 = buildNextUpHtml(at400d, now, (s) => s);
-if (html400.includes('5 years') || html400.includes('1426d')) {
+if (html400.includes('5 años') || html400.includes('1426d')) {
   console.error('next-up at 400d must not show long-term health countdown');
   process.exit(1);
 }
-if (!html400.includes('All first-year health milestones reached')) {
+if (!html400.includes('Todos los hitos de salud del primer año alcanzados')) {
   console.error('next-up at 400d should show first-year complete copy');
   process.exit(1);
 }

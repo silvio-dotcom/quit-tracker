@@ -60,6 +60,11 @@ async function runCase(name, seedLocalStorage) {
   }
 
   for (let i = 0; i < 24; i++) {
+    if (await page.locator('#modal-chip-health.open').count()) {
+      await page.locator('[data-close="modal-chip-health"]').tap();
+      await page.waitForTimeout(350);
+      continue;
+    }
     if (await page.locator('#modal-milestone.open').count()) {
       await page.locator('[data-close="modal-milestone"]').tap();
       await page.waitForTimeout(350);

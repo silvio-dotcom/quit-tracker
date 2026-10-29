@@ -56,7 +56,7 @@ public final class WidgetUi {
         bindLaunchIntent(context, views, widgetId);
 
         views.setImageViewResource(R.id.widget_logo, R.drawable.widget_logo);
-        views.setImageViewBitmap(R.id.widget_brand, WidgetPixelText.line(context, "QUIT", 7f, COLOR_BRAND, textWidthPx, scale));
+        views.setImageViewBitmap(R.id.widget_brand, WidgetPixelText.line(context, "DEJA", 7f, COLOR_BRAND, textWidthPx, scale));
 
         if (!model.configured) {
             views.setViewVisibility(R.id.widget_empty, View.VISIBLE);
@@ -73,7 +73,7 @@ public final class WidgetUi {
             float smokeSp = compact ? 8f : 9f;
             views.setImageViewBitmap(
                 R.id.widget_smoke_label,
-                WidgetPixelText.line(context, "SMOKE-FREE", 6f, COLOR_MUTED, textWidthPx, scale)
+                WidgetPixelText.line(context, "SIN FUMAR", 6f, COLOR_MUTED, textWidthPx, scale)
             );
             views.setImageViewBitmap(
                 R.id.widget_smoke_time,

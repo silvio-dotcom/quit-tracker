@@ -36,11 +36,11 @@ try {
   assertDays(eveIso, eve.getTime() + 25 * H, 1, 'eve+25h');
 
   const display20h = formatStreakDisplay(stateAt(quitIso), quit.getTime() + 20 * H);
-  if (!display20h.includes('20') || !display20h.includes('hr')) {
+  if (!display20h.includes('20') || !display20h.includes('hora')) {
     throw new Error(`formatStreakDisplay 20h: got "${display20h}"`);
   }
   const display0 = formatStreakDisplay(stateAt(quitIso), quit.getTime() + 30 * 1000);
-  if (display0 !== '0 days') throw new Error(`formatStreakDisplay 30s: got "${display0}"`);
+  if (display0 !== '0 días') throw new Error(`formatStreakDisplay 30s: got "${display0}"`);
 
   console.log('streak day tests OK (TZ=%s)', TZ);
 } finally {

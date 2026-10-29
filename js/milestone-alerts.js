@@ -102,9 +102,9 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
       const key = celebrationKey('health', m.id);
       if (!seen.has(key)) fresh.push({
         key,
-        celebration: { icon: '💚', title: 'Health milestone', subtitle: m.title },
+        celebration: { icon: '💚', title: 'Hito de salud', subtitle: m.title },
         notify: {
-          title: 'Health milestone reached',
+          title: 'Hito de salud alcanzado',
           body: m.title,
           tag: key,
         },
@@ -123,12 +123,12 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
         key,
         celebration: {
           icon: a.icon,
-          title: 'Badge unlocked',
+          title: 'Medalla desbloqueada',
           subtitle: badgeDisplayTitle(a, state.profile.currency),
           badgePop: true,
         },
         notify: {
-          title: 'Badge unlocked',
+          title: 'Medalla desbloqueada',
           body: badgeDisplayTitle(a, state.profile.currency),
           tag: key,
         },
@@ -147,10 +147,10 @@ export function processMilestoneUnlocks(state, now, toast, persist) {
           chipHealthTier: healthFact ? s.tier : null,
           celebration: healthFact
             ? null
-            : { icon: '🪙', title: 'Chip earned', subtitle: `Your ${s.tier.notifyLabel}` },
+            : { icon: '🪙', title: 'Medalla ganada', subtitle: `Tu ${s.tier.notifyLabel}` },
           notify: {
-            title: healthFact ? 'Health milestone' : 'Smoke-free chip earned',
-            body: healthFact || `You earned your ${s.tier.notifyLabel}`,
+            title: healthFact ? 'Hito de salud' : 'Medalla sin fumar',
+            body: healthFact || `Ganaste tu ${s.tier.notifyLabel}`,
             tag: key,
           },
           chipAnim: true,
@@ -235,4 +235,4 @@ export async function refreshMilestoneSchedules(state) {
 }
 
 export const MILESTONE_ALERTS_HELP =
-  'Local alerts when a health milestone, smoke-free chip, or badge unlocks. Uses this device only — no push server. On iPhone/iPad, notifications work only if Quit Tracker is installed to your Home Screen (iOS 16.4+). In a Safari tab, you will still see in-app celebrations. On Android (this app), alerts are scheduled on your device at each upcoming unlock time.';
+  'Alertas locales cuando se desbloquea un hito de salud, una medalla sin fumar o una medalla. Solo en este dispositivo — sin servidor push. En iPhone/iPad, las notificaciones funcionan si Quit Tracker está en la pantalla de inicio (iOS 16.4+). En una pestaña de Safari, igual verás celebraciones en la app. En Android (esta app), las alertas se programan en tu dispositivo en cada próximo desbloqueo.';

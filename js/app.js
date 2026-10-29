@@ -146,11 +146,11 @@ function renderHealthHome(now = Date.now()) {
           .map(
             (m) => `<li class="health-recent-item">
           <span class="health-recent-title">✓ ${escapeHtml(m.displayBenefit)}</span>
-          <a class="health-source-inline" href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source.name)}</a>
+          <a class="health-source-inline" href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Fuente: ${escapeHtml(m.source.name)}</a>
         </li>`
           )
           .join('')
-      : '<li class="muted">Your first milestones are minutes away.</li>';
+      : '<li class="muted">Tus primeros hitos están a minutos de distancia.</li>';
   }
 
   const full = $('#health-list-home');
@@ -166,8 +166,8 @@ function renderHealthHome(now = Date.now()) {
           <span class="health-title">${escapeHtml(m.displayBenefit)}</span>
           <span class="health-pct">${m.done ? '✓' : `${Math.round(m.progress)}%`}</span>
         </div>
-        <p class="health-at muted small">at ${escapeHtml(m.title)}</p>
-        <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(m.source.name)}</a></p>
+        <p class="health-at muted small">a los ${escapeHtml(m.title)}</p>
+        <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Fuente: ${escapeHtml(m.source.name)}</a></p>
         <div class="progress-track"><div class="progress-fill" style="width:${m.progress}%"></div></div>
       </article>`;
 
@@ -177,17 +177,17 @@ function renderHealthHome(now = Date.now()) {
           <span class="health-title">${escapeHtml(m.displayBenefit)}</span>
           <span class="health-pct">${m.done ? '✓' : ''}</span>
         </div>
-        <p class="health-at muted small">at ${escapeHtml(m.title)}</p>
-        <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Source: ${escapeHtml(m.source.name)}</a></p>
+        <p class="health-at muted small">a los ${escapeHtml(m.title)}</p>
+        <p class="health-source"><a href="${escapeAttr(m.source.url)}" target="_blank" rel="noopener noreferrer">Fuente: ${escapeHtml(m.source.name)}</a></p>
       </article>`;
 
     const longBlock = longTerm.length
-      ? `<h3 class="health-longterm-heading pixel-label">Long-term</h3>${longTerm.map(renderLong).join('')}`
+      ? `<h3 class="health-longterm-heading pixel-label">Largo plazo</h3>${longTerm.map(renderLong).join('')}`
       : '';
 
     full.innerHTML = `${nearTerm.map(renderNear).join('')}${longBlock}`;
   }
-  if (toggle) toggle.textContent = healthExpanded ? 'Hide full timeline' : 'See all health milestones';
+  if (toggle) toggle.textContent = healthExpanded ? 'Ocultar línea de tiempo' : 'Ver todos los hitos de salud';
 }
 
 function renderRankPreview(now = Date.now()) {
@@ -202,11 +202,11 @@ function renderRankPreview(now = Date.now()) {
   const nextEl = $('#rank-dash-next');
   if (nextEl) {
     nextEl.textContent = next
-      ? `Next: ${next.icon} ${next.name} — ${nextRankHint(metrics, next) || 'almost there'}`
-      : 'You reached the top rank.';
+      ? `Siguiente: ${next.icon} ${next.name} — ${nextRankHint(metrics, next) || 'casi ahí'}`
+      : 'Llegaste al rango más alto.';
   }
   const streaks = $('#rank-dash-streaks');
-  if (streaks) streaks.textContent = `Current streak: ${formatStreakDisplay(state, now)}`;
+  if (streaks) streaks.textContent = `Racha actual: ${formatStreakDisplay(state, now)}`;
 }
 
 function renderDashboard() {
@@ -265,7 +265,7 @@ function renderRank() {
     '#rank-hero-next',
     next
       ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}`
-      : 'Legend rank — one year smoke-free. You made it.'
+      : 'Rango leyenda — un año sin fumar. Lo lograste.'
   );
 
   const ladder = $('#rank-ladder');
@@ -276,7 +276,7 @@ function renderRank() {
         return `<article class="rank-row ${unlocked ? 'unlocked' : 'locked'} ${current ? 'current' : ''}">
           <span class="rank-row-icon">${unlocked ? r.icon : '🔒'}</span>
           <div class="rank-row-body">
-            <span class="rank-row-name">${r.name}${current ? ' · You' : ''}</span>
+            <span class="rank-row-name">${r.name}${current ? ' · Tú' : ''}</span>
             <span class="rank-row-req muted">${req}</span>
           </div>
         </article>`;
@@ -345,13 +345,13 @@ function openSetupWizard() {
 }
 
 function startOverAfterSmoking() {
-  const msg = 'This will reset your quit date to right now and start a fresh attempt. Continue?';
+  const msg = 'Esto reiniciará tu fecha de dejar de fumar a ahora y empezará un intento nuevo. ¿Continuar?';
   if (!confirm(msg)) return;
   state.profile.quitDate = new Date().toISOString();
   state.seenRanks = ['rookie'];
   persist();
   renderDashboard();
-  toast('Fresh start — you can do this.');
+  toast('Nuevo comienzo — tú puedes.');
 }
 
 function checkNewRanks(now = Date.now()) {
@@ -396,14 +396,14 @@ function bindEvents() {
     try {
       await openSharePreview(state, toast);
     } catch {
-      toast('Could not prepare share');
+      toast('No se pudo preparar para compartir');
     }
   });
   $('#toggle-milestone-alerts')?.addEventListener('change', async (e) => {
     const perm = await setMilestoneAlertsEnabled(state, e.target.checked, persist);
     if (e.target.checked && perm !== 'granted') {
       e.target.checked = false;
-      toast('Notifications blocked — enable in browser settings to use alerts.');
+      toast('Notificaciones bloqueadas — actívalas en ajustes del navegador.');
     }
     renderMore();
   });
@@ -424,7 +424,7 @@ function bindEvents() {
     persist();
     closeModal('modal-setup');
     renderDashboard();
-    toast(`Let's go, ${state.profile.displayName}!`);
+    toast(`¡Vamos, ${state.profile.displayName}!`);
   });
 
   $('#settings-form')?.addEventListener('submit', (e) => {
@@ -444,7 +444,7 @@ function bindEvents() {
     state.profile.currency = $('#settings-currency').value;
     persist();
     renderDashboard();
-    toast('Settings saved');
+    toast('Ajustes guardados');
   });
 
   $('#btn-export')?.addEventListener('click', () => exportJson(state));
@@ -454,9 +454,9 @@ function bindEvents() {
     try {
       state = await importJson(file);
       renderAll();
-      toast('Backup imported');
+      toast('Copia de seguridad importada');
     } catch {
-      toast('Could not import file');
+      toast('No se pudo importar el archivo');
     }
     e.target.value = '';
   });

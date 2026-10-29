@@ -70,10 +70,10 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     btn.setAttribute(
       'aria-label',
       maxChip
-        ? `My chips: ${earned.tier.label}, all chips earned`
+        ? `Mis medallas: ${earned.tier.label}, todas ganadas`
         : earned
-          ? `My chips: ${earned.tier.label} earned`
-          : `Next chip: ${next?.tier.shortLabel ?? '24h'}`
+          ? `Mis medallas: ${earned.tier.label} ganada`
+          : `Próxima medalla: ${next?.tier.shortLabel ?? '24 h'}`
     );
     btn.classList.toggle('hero-chip-btn--max', maxChip);
     btn.classList.remove('chip-animate');
@@ -84,7 +84,7 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     const next = nextChipTarget(state, now);
     const earned = highestEarnedChip(state, now);
     if (maxChip) {
-      hint.textContent = 'Complete';
+      hint.textContent = 'Completo';
       hint.classList.remove('hidden');
       hint.classList.add('hero-chip-hint--max');
     } else if (!earned && next) {
@@ -121,12 +121,12 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
       });
       const meta = earned
         ? `<span class="chips-grid-date">${escapeHtml(formatChipEarnedDate(earnedAt))}</span>`
-        : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} left</span>`;
+        : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} restantes</span>`;
       const maxTag =
         tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MAX</span>' : '';
       const healthTap = earned && isChipHealthUnlockTier(tier.id);
       const tapAttrs = healthTap
-        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Health fact for ${escapeHtml(tier.label)}"`
+        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Dato de salud de ${escapeHtml(tier.label)}"`
         : '';
       const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';
       return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}${healthClass}"${tapAttrs}>
@@ -141,11 +141,11 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
     const ms = msSinceQuit(state.profile, now);
     const top = highestEarnedChip(state, now);
     if (isAtMaxChip(state, now)) {
-      summary.textContent = `All ${allChipTiers().length} chips earned — MAX for your first year.`;
+      summary.textContent = `Las ${allChipTiers().length} medallas ganadas — MAX en tu primer año.`;
     } else if (top) {
-      summary.textContent = `Highest chip: ${top.tier.label}`;
+      summary.textContent = `Medalla más alta: ${top.tier.label}`;
     } else if (ms > 0) {
-      summary.textContent = 'Your first chip unlocks at 24 hours smoke-free.';
+      summary.textContent = 'Tu primera medalla se desbloquea a las 24 horas sin fumar.';
     } else {
       summary.textContent = '';
     }

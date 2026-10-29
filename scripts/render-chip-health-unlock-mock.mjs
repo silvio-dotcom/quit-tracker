@@ -44,8 +44,8 @@ async function captureMock(tierId, filename) {
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <link rel="stylesheet" href="${base}css/styles.css?v=27"/>
-  <link rel="stylesheet" href="${base}css/pixel-theme.css?v=27"/>
+  <link rel="stylesheet" href="${base}css/styles.css?v=28"/>
+  <link rel="stylesheet" href="${base}css/pixel-theme.css?v=28"/>
   <style>body{margin:0;background:#0b1220;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;}</style>
 </head>
 <body>
@@ -53,11 +53,11 @@ async function captureMock(tierId, filename) {
     <div class="modal-backdrop dark" style="position:relative;min-height:auto;padding:0;background:transparent;">
       <div class="modal-panel rank-up-panel chip-health-unlock-panel" style="margin:0 auto;">
         <div class="rank-up-burst" aria-hidden="true"></div>
-        <p class="rank-up-label">Health milestone</p>
+        <p class="rank-up-label">HITO DE SALUD</p>
         <div class="chip-health-unlock-art">${coin}</div>
         <h2 id="chip-health-title">${tier.label}</h2>
         <p class="chip-health-fact">${fact}</p>
-        <button type="button" class="btn full">Nice!</button>
+        <button type="button" class="btn full">¡Bien!</button>
       </div>
     </div>
   </div>

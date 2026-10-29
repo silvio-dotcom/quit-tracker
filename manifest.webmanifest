@@ -1,8 +1,8 @@
 {
   "id": "/quit-tracker/",
-  "name": "Quit Tracker",
-  "short_name": "Quit",
-  "description": "Silvio's personal smoke-free tracker with health milestones, ranks, and savings.",
+  "name": "Dejar de fumar",
+  "short_name": "Dejar",
+  "description": "Seguimiento personal sin fumar de Silvio: hitos de salud, rangos y ahorro.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

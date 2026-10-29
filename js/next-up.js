@@ -10,11 +10,11 @@ import { badgeDisplayTitle } from './achievements.js';
 export function formatHealthMilestoneAt(title) {
   const t = String(title || '').trim();
   if (!t) return '';
-  return `at ${t}`;
+  return `a los ${t}`;
 }
 
 export function formatCountdown(ms) {
-  if (ms <= 0) return 'Now';
+  if (ms <= 0) return 'Ahora';
   const sec = Math.floor(ms / 1000);
   const d = Math.floor(sec / 86400);
   const h = Math.floor((sec % 86400) / 3600);
@@ -64,7 +64,7 @@ export function getNextBadge(state, now = Date.now()) {
 
 export function buildNextUpHtml(state, now, escapeHtml) {
   if (!state.profile.quitDate) {
-    return '<p class="muted small">Complete setup to see what’s next.</p>';
+    return '<p class="muted small">Completa la configuración para ver qué sigue.</p>';
   }
   const health = getNextHealthMilestone(state, now);
   const badge = getNextBadge(state, now);
@@ -74,7 +74,7 @@ export function buildNextUpHtml(state, now, escapeHtml) {
     rows.push(`
       <div class="next-up-row next-up-row-health">
         <div class="next-up-row-head">
-          <span class="next-up-tag">Health</span>
+          <span class="next-up-tag">Salud</span>
           <span class="next-up-countdown" aria-live="polite">${escapeHtml(formatCountdown(health.remainingMs))}</span>
         </div>
         <p class="next-up-health-benefit">${escapeHtml(health.displayBenefit)}</p>
@@ -83,7 +83,7 @@ export function buildNextUpHtml(state, now, escapeHtml) {
       </div>`);
   } else if (allFirstYearHealthMilestonesReached(state, now)) {
     rows.push(
-      `<p class="next-up-health-complete muted small">${escapeHtml('All first-year health milestones reached')}</p>`
+      `<p class="next-up-health-complete muted small">${escapeHtml('Todos los hitos de salud del primer año alcanzados')}</p>`
     );
   }
   if (badge) {
@@ -91,7 +91,7 @@ export function buildNextUpHtml(state, now, escapeHtml) {
     rows.push(`
       <div class="next-up-row">
         <div class="next-up-row-head">
-          <span class="next-up-tag">Badge ${badge.achievement.icon}</span>
+          <span class="next-up-tag">Medalla ${badge.achievement.icon}</span>
           <span class="next-up-countdown" aria-live="polite">${escapeHtml(formatCountdown(badge.remainingMs))}</span>
         </div>
         <p class="next-up-title">${escapeHtml(title)}</p>
@@ -99,7 +99,7 @@ export function buildNextUpHtml(state, now, escapeHtml) {
       </div>`);
   }
   if (!rows.length) {
-    return '<p class="muted small">All milestones and badges unlocked — amazing.</p>';
+    return '<p class="muted small">Todos los hitos y medallas desbloqueados — increíble.</p>';
   }
   return rows.join('');
 }

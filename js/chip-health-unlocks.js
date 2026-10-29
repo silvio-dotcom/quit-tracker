@@ -40,7 +40,7 @@ export function isChipHealthUnlockTier(tierId) {
  * @param {string} tierId
  * @param {'en'|'es'} [locale]
  */
-export function chipHealthFact(tierId, locale = 'en') {
+export function chipHealthFact(tierId, locale = 'es') {
   const row = CHIP_HEALTH_UNLOCKS[tierId];
   if (!row) return null;
   return locale === 'es' ? row.factEs : row.factEn;

@@ -1,128 +1,128 @@
 [
   {
     "id": "chip-24h",
-    "label": "24 HRS",
-    "shortLabel": "24h",
+    "label": "24 H",
+    "shortLabel": "24 h",
     "ms": 86400000,
     "kind": "chip",
     "rim": "#94a3b8"
   },
   {
     "id": "chip-2d",
-    "label": "2 DAYS",
-    "shortLabel": "2d",
+    "label": "2 DIAS",
+    "shortLabel": "2 d",
     "ms": 172800000,
     "kind": "chip",
     "rim": "#0e7490"
   },
   {
     "id": "chip-3d",
-    "label": "3 DAYS",
-    "shortLabel": "3d",
+    "label": "3 DIAS",
+    "shortLabel": "3 d",
     "ms": 259200000,
     "kind": "chip",
     "rim": "#8b5a2b"
   },
   {
     "id": "chip-4d",
-    "label": "4 DAYS",
-    "shortLabel": "4d",
+    "label": "4 DIAS",
+    "shortLabel": "4 d",
     "ms": 345600000,
     "kind": "chip",
     "rim": "#5b21b6"
   },
   {
     "id": "chip-5d",
-    "label": "5 DAYS",
-    "shortLabel": "5d",
+    "label": "5 DIAS",
+    "shortLabel": "5 d",
     "ms": 432000000,
     "kind": "chip",
     "rim": "#a16207"
   },
   {
     "id": "chip-6d",
-    "label": "6 DAYS",
-    "shortLabel": "6d",
+    "label": "6 DIAS",
+    "shortLabel": "6 d",
     "ms": 518400000,
     "kind": "chip",
     "rim": "#be185d"
   },
   {
     "id": "chip-1w",
-    "label": "1 WEEK",
-    "shortLabel": "1 wk",
+    "label": "1 SEM",
+    "shortLabel": "1 sem",
     "ms": 604800000,
     "kind": "chip",
     "rim": "#991b1b"
   },
   {
     "id": "chip-2w",
-    "label": "2 WEEKS",
-    "shortLabel": "2 wk",
+    "label": "2 SEM",
+    "shortLabel": "2 sem",
     "ms": 1209600000,
     "kind": "chip",
     "rim": "#9d174d"
   },
   {
     "id": "chip-3w",
-    "label": "3 WEEKS",
-    "shortLabel": "3 wk",
+    "label": "3 SEM",
+    "shortLabel": "3 sem",
     "ms": 1814400000,
     "kind": "chip",
     "rim": "#c2410c"
   },
   {
     "id": "chip-1mo",
-    "label": "1 MONTH",
-    "shortLabel": "1 mo",
+    "label": "1 MES",
+    "shortLabel": "1 mes",
     "ms": 2592000000,
     "kind": "chip",
     "rim": "#b45309"
   },
   {
     "id": "chip-2mo",
-    "label": "2 MONTHS",
-    "shortLabel": "2 mo",
+    "label": "2 MESES",
+    "shortLabel": "2 mes",
     "ms": 5184000000,
     "kind": "chip",
     "rim": "#0f766e"
   },
   {
     "id": "chip-3mo",
-    "label": "3 MONTHS",
-    "shortLabel": "3 mo",
+    "label": "3 MESES",
+    "shortLabel": "3 mes",
     "ms": 7776000000,
     "kind": "chip",
     "rim": "#15803d"
   },
   {
     "id": "chip-4mo",
-    "label": "4 MONTHS",
-    "shortLabel": "4 mo",
+    "label": "4 MESES",
+    "shortLabel": "4 mes",
     "ms": 10368000000,
     "kind": "chip",
     "rim": "#0891b2"
   },
   {
     "id": "chip-6mo",
-    "label": "6 MONTHS",
-    "shortLabel": "6 mo",
+    "label": "6 MESES",
+    "shortLabel": "6 mes",
     "ms": 15724800000,
     "kind": "chip",
     "rim": "#1d4ed8"
   },
   {
     "id": "chip-9mo",
-    "label": "9 MONTHS",
-    "shortLabel": "9 mo",
+    "label": "9 MESES",
+    "shortLabel": "9 mes",
     "ms": 23587200000,
     "kind": "chip",
     "rim": "#6b21a8"
   },
   {
     "id": "chip-1y",
-    "label": "1 YEAR",
-    "shortLabel": "1 yr",
+    "label": "1 ANO",
+    "shortLabel": "1 año",
     "ms": 31536000000,
     "kind": "medallion",
     "rim": "#8b4513"
