@@ -10,14 +10,16 @@ const W = 900;
 const H = 1180;
 
 function pixelFrame(ctx, x, y, w, h) {
-  ctx.fillStyle = '#1c242d';
+  ctx.fillStyle = '#5c94fc';
   ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = '#3d4f66';
-  ctx.lineWidth = 8;
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 12;
   ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
-  ctx.strokeStyle = '#22c55e';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(x + 16, y + 16, w - 32, h - 32);
+  ctx.fillStyle = '#fce0a8';
+  ctx.fillRect(x + 24, y + 24, w - 48, h - 48);
+  ctx.strokeStyle = '#c84c0c';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(x + 32, y + 32, w - 64, h - 64);
 }
 
 async function loadPixelFont() {
@@ -43,22 +45,22 @@ export async function renderSharePng(state, now = Date.now()) {
   const timeBack = formatTimeBack(cigs);
 
   await loadPixelFont();
-  ctx.fillStyle = '#0f1419';
+  ctx.fillStyle = '#5c94fc';
   ctx.fillRect(0, 0, W, H);
   pixelFrame(ctx, 40, 40, W - 80, H - 80);
 
-  ctx.fillStyle = '#f3f6f9';
+  ctx.fillStyle = '#1f3c8c';
   ctx.font = '28px "Press Start 2P", monospace';
   ctx.fillText('SIN HUMO', 72, 120);
-  ctx.font = '16px system-ui, sans-serif';
-  ctx.fillStyle = '#b8c6d6';
+  ctx.font = '600 22px "Pixelify Sans", system-ui, sans-serif';
+  ctx.fillStyle = '#7a2b00';
   ctx.fillText('Progreso sin fumar', 72, 155);
 
-  ctx.fillStyle = '#22c55e';
-  ctx.font = '22px "Press Start 2P", monospace';
-  ctx.fillText(rank.name.toUpperCase(), 72, 220);
+  ctx.fillStyle = '#c84c0c';
+  ctx.font = '600 26px "Pixelify Sans", system-ui, sans-serif';
+  ctx.fillText(rank.name, 72, 220);
 
-  ctx.fillStyle = '#f3f6f9';
+  ctx.fillStyle = '#111';
   ctx.font = '36px "Press Start 2P", monospace';
   const durShort = dur.length > 22 ? dur.slice(0, 22) : dur;
   ctx.fillText(durShort, 72, 340);
@@ -73,15 +75,15 @@ export async function renderSharePng(state, now = Date.now()) {
     `Dinero ahorrado: ${formatMoney(money, cur, CURRENCIES)}`,
     `Tiempo recuperado: ${timeBack.replace(' de mi tiempo recuperado', '')}`,
   ];
-  ctx.font = '22px system-ui, sans-serif';
-  ctx.fillStyle = '#e2e8f0';
+  ctx.font = '22px "Pixelify Sans", system-ui, sans-serif';
+  ctx.fillStyle = '#111';
   let y = 460;
   for (const line of lines) {
     ctx.fillText(line, 72, y);
     y += 48;
   }
 
-  ctx.fillStyle = '#8b9aab';
+  ctx.fillStyle = '#7a2b00';
   ctx.font = '14px "Press Start 2P", monospace';
   ctx.fillText('SIN-HUMO', 72, H - 72);
 
