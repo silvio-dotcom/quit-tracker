@@ -529,7 +529,7 @@ label,
 }
 
 .main-content {
-  padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 8px);
+  padding-top: calc(var(--header-h) + var(--safe-top) + 8px);
 }
 
 .progress-fill,
