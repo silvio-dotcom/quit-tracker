@@ -9,19 +9,25 @@ import { formatMoney } from '../js/stats.js';
 import { CURRENCIES } from '../js/constants.js';
 import { xpLevelProgress } from '../js/xp.js';
 import { WIDGET_FIXTURE_PROFILE } from '../js/widget-compute.js';
-import { BASE_SMOKE_FREE_CHIPS } from '../js/constants.js';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const out = process.env.QT_ARTIFACTS_DIR || '/opt/cursor/artifacts';
+const out = process.env.QT_ARTIFACTS_DIR || path.join(repo, 'artifacts');
 const repoArtifacts = path.join(repo, 'artifacts');
 const drawable = path.join(repo, 'android/app/src/main/res/drawable-nodpi');
-const fontPath = path.join(repo, 'fonts/PressStart2P-Regular.ttf').replace(/\\/g, '/');
 fs.mkdirSync(out, { recursive: true });
 
 const MS_H = 60 * 60 * 1000;
 const MS_D = 24 * MS_H;
 
+const fontB64 = fs.readFileSync(path.join(repo, 'fonts/PressStart2P-Regular.ttf')).toString('base64');
 const logoB64 = fs.readFileSync(path.join(drawable, 'widget_logo.png')).toString('base64');
+
+function coinB64(tierId) {
+  const name = tierId ? `widget_coin_${tierId.replace(/-/g, '_')}.png` : 'widget_coin_slot_empty.png';
+  const p = path.join(drawable, name);
+  if (fs.existsSync(p)) return fs.readFileSync(p).toString('base64');
+  return null;
+}
 
 function stateAt(ms) {
   return {
@@ -77,21 +83,31 @@ function widgetModel(msElapsed) {
     progress = Math.round(next.progress);
   }
 
-  return { smoke, money, level, currentLabel, currentTierId, nextTierId, showNext, sigLine, progress, logoB64 };
+  return {
+    smoke,
+    money,
+    level,
+    currentLabel,
+    currentCoinB64: coinB64(currentTierId),
+    nextCoinB64: showNext ? coinB64(nextTierId) : null,
+    showNext,
+    sigLine,
+    progress,
+    logoB64,
+  };
 }
 
 function renderHtml(w, h, model) {
   const compact = w < 200;
-  const data = JSON.stringify({ w, h, compact, ...model });
+  const payload = JSON.stringify({ w, h, compact, fontB64, ...model });
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#222;display:flex;align-items:center;justify-content:center;min-height:100vh}</style>
-</head><body><canvas id="c"></canvas>
+<style>html,body{margin:0;padding:0;background:#111}#c{display:block}</style>
+</head><body><canvas id="c" width="${w}" height="${h}"></canvas>
 <script>
-const M = ${data};
-const fontUrl = 'file://${fontPath}';
+const M = ${payload};
 
 function drawAccentI(ctx, x, baseline, size, color) {
-  const px = Math.max(1, size * 0.1);
+  const px = Math.max(1, size * 0.12);
   ctx.fillStyle = color;
   const left = x + size * 0.38;
   const top = baseline - size * 0.72;
@@ -113,44 +129,50 @@ function drawP2(ctx, text, x, y, size, color, shadow) {
       if (ch === 'I') drawAccentI(ctx, cx, y, size, color);
       cx += ctx.measureText(ch).width;
     }
-    return cx;
+    return;
   }
   if (shadow) { ctx.fillStyle = shadow; ctx.fillText(text, x + 1, y + 1); }
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
-  return x + ctx.measureText(text).width;
 }
 
-function drawBlocks(ctx, x, y, w, h, pct) {
+function drawBlocks(ctx, x, y, bw, bh, pct) {
   const n = 10;
-  const filled = Math.round((pct / 100) * n);
+  const filled = Math.round((Math.max(0, Math.min(100, pct)) / 100) * n);
   const gap = 2;
-  const bw = Math.floor((w - gap * (n - 1)) / n);
+  const blockW = Math.max(4, Math.floor((bw - gap * (n - 1)) / n));
   for (let i = 0; i < n; i++) {
-    const bx = x + i * (bw + gap);
+    const bx = x + i * (blockW + gap);
     ctx.fillStyle = '#000';
-    ctx.fillRect(bx, y, bw, h);
+    ctx.fillRect(bx, y, blockW, bh);
     ctx.fillStyle = i < filled ? '#c84c0c' : '#f8b800';
-    ctx.fillRect(bx + 2, y + 2, bw - 4, h - 4);
+    ctx.fillRect(bx + 2, y + 2, blockW - 4, bh - 4);
     if (i < filled) {
       ctx.fillStyle = '#7a2b00';
-      ctx.fillRect(bx + 2, y + h - 4, bw - 4, 2);
+      ctx.fillRect(bx + 2, y + bh - 4, blockW - 4, 2);
     }
   }
 }
 
+async function loadImg(b64) {
+  if (!b64) return null;
+  const img = new Image();
+  img.src = 'data:image/png;base64,' + b64;
+  await img.decode();
+  return img;
+}
+
 async function paint() {
-  const ff = new FontFace('P2', 'url(' + fontUrl + ')');
+  const ff = new FontFace('P2', 'url(data:font/ttf;base64,' + M.fontB64 + ')');
   await ff.load();
   document.fonts.add(ff);
+  await document.fonts.load('8px P2');
+  await document.fonts.ready;
+
   const c = document.getElementById('c');
-  const dpr = 3;
-  c.width = M.w * dpr;
-  c.height = M.h * dpr;
-  c.style.width = M.w + 'px';
-  c.style.height = M.h + 'px';
+  c.width = M.w;
+  c.height = M.h;
   const ctx = c.getContext('2d');
-  ctx.scale(dpr, dpr);
   ctx.imageSmoothingEnabled = false;
 
   ctx.fillStyle = '#5c94fc';
@@ -166,14 +188,13 @@ async function paint() {
   for (let gx = 4; gx < M.w - 4; gx += 16) ctx.fillRect(gx, M.h - groundH - 4, 2, groundH);
 
   const pad = 10;
-  let y = pad + 8;
-  const img = new Image();
-  img.src = 'data:image/png;base64,' + M.logoB64;
-  await img.decode();
-  ctx.drawImage(img, pad, y - 6, 18, 18);
+  let y = pad + 6;
+  const logo = await loadImg(M.logoB64);
+  if (logo) ctx.drawImage(logo, pad, y - 4, 18, 18);
   ctx.font = '700 11px sans-serif';
   ctx.fillStyle = '#f8b800';
-  ctx.fillText('SIN HUMO', pad + 24, y + 6);
+  ctx.fillText('SIN HUMO', pad + 24, y + 8);
+
   const lvW = 68;
   const lvX = M.w - pad - lvW;
   ctx.fillStyle = '#f8b800';
@@ -183,23 +204,55 @@ async function paint() {
   ctx.strokeRect(lvX, y - 2, lvW, 14);
   drawP2(ctx, M.level, lvX + 4, y + 8, M.compact ? 6 : 7, '#000', null);
 
-  y += 22;
+  y += 24;
+  const coinCol = M.compact ? 44 : 48;
+  const textW = M.w - pad * 2 - coinCol - 6;
   const sz = M.compact ? 8 : 9;
   drawP2(ctx, M.smoke, pad, y + sz, sz, '#fff', '#1f3c8c');
-  y += sz + 6;
+  y += sz + 5;
   drawP2(ctx, M.money, pad, y + 7, M.compact ? 7 : 8, '#fce0a8', '#1f3c8c');
 
-  drawP2(ctx, M.currentLabel, M.w - pad - 58, y + 4, 5, '#f8b800', '#000');
+  const curCoin = await loadImg(M.currentCoinB64);
+  const coinX = M.w - pad - coinCol;
+  const coinSize = M.compact ? 36 : 40;
+  if (curCoin) ctx.drawImage(curCoin, coinX + (coinCol - coinSize) / 2, pad + 22, coinSize, coinSize);
+  drawP2(ctx, M.currentLabel, coinX, y - 2, 5, '#f8b800', '#000');
 
   if (M.showNext) {
-    y += 16;
-    drawP2(ctx, M.sigLine, pad, y + 7, M.compact ? 6 : 7, '#fff', '#1f3c8c');
-    y += 12;
+    y += 14;
+    const nextCoin = await loadImg(M.nextCoinB64);
+    if (nextCoin) ctx.drawImage(nextCoin, pad, y, 18, 18);
+    drawP2(ctx, M.sigLine, pad + 22, y + 14, M.compact ? 5 : 6, '#fff', '#1f3c8c');
+    y += 18;
     drawBlocks(ctx, pad, y, M.w - pad * 2, 8, M.progress);
   }
+
+  const px = ctx.getImageData(8, 8, 1, 1).data;
+  if (px[2] < 200) throw new Error('sky pixel check failed');
+  window.__WIDGET_PAINT_OK__ = true;
 }
-paint();
+
+paint().catch((e) => { window.__WIDGET_PAINT_ERR__ = String(e && e.message ? e.message : e); });
 </script></body></html>`;
+}
+
+function writePngFromDataUrl(dataUrl, filePath) {
+  const b64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+  fs.writeFileSync(filePath, Buffer.from(b64, 'base64'));
+}
+
+function assertPngNotBlank(filePath, minBytes = 800) {
+  const stat = fs.statSync(filePath);
+  if (stat.size < minBytes) {
+    throw new Error(`${filePath}: file too small (${stat.size} bytes)`);
+  }
+  const buf = fs.readFileSync(filePath);
+  if (buf.length < 24) throw new Error(`${filePath}: invalid PNG`);
+  const w = buf.readUInt32BE(16);
+  const h = buf.readUInt32BE(20);
+  if (w <= 300 && h <= 150 && stat.size < 2000) {
+    throw new Error(`${filePath}: looks like default blank canvas ${w}x${h}`);
+  }
 }
 
 const scenarios = [
@@ -219,12 +272,28 @@ for (const sc of scenarios) {
   const model = widgetModel(sc.ms);
   for (const sz of sizes) {
     const name = `v29-widget-${sz.suffix}-${sc.tag}.png`;
-    const page = await browser.newPage({ viewport: { width: sz.w + 40, height: sz.h + 40 }, deviceScaleFactor: 1 });
-    await page.setContent(renderHtml(sz.w, sz.h, model));
-    await page.waitForFunction(() => document.fonts.check('8px P2'));
-    await page.waitForTimeout(200);
-    await page.locator('#c').screenshot({ path: path.join(out, name) });
+    const outPath = path.join(out, name);
+    const page = await browser.newPage({
+      viewport: { width: sz.w + 20, height: sz.h + 20 },
+      deviceScaleFactor: 1,
+    });
+    await page.setContent(renderHtml(sz.w, sz.h, model), { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.__WIDGET_PAINT_OK__ === true || window.__WIDGET_PAINT_ERR__, null, {
+      timeout: 15000,
+    });
+    const err = await page.evaluate(() => window.__WIDGET_PAINT_ERR__);
+    if (err) {
+      await page.close();
+      throw new Error(`${name}: paint failed: ${err}`);
+    }
+    const dataUrl = await page.evaluate(() => {
+      const c = document.getElementById('c');
+      return c.toDataURL('image/png');
+    });
+    writePngFromDataUrl(dataUrl, outPath);
+    assertPngNotBlank(outPath);
     await page.close();
+    console.log('wrote', outPath);
   }
 }
 await browser.close();
@@ -234,4 +303,5 @@ fs.mkdirSync(repoArtifacts, { recursive: true });
 fs.copyFileSync(previewSrc, path.join(drawable, 'widget_preview.png'));
 fs.copyFileSync(previewSrc, path.join(out, 'v29-widget-preview.png'));
 fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-v29-plataformas.png'));
+assertPngNotBlank(path.join(drawable, 'widget_preview.png'));
 console.log('saved v29 widget mocks + widget_preview.png + artifacts/widget-v29-plataformas.png');
