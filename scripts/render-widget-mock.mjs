@@ -117,28 +117,29 @@ function htmlFor(model, w, h) {
     : `<div class="prog"><span style="width:100%"></span></div>`;
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
 <style>
+  @font-face{font-family:P2;src:url('file://${path.join(repo, 'fonts/PressStart2P-Regular.ttf')}')}
+  @font-face{font-family:PX;src:url('file://${path.join(repo, 'fonts/PixelifySans-latin-600.woff2')}') format('woff2')}
+  .ia{position:relative;display:inline-block}.ia::after{content:"";position:absolute;left:.375em;top:-.375em;width:.125em;height:.125em;background:currentColor;box-shadow:.125em -.125em 0 currentColor}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh}
-  .w{width:${w}px;height:${h}px;background:#0f1419;border:3px solid #334155;box-shadow:4px 4px 0 #1e293b;padding:6px 10px;font-family:'Press Start 2P',monospace;color:#f3f6f9;display:flex;flex-direction:column;justify-content:center}
-  .head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-  .brand{color:#86efac;font-size:${compact ? 6 : 7}px;flex:1}
-  .lv{font-size:6px;color:#22c55e;background:#1c242d;padding:3px 6px}
-  .hero{display:flex;gap:6px;align-items:flex-start}
+  .w{width:${w}px;height:${h}px;background:#5c94fc;border:4px solid #000;padding:8px 10px;font-family:P2,monospace;color:#fff;display:flex;flex-direction:column;justify-content:center;text-shadow:2px 2px 0 #1f3c8c}
+  .head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .brand{color:#f8b800;font-size:${compact ? 6 : 7}px;flex:1;font-family:PX,sans-serif;font-weight:700}
+  .lv{font-size:6px;color:#000;background:#f8b800;padding:3px 6px;border:2px solid #000;text-shadow:none}
+  .hero{display:flex;gap:8px;align-items:flex-start}
   .stats{flex:1;min-width:0}
-  .lbl{color:#64748b;font-size:6px}
-  .time{font-size:${compact ? 8 : 9}px;margin-top:2px;line-height:1.35}
-  .money{color:#22c55e;font-size:${compact ? 7 : 8}px;margin-top:4px}
+  .time{font-size:${compact ? 8 : 9}px;line-height:1.35}
+  .money{color:#fce0a8;font-size:${compact ? 7 : 8}px;margin-top:4px}
   .curcol{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:${compact ? 64 : 72}px}
   .curcoin{width:${model.currentSize}px;height:${model.currentSize}px;image-rendering:pixelated}
-  .curlbl{font-size:5px;color:#86efac;margin-top:2px;text-align:center;line-height:1.3;max-width:72px}
-  .nextrow{display:flex;gap:6px;margin-top:5px;align-items:center}
+  .curlbl{font-size:5px;color:#f8b800;margin-top:2px;text-align:center;line-height:1.3;max-width:72px;text-shadow:1px 1px 0 #000}
+  .nextrow{display:flex;gap:6px;margin-top:6px;align-items:center}
   .nextcoin{width:22px;height:22px;image-rendering:pixelated}
   .chip{font-size:${compact ? 6 : 7}px;line-height:1.3}
-  .eta{color:#86efac;font-size:6px;margin-top:1px}
-  .prog{margin-top:6px;height:5px;background:#1c242d;border:1px solid #334155}
-  .prog>span{display:block;height:100%;background:#22c55e}
+  .eta{color:#fce0a8;font-size:6px;margin-top:1px;font-family:PX,sans-serif;font-weight:600;text-shadow:1px 1px 0 #000}
+  .prog{margin-top:6px;height:8px;background:#7a2b00;border:2px solid #000}
+  .prog>span{display:block;height:100%;background:#f8b800;box-shadow:inset -2px -2px 0 #c84c0c}
   img{object-fit:contain}
 </style></head><body>
 <div class="w">
@@ -146,7 +147,7 @@ function htmlFor(model, w, h) {
   <span class="brand">SIN HUMO</span><span class="lv">${model.level}</span></div>
   <div class="hero">
     <div class="stats">
-      <div class="time">${model.smoke}</div>
+      <div class="time">${model.smoke.replace(/DÍAS/g, 'D<span class="ia">I</span>AS').replace(/DÍA/g, 'D<span class="ia">I</span>A')}</div>
       <div class="money">${model.money}</div>
     </div>
     <div class="curcol">${model.currentCoin.replace('alt=""', 'class="curcoin" alt=""')}<div class="curlbl">${model.currentLabel}</div></div>
@@ -171,7 +172,7 @@ const browser = await chromium.launch();
 for (const sc of scenarios) {
   const model = widgetModel(sc.ms);
   for (const sz of sizes) {
-    const name = `v28-widget-${sz.suffix}-${sc.tag}.png`;
+    const name = `v29-widget-${sz.suffix}-${sc.tag}.png`;
     const page = await browser.newPage({ viewport: { width: sz.w + 80, height: sz.h + 80 }, deviceScaleFactor: 3 });
     await page.setContent(htmlFor(model, sz.w, sz.h));
     await page.waitForTimeout(150);
@@ -181,9 +182,9 @@ for (const sc of scenarios) {
 }
 await browser.close();
 
-const previewSrc = path.join(out, 'v28-widget-4x2-45d.png');
+const previewSrc = path.join(out, 'v29-widget-4x2-45d.png');
 fs.mkdirSync(repoArtifacts, { recursive: true });
 fs.copyFileSync(previewSrc, path.join(drawable, 'widget_preview.png'));
-fs.copyFileSync(previewSrc, path.join(out, 'v28-widget-preview.png'));
-fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-es-419-mock.png'));
-console.log('saved v28 widget mocks + widget_preview.png + artifacts/widget-es-419-mock.png');
+fs.copyFileSync(previewSrc, path.join(out, 'v29-widget-preview.png'));
+fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-v29-plataformas.png'));
+console.log('saved v29 widget mocks + widget_preview.png + artifacts/widget-v29-plataformas.png');

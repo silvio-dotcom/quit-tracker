@@ -12,15 +12,15 @@ import android.widget.RemoteViews;
 import org.json.JSONObject;
 
 public final class WidgetUi {
-    private static final int COLOR_BRAND = 0xFF86EFAC;
-    private static final int COLOR_MUTED = 0xFF64748B;
-    private static final int COLOR_TEXT = 0xFFF3F6F9;
-    private static final int COLOR_MONEY = 0xFF22C55E;
-    private static final int COLOR_CHIP = 0xFFE2E8F0;
-    private static final int COLOR_CURRENT = 0xFF86EFAC;
-    private static final int COLOR_ETA = 0xFF86EFAC;
-    private static final int COLOR_EMPTY = 0xFF94A3B8;
-    private static final int COLOR_LEVEL = 0xFF22C55E;
+    private static final int COLOR_BRAND = 0xFFF8B800;
+    private static final int COLOR_MUTED = 0xFFFCE0A8;
+    private static final int COLOR_TEXT = 0xFFFFFFFF;
+    private static final int COLOR_MONEY = 0xFFFCE0A8;
+    private static final int COLOR_CHIP = 0xFFFFFFFF;
+    private static final int COLOR_CURRENT = 0xFFF8B800;
+    private static final int COLOR_ETA = 0xFFFCE0A8;
+    private static final int COLOR_EMPTY = 0xFF1F3C8C;
+    private static final int COLOR_LEVEL = 0xFFF8B800;
     private static final int COLOR_NO_CHIP = 0xFF64748B;
 
     private WidgetUi() {}

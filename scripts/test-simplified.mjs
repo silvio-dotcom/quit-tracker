@@ -98,21 +98,19 @@ async function runCase(name, seedLocalStorage) {
   }
 
   await page.locator('.nav-btn[data-nav="home"]').tap();
-  await page.locator('#btn-health-toggle').tap();
+  const healthToggle = page.locator('#btn-health-toggle');
+  if (await healthToggle.isVisible()) {
+    await healthToggle.tap();
+  } else {
+    const platHealth = await page.locator('#plat-health-body').textContent();
+    if (!platHealth || !platHealth.trim()) throw new Error(`${name}: missing plataformas health sign`);
+  }
   if (name === 'fresh') {
     await page.waitForTimeout(200);
-    const nextUp = await page.locator('#next-up-card').count();
-    if (!nextUp) throw new Error('fresh: missing next-up card');
-    const installHeader = await page.locator('#btn-install-header:not(.hidden)').count();
-    if (!installHeader) throw new Error('fresh: header install button should show before installed');
-    const rankNameColor = await page.evaluate(() => {
-      const el = document.querySelector('#rank-dash-name');
-      if (!el) return null;
-      return getComputedStyle(el).color;
-    });
-    if (!rankNameColor || rankNameColor === 'rgb(0, 0, 0)') {
-      throw new Error(`fresh: rank name low contrast color ${rankNameColor}`);
-    }
+    const platHero = await page.locator('#plat-hero-days').count();
+    if (!platHero) throw new Error('fresh: missing plataformas hero');
+    const platPath = await page.locator('#plat-chip-path-blocks i').count();
+    if (platPath !== 14) throw new Error(`fresh: expected 14 path blocks, got ${platPath}`);
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/home-simplified-mobile.png', fullPage: false });
     await page.locator('.nav-btn[data-nav="badges"]').tap();
     await page.waitForTimeout(250);
@@ -120,8 +118,8 @@ async function runCase(name, seedLocalStorage) {
     await page.screenshot({ path: '/opt/cursor/artifacts/screenshots/tab-badges-mobile.png', fullPage: false });
     const filters = await page.locator('.badge-filter-chip').count();
     if (filters < 4) throw new Error('fresh: expected badge filter chips');
-    const badgeNext = await page.locator('.badge-next-up').count();
-    if (!badgeNext) throw new Error('fresh: expected badge next-up card');
+    const ladder = await page.locator('#medallas-ladder .chips-grid-item').count();
+    if (ladder < 16) throw new Error('fresh: expected medallas ladder chips');
   }
 
   if (name === 'ten-days') {

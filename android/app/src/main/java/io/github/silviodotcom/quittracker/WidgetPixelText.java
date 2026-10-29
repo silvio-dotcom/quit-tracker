@@ -25,6 +25,45 @@ public final class WidgetPixelText {
 
     public static Bitmap line(Context context, String text, float sp, int color, int maxWidthPx, float scale) {
         if (text == null) text = "";
+        if (text.contains("D\u00cdAS") || text.contains("D\u00cdA")) {
+            return lineWithPixelDias(context, text, sp, color, maxWidthPx, scale);
+        }
+        return linePlain(context, text, sp, color, maxWidthPx, scale);
+    }
+
+    /** D + pixel accent + AS/ A (Press Start 2P reads Í as lowercase). */
+    private static Bitmap lineWithPixelDias(Context context, String text, float sp, int color, int maxWidthPx, float scale) {
+        TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTypeface(pixelFont(context));
+        float size = sp * scale * context.getResources().getDisplayMetrics().scaledDensity;
+        paint.setTextSize(size);
+        paint.setColor(color);
+
+        String normalized = text.replace("D\u00cdAS", "DIAS").replace("D\u00cdA", "DIA");
+        float w = paint.measureText(normalized);
+        int h = Math.max(1, (int) (size * 1.35f));
+        Bitmap bmp = Bitmap.createBitmap(Math.max(1, (int) Math.ceil(w)), h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+        float x = 0;
+        for (int i = 0; i < normalized.length(); i++) {
+            char c = normalized.charAt(i);
+            String s = String.valueOf(c);
+            canvas.drawText(s, x, size, paint);
+            if (c == 'I') {
+                float px = size * 0.08f;
+                Paint dot = new Paint(Paint.ANTI_ALIAS_FLAG);
+                dot.setColor(color);
+                float left = x + size * 0.35f;
+                float top = size * 0.05f;
+                canvas.drawRect(left, top, left + px, top + px, dot);
+                canvas.drawRect(left + px, top - px, left + px * 2, top, dot);
+            }
+            x += paint.measureText(s);
+        }
+        return bmp;
+    }
+
+    private static Bitmap linePlain(Context context, String text, float sp, int color, int maxWidthPx, float scale) {
         TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         paint.setTypeface(pixelFont(context));
         paint.setTextSize(sp * scale * context.getResources().getDisplayMetrics().scaledDensity);
