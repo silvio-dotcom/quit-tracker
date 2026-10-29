@@ -17,6 +17,16 @@ function $(sel) {
   return document.querySelector(sel);
 }
 
+function chipLabelHtml(label, escapeHtml) {
+  let s = escapeHtml(label);
+  s = s.replace(/DÍAS/g, 'D<span class="ia">I</span>AS');
+  s = s.replace(/DÍA/g, 'D<span class="ia">I</span>A');
+  if (s.includes('AÑO')) {
+    s = s.replace(/AÑO/g, '<span class="px-accent-word">AÑO</span>');
+  }
+  return s;
+}
+
 function displayLabel(state, now) {
   const earned = highestEarnedChip(state, now);
   if (earned) return earned.tier.label;
@@ -47,13 +57,18 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
   const mount = $('#hero-chip-mount');
   const btn = $('#hero-chip-btn');
   const labelEl = $('#hero-chip-label');
-  if (!mount) return;
+  const platStage = $('#plat-stage');
+  if (!mount && !platStage) return;
 
-  mount.innerHTML = heroChipMarkup(state, now);
-  if (popUnlock) {
-    mount.classList.add('coin-pop');
-    mount.innerHTML += '<span class="coin-sparkle" aria-hidden="true"></span><span class="coin-sparkle coin-sparkle--b" aria-hidden="true"></span>';
-    window.setTimeout(() => mount.classList.remove('coin-pop'), 700);
+  if (!platStage && mount) {
+    mount.innerHTML = heroChipMarkup(state, now);
+    if (popUnlock) {
+      mount.classList.add('coin-pop');
+      mount.innerHTML += '<span class="coin-sparkle" aria-hidden="true"></span><span class="coin-sparkle coin-sparkle--b" aria-hidden="true"></span>';
+      window.setTimeout(() => mount.classList.remove('coin-pop'), 700);
+    }
+  } else if (mount) {
+    mount.innerHTML = heroChipMarkup(state, now);
   }
 
   const maxChip = isAtMaxChip(state, now);
@@ -109,33 +124,7 @@ export function closeChipsSheet() {
 }
 
 export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
-  const root = $('#chips-grid');
-  if (!root) return;
-  const rows = chipStatuses(state, now);
-  root.innerHTML = rows
-    .map(({ tier, earned, earnedAt, remainingMs }) => {
-      const coin = renderPixelCoin(tier, {
-        size: 56,
-        mode: earned ? 'earned' : 'locked',
-        idleSpin: earned,
-      });
-      const meta = earned
-        ? `<span class="chips-grid-date">${escapeHtml(formatChipEarnedDate(earnedAt))}</span>`
-        : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} restantes</span>`;
-      const maxTag =
-        tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MAX</span>' : '';
-      const healthTap = earned && isChipHealthUnlockTier(tier.id);
-      const tapAttrs = healthTap
-        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Dato de salud de ${escapeHtml(tier.label)}"`
-        : '';
-      const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';
-      return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}${healthClass}"${tapAttrs}>
-        <div class="chips-grid-art">${coin}${maxTag}</div>
-        <p class="chips-grid-label pixel-label">${escapeHtml(tier.label)}</p>
-        ${meta}
-      </article>`;
-    })
-    .join('');
+  renderChipsPathGrid('#chips-grid', state, now, escapeHtml);
   const summary = $('#chips-sheet-summary');
   if (summary) {
     const ms = msSinceQuit(state.profile, now);
@@ -150,6 +139,46 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
       summary.textContent = '';
     }
   }
+}
+
+export function renderMedallasLadder(state, now = Date.now(), escapeHtml) {
+  renderChipsPathGrid('#medallas-ladder', state, now, escapeHtml);
+}
+
+function renderChipsPathGrid(rootSel, state, now, escapeHtml) {
+  const root = $(rootSel);
+  if (!root) return;
+  const rows = chipStatuses(state, now);
+  const next = nextChipTarget(state, now);
+  root.classList.add('chips-path-grid');
+  root.innerHTML = rows
+    .map(({ tier, earned, earnedAt, remainingMs }) => {
+      const isNext = !earned && next?.tier.id === tier.id;
+      const isCastle = tier.id === 'chip-1y';
+      const coin = renderPixelCoin(tier, {
+        size: 56,
+        mode: earned ? 'earned' : isNext ? 'next' : 'locked',
+        idleSpin: earned && !isCastle,
+        progress: isNext ? next.progress : 0,
+      });
+      const meta = earned
+        ? `<span class="chips-grid-date">${escapeHtml(formatChipEarnedDate(earnedAt))}</span>`
+        : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))}</span>`;
+      const maxTag =
+        tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MÁX</span>' : '';
+      const healthTap = earned && isChipHealthUnlockTier(tier.id);
+      const tapAttrs = healthTap
+        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Dato de salud de ${escapeHtml(tier.label)}"`
+        : '';
+      const extraClass = isNext ? ' chips-grid-item--next' : isCastle ? ' chips-grid-item--castle' : '';
+      const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';
+      return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}${extraClass}${healthClass}"${tapAttrs}>
+        <div class="chips-grid-art">${coin}${maxTag}</div>
+        <p class="chips-grid-label pixel-label">${chipLabelHtml(tier.label, escapeHtml)}</p>
+        ${meta}
+      </article>`;
+    })
+    .join('');
 }
 
 function openHealthChipFromGrid(tierId) {
@@ -172,6 +201,18 @@ export function bindChipsUi(getState, escapeHtml) {
     openHealthChipFromGrid(item.dataset.healthChip);
   });
   $('#chips-grid')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const item = e.target.closest('[data-health-chip]');
+    if (!item) return;
+    e.preventDefault();
+    openHealthChipFromGrid(item.dataset.healthChip);
+  });
+  $('#medallas-ladder')?.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-health-chip]');
+    if (!item) return;
+    openHealthChipFromGrid(item.dataset.healthChip);
+  });
+  $('#medallas-ladder')?.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     const item = e.target.closest('[data-health-chip]');
     if (!item) return;

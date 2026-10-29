@@ -9,11 +9,9 @@ import { formatMoney } from '../js/stats.js';
 import { CURRENCIES } from '../js/constants.js';
 import { xpLevelProgress } from '../js/xp.js';
 import { WIDGET_FIXTURE_PROFILE } from '../js/widget-compute.js';
-import { renderPixelCoin } from '../js/chip-art.js';
-import { BASE_SMOKE_FREE_CHIPS } from '../js/constants.js';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const out = process.env.QT_ARTIFACTS_DIR || '/opt/cursor/artifacts';
+const out = process.env.QT_ARTIFACTS_DIR || path.join(repo, 'artifacts');
 const repoArtifacts = path.join(repo, 'artifacts');
 const drawable = path.join(repo, 'android/app/src/main/res/drawable-nodpi');
 fs.mkdirSync(out, { recursive: true });
@@ -21,20 +19,14 @@ fs.mkdirSync(out, { recursive: true });
 const MS_H = 60 * 60 * 1000;
 const MS_D = 24 * MS_H;
 
+const fontB64 = fs.readFileSync(path.join(repo, 'fonts/PressStart2P-Regular.ttf')).toString('base64');
 const logoB64 = fs.readFileSync(path.join(drawable, 'widget_logo.png')).toString('base64');
 
-function coinImg(tierId, locked = false) {
-  const tier = BASE_SMOKE_FREE_CHIPS.find((t) => t.id === tierId) || BASE_SMOKE_FREE_CHIPS[0];
-  const mode = locked ? 'locked' : 'earned';
-  const html = renderPixelCoin(tier, { size: 72, mode, idleSpin: false });
-  const file = locked
-    ? 'widget_coin_slot_empty.png'
-    : `widget_coin_${tierId.replace(/-/g, '_')}.png`;
-  const p = path.join(drawable, file);
-  if (fs.existsSync(p)) {
-    return `<img src="data:image/png;base64,${fs.readFileSync(p).toString('base64')}" alt=""/>`;
-  }
-  return html;
+function coinB64(tierId) {
+  const name = tierId ? `widget_coin_${tierId.replace(/-/g, '_')}.png` : 'widget_coin_slot_empty.png';
+  const p = path.join(drawable, name);
+  if (fs.existsSync(p)) return fs.readFileSync(p).toString('base64');
+  return null;
 }
 
 function stateAt(ms) {
@@ -60,7 +52,7 @@ function widgetModel(msElapsed) {
   }
   const money = formatMoney(moneySaved(state, now), 'USD', CURRENCIES);
   const xp = xpLevelProgress(state, now);
-  const level = `LV ${xp.level}/${xp.maxed ? '20 MAX' : '20'}`;
+  const level = `LV ${xp.level}/20`;
 
   const earned = highestEarnedChip(state, now);
   const next = nextChipTarget(state, now);
@@ -68,7 +60,6 @@ function widgetModel(msElapsed) {
 
   let currentLabel;
   let currentTierId;
-  let currentLocked = false;
   if (atMax) {
     currentLabel = 'MAX';
     currentTierId = 'chip-1y';
@@ -78,19 +69,17 @@ function widgetModel(msElapsed) {
   } else {
     currentLabel = 'SIN MEDALLA';
     currentTierId = 'chip-24h';
-    currentLocked = true;
   }
 
   let showNext = !atMax;
-  let nextLabel = '';
-  let nextEta = '';
+  let sigLine = '';
   let progress = 100;
   let nextTierId = 'chip-24h';
   if (showNext && next) {
     nextTierId = next.tier.id;
-    nextLabel = `SIG.: ${next.tier.label}`;
     const h = Math.floor(next.remainingMs / MS_H);
-    nextEta = h >= 24 ? `${Math.floor(h / 24)}d` : `${h}h`;
+    const eta = h >= 24 ? `${Math.floor(h / 24)} d` : `${h} h`;
+    sigLine = `SIG.: ${next.tier.label} · ${eta}`;
     progress = Math.round(next.progress);
   }
 
@@ -99,61 +88,257 @@ function widgetModel(msElapsed) {
     money,
     level,
     currentLabel,
-    currentCoin: coinImg(currentTierId, currentLocked),
-    currentSize: 40,
+    currentCoinB64: coinB64(currentTierId),
+    nextCoinB64: showNext ? coinB64(nextTierId) : null,
     showNext,
-    nextLabel,
-    nextEta,
-    nextCoin: coinImg(nextTierId, false),
+    sigLine,
     progress,
+    logoB64,
   };
 }
 
-function htmlFor(model, w, h) {
-  const compact = w < 200;
-  const nextBlock = model.showNext
-    ? `<div class="nextrow">${model.nextCoin.replace('alt=""', 'class="nextcoin" alt=""')}<div><div class="chip">${model.nextLabel}</div><div class="eta">${model.nextEta}</div></div></div>
-       <div class="prog"><span style="width:${model.progress}%"></span></div>`
-    : `<div class="prog"><span style="width:100%"></span></div>`;
-
+function renderHtml(outW, outH, logicalW, logicalH, model) {
+  const compact = logicalW < 200;
+  const S = outW / logicalW;
+  const payload = JSON.stringify({ outW, outH, logicalW, logicalH, S, compact, fontB64, showLevel: true, ...model });
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh}
-  .w{width:${w}px;height:${h}px;background:#0f1419;border:3px solid #334155;box-shadow:4px 4px 0 #1e293b;padding:6px 10px;font-family:'Press Start 2P',monospace;color:#f3f6f9;display:flex;flex-direction:column;justify-content:center}
-  .head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-  .brand{color:#86efac;font-size:${compact ? 6 : 7}px;flex:1}
-  .lv{font-size:6px;color:#22c55e;background:#1c242d;padding:3px 6px}
-  .hero{display:flex;gap:6px;align-items:flex-start}
-  .stats{flex:1;min-width:0}
-  .lbl{color:#64748b;font-size:6px}
-  .time{font-size:${compact ? 8 : 9}px;margin-top:2px;line-height:1.35}
-  .money{color:#22c55e;font-size:${compact ? 7 : 8}px;margin-top:4px}
-  .curcol{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:${compact ? 64 : 72}px}
-  .curcoin{width:${model.currentSize}px;height:${model.currentSize}px;image-rendering:pixelated}
-  .curlbl{font-size:5px;color:#86efac;margin-top:2px;text-align:center;line-height:1.3;max-width:72px}
-  .nextrow{display:flex;gap:6px;margin-top:5px;align-items:center}
-  .nextcoin{width:22px;height:22px;image-rendering:pixelated}
-  .chip{font-size:${compact ? 6 : 7}px;line-height:1.3}
-  .eta{color:#86efac;font-size:6px;margin-top:1px}
-  .prog{margin-top:6px;height:5px;background:#1c242d;border:1px solid #334155}
-  .prog>span{display:block;height:100%;background:#22c55e}
-  img{object-fit:contain}
-</style></head><body>
-<div class="w">
-  <div class="head"><img src="data:image/png;base64,${logoB64}" width="20" height="20" style="image-rendering:pixelated" alt=""/>
-  <span class="brand">SIN HUMO</span><span class="lv">${model.level}</span></div>
-  <div class="hero">
-    <div class="stats">
-      <div class="time">${model.smoke}</div>
-      <div class="money">${model.money}</div>
-    </div>
-    <div class="curcol">${model.currentCoin.replace('alt=""', 'class="curcoin" alt=""')}<div class="curlbl">${model.currentLabel}</div></div>
-  </div>
-  ${nextBlock}
-</div></body></html>`;
+<style>html,body{margin:0;padding:0;background:#111}#c{display:block}</style>
+</head><body><canvas id="c" width="${outW}" height="${outH}"></canvas>
+<script>
+const M = ${payload};
+const S = M.S;
+
+function drawAccentI(ctx, x, baseline, size, color, shadow) {
+  const px = Math.max(3, Math.round(size * 0.14));
+  ctx.fillStyle = color;
+  const left = x + size * 0.35;
+  const top = baseline - size * 1.28;
+  if (shadow) {
+    ctx.fillStyle = shadow;
+    ctx.fillRect(left + S, top + S, px, px);
+    ctx.fillRect(left + px + S, top - px + S, px, px);
+  }
+  ctx.fillStyle = color;
+  ctx.fillRect(left, top, px, px);
+  ctx.fillRect(left + px, top - px, px, px);
 }
+
+function needsDiasAccent(text) {
+  return /DÍAS|DÍA|DIAS|DIA/.test(text);
+}
+
+function normalizeDiasWords(text) {
+  return text.replace(/DÍAS/g, 'DIAS').replace(/DÍA/g, 'DIA');
+}
+
+function isDiasAccentI(norm, i) {
+  if (i <= 0 || norm[i] !== 'I' || norm[i - 1] !== 'D') return false;
+  const n = norm[i + 1];
+  return n === 'A' || n === 'S';
+}
+
+function measureP2(ctx, text, size) {
+  ctx.font = size + 'px P2';
+  if (needsDiasAccent(text)) {
+    const norm = normalizeDiasWords(text);
+    let w = 0;
+    for (let i = 0; i < norm.length; i++) w += ctx.measureText(norm[i]).width;
+    return w;
+  }
+  return ctx.measureText(text).width;
+}
+
+function drawP2(ctx, text, x, y, size, color, shadow) {
+  ctx.font = size + 'px P2';
+  ctx.textBaseline = 'alphabetic';
+  if (needsDiasAccent(text)) {
+    const norm = normalizeDiasWords(text);
+    let cx = x;
+    for (let i = 0; i < norm.length; i++) {
+      const ch = norm[i];
+      if (shadow) {
+        ctx.fillStyle = shadow;
+        ctx.fillText(ch, cx + S, y + S);
+      }
+      ctx.fillStyle = color;
+      ctx.fillText(ch, cx, y);
+      if (isDiasAccentI(norm, i)) drawAccentI(ctx, cx, y, size, color, shadow);
+      cx += ctx.measureText(ch).width;
+    }
+    return;
+  }
+  if (shadow) {
+    ctx.fillStyle = shadow;
+    ctx.fillText(text, x + S, y + S);
+  }
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
+function drawP2Centered(ctx, text, cx, y, size, color, shadow) {
+  const w = measureP2(ctx, text, size);
+  drawP2(ctx, text, cx - w / 2, y, size, color, shadow);
+}
+
+function drawBlocks(ctx, x, y, bw, bh, pct) {
+  const n = 10;
+  const filled = Math.round((Math.max(0, Math.min(100, pct)) / 100) * n);
+  const gap = 2 * S;
+  const blockW = Math.max(4 * S, Math.floor((bw - gap * (n - 1)) / n));
+  for (let i = 0; i < n; i++) {
+    const bx = x + i * (blockW + gap);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(bx, y, blockW, bh);
+    ctx.fillStyle = i < filled ? '#c84c0c' : '#f8b800';
+    ctx.fillRect(bx + 2 * S, y + 2 * S, blockW - 4 * S, bh - 4 * S);
+    if (i < filled) {
+      ctx.fillStyle = '#7a2b00';
+      ctx.fillRect(bx + 2 * S, y + bh - 4 * S, blockW - 4 * S, 2 * S);
+    }
+  }
+}
+
+async function loadImg(b64) {
+  if (!b64) return null;
+  const img = new Image();
+  img.src = 'data:image/png;base64,' + b64;
+  await img.decode();
+  return img;
+}
+
+async function paint() {
+  const ff = new FontFace('P2', 'url(data:font/ttf;base64,' + M.fontB64 + ')');
+  await ff.load();
+  document.fonts.add(ff);
+  await document.fonts.load(Math.ceil(8 * S) + 'px P2');
+  await document.fonts.ready;
+
+  const c = document.getElementById('c');
+  c.width = M.outW;
+  c.height = M.outH;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.fillStyle = '#5c94fc';
+  ctx.fillRect(0, 0, M.outW, M.outH);
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 4 * S;
+  ctx.strokeRect(2 * S, 2 * S, M.outW - 4 * S, M.outH - 4 * S);
+
+  const groundH = 10 * S;
+  ctx.fillStyle = '#c84c0c';
+  ctx.fillRect(4 * S, M.outH - groundH - 4 * S, M.outW - 8 * S, groundH);
+  ctx.fillStyle = '#000';
+  for (let gx = 4 * S; gx < M.outW - 4 * S; gx += 16 * S) ctx.fillRect(gx, M.outH - groundH - 4 * S, 2 * S, groundH);
+
+  const pad = 10 * S;
+  let y = pad + 6 * S;
+  const logo = await loadImg(M.logoB64);
+  if (logo) ctx.drawImage(logo, pad, y - 4 * S, 18 * S, 18 * S);
+  drawP2(ctx, 'SIN HUMO', pad + 24 * S, y + 8 * S, 6 * S, '#f8b800', null);
+
+  if (!M.compact && M.showLevel) {
+    const lvSize = 7 * S;
+    const lvPadX = 4 * S;
+    const lvW = measureP2(ctx, M.level, lvSize) + lvPadX * 2;
+    const lvH = 14 * S;
+    const lvX = M.outW - pad - lvW;
+    ctx.fillStyle = '#f8b800';
+    ctx.fillRect(lvX, y - 2 * S, lvW, lvH);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2 * S;
+    ctx.strokeRect(lvX, y - 2 * S, lvW, lvH);
+    drawP2(ctx, M.level, lvX + lvPadX, y + 8 * S, lvSize, '#000', null);
+  }
+
+  y += 24 * S;
+  const heroTop = y;
+  const coinCol = (M.compact ? 44 : 52) * S;
+  const coinCenterX = M.outW - pad - coinCol / 2;
+  const coinSize = (M.compact ? 24 : 38) * S;
+  const labelSize = (M.compact ? 5 : 6) * S;
+  const labelBaseline = heroTop + coinSize + 4 * S + labelSize;
+  const coinColBottom = labelBaseline + 6 * S;
+
+  const sz = (M.compact ? 8 : 9) * S;
+  drawP2(ctx, M.smoke, pad, heroTop + sz, sz, '#fff', '#1f3c8c');
+  const moneyBaseline = heroTop + sz + 5 * S + (M.compact ? 7 : 8) * S;
+  drawP2(ctx, M.money, pad, moneyBaseline, (M.compact ? 7 : 8) * S, '#fce0a8', '#1f3c8c');
+  const leftBottom = moneyBaseline + 4 * S;
+
+  const curCoin = await loadImg(M.currentCoinB64);
+  if (curCoin) ctx.drawImage(curCoin, coinCenterX - coinSize / 2, heroTop, coinSize, coinSize);
+  drawP2Centered(ctx, M.currentLabel, coinCenterX, labelBaseline, labelSize, '#f8b800', '#000');
+
+  const heroBottom = Math.max(leftBottom, coinColBottom);
+
+  const groundTop = M.outH - groundH - 4 * S;
+  const blockH = 8 * S;
+  const sigSize = (M.compact ? 5 : 6) * S;
+  const sigCoin = (M.compact ? 16 : 18) * S;
+
+  if (M.showNext) {
+    const nextCoin = await loadImg(M.nextCoinB64);
+    if (M.compact) {
+      const sigRowTop = groundTop - sigCoin - 2 * S;
+      const sigBaseline = sigRowTop + sigCoin - 2 * S;
+      let blockTop = sigRowTop - blockH - 4 * S;
+      const minBlockTop = coinColBottom + 5 * S;
+      if (blockTop < minBlockTop) blockTop = minBlockTop;
+      if (blockTop + blockH > sigRowTop - 4 * S) {
+        throw new Error('compact layout overlap: blocks intersect sig row');
+      }
+      drawBlocks(ctx, pad, blockTop, M.outW - pad * 2, blockH, M.progress);
+      if (nextCoin) ctx.drawImage(nextCoin, pad, sigRowTop, sigCoin, sigCoin);
+      drawP2(ctx, M.sigLine, pad + (sigCoin + 4 * S), sigBaseline, sigSize, '#fff', '#1f3c8c');
+    } else {
+      let blockTop = groundTop - blockH - 2 * S;
+      const minBlockTop = coinColBottom + 18 * S;
+      if (blockTop < minBlockTop) blockTop = minBlockTop;
+      if (blockTop + blockH > groundTop - 2 * S) {
+        throw new Error('wide layout: block row would overlap ground');
+      }
+      const sigBaseline = blockTop - 5 * S;
+      const sigRowTop = sigBaseline - sigCoin + 4 * S;
+      if (sigRowTop < heroBottom + 3 * S) {
+        throw new Error('wide layout overlap: sig row intersects hero/coin column');
+      }
+      if (nextCoin) ctx.drawImage(nextCoin, pad, sigRowTop, sigCoin, sigCoin);
+      drawP2(ctx, M.sigLine, pad + 22 * S, sigBaseline, sigSize, '#fff', '#1f3c8c');
+      drawBlocks(ctx, pad, blockTop, M.outW - pad * 2, blockH, M.progress);
+    }
+  }
+
+  const px = ctx.getImageData(Math.floor(8 * S), Math.floor(8 * S), 1, 1).data;
+  if (px[2] < 200) throw new Error('sky pixel check failed');
+  window.__WIDGET_PAINT_OK__ = true;
+}
+
+paint().catch((e) => { window.__WIDGET_PAINT_ERR__ = String(e && e.message ? e.message : e); });
+</script></body></html>`;
+}
+
+function writePngFromDataUrl(dataUrl, filePath) {
+  const b64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+  fs.writeFileSync(filePath, Buffer.from(b64, 'base64'));
+}
+
+function assertPngNotBlank(filePath, minBytes = 2000) {
+  const stat = fs.statSync(filePath);
+  if (stat.size < minBytes) {
+    throw new Error(`${filePath}: file too small (${stat.size} bytes)`);
+  }
+  const buf = fs.readFileSync(filePath);
+  if (buf.length < 24) throw new Error(`${filePath}: invalid PNG`);
+  const w = buf.readUInt32BE(16);
+  const h = buf.readUInt32BE(20);
+  if (w <= 300 && h <= 150 && stat.size < 2000) {
+    throw new Error(`${filePath}: looks like default blank canvas ${w}x${h}`);
+  }
+}
+
+/** ~3× device density: 4×2 ≈ 1100×509 px (320×148 dp logical). */
+const WIDE_SCALE = 1100 / 320;
 
 const scenarios = [
   { tag: '12h', ms: 12 * MS_H },
@@ -163,27 +348,53 @@ const scenarios = [
 ];
 
 const sizes = [
-  { suffix: '4x2', w: 320, h: 148 },
-  { suffix: '2x2', w: 148, h: 148 },
+  { suffix: '4x2', logicalW: 320, logicalH: 148, outW: 1100, outH: Math.round(148 * WIDE_SCALE) },
+  {
+    suffix: '2x2',
+    logicalW: 148,
+    logicalH: 148,
+    outW: Math.round(148 * WIDE_SCALE),
+    outH: Math.round(148 * WIDE_SCALE),
+  },
 ];
 
 const browser = await chromium.launch();
 for (const sc of scenarios) {
   const model = widgetModel(sc.ms);
   for (const sz of sizes) {
-    const name = `v28-widget-${sz.suffix}-${sc.tag}.png`;
-    const page = await browser.newPage({ viewport: { width: sz.w + 80, height: sz.h + 80 }, deviceScaleFactor: 3 });
-    await page.setContent(htmlFor(model, sz.w, sz.h));
-    await page.waitForTimeout(150);
-    await page.locator('.w').screenshot({ path: path.join(out, name) });
+    const name = `v29-widget-${sz.suffix}-${sc.tag}.png`;
+    const outPath = path.join(out, name);
+    const page = await browser.newPage({
+      viewport: { width: sz.outW + 40, height: sz.outH + 40 },
+      deviceScaleFactor: 1,
+    });
+    await page.setContent(renderHtml(sz.outW, sz.outH, sz.logicalW, sz.logicalH, model), {
+      waitUntil: 'domcontentloaded',
+    });
+    await page.waitForFunction(() => window.__WIDGET_PAINT_OK__ === true || window.__WIDGET_PAINT_ERR__, null, {
+      timeout: 15000,
+    });
+    const err = await page.evaluate(() => window.__WIDGET_PAINT_ERR__);
+    if (err) {
+      await page.close();
+      throw new Error(`${name}: paint failed: ${err}`);
+    }
+    const dataUrl = await page.evaluate(() => {
+      const c = document.getElementById('c');
+      return c.toDataURL('image/png');
+    });
+    writePngFromDataUrl(dataUrl, outPath);
+    assertPngNotBlank(outPath);
     await page.close();
+    console.log('wrote', outPath);
   }
 }
 await browser.close();
 
-const previewSrc = path.join(out, 'v28-widget-4x2-45d.png');
+const previewSrc = path.join(out, 'v29-widget-4x2-45d.png');
 fs.mkdirSync(repoArtifacts, { recursive: true });
 fs.copyFileSync(previewSrc, path.join(drawable, 'widget_preview.png'));
-fs.copyFileSync(previewSrc, path.join(out, 'v28-widget-preview.png'));
-fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-es-419-mock.png'));
-console.log('saved v28 widget mocks + widget_preview.png + artifacts/widget-es-419-mock.png');
+fs.copyFileSync(previewSrc, path.join(out, 'v29-widget-preview.png'));
+fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-v29-plataformas.png'));
+assertPngNotBlank(path.join(drawable, 'widget_preview.png'));
+console.log('saved v29 widget mocks + widget_preview.png + artifacts/widget-v29-plataformas.png');

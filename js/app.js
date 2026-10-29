@@ -23,7 +23,7 @@ import {
   refreshMilestoneSchedules,
 } from './milestone-alerts.js';
 import { openSharePreview, bindSharePreviewUi } from './share-ui.js';
-import { renderHeroChip, bindChipsUi } from './chips-ui.js';
+import { renderHeroChip, bindChipsUi, renderMedallasLadder } from './chips-ui.js';
 import { registerPredictiveBack } from './back-handler.js';
 import { initNativeShell, onNativeAppActive } from './native-shell.js';
 import { syncWidgetSnapshot } from './widget-sync.js';
@@ -32,6 +32,7 @@ import { initPixelNavIcons } from './pixel-nav-icons.js';
 import { syncAchievementUnlocks, unlockedAchievements } from './achievements.js';
 import { toDatetimeLocalValue, datetimeLocalNow, quitDateFromDatetimeLocal } from './datetime.js';
 import { initInstallUi, updateInstallUi } from './install.js';
+import { renderPlataformasHome } from './plataformas-home.js';
 import {
   getCurrentRank,
   getNextRank,
@@ -246,6 +247,7 @@ function renderDashboard() {
   const chipAnim = Boolean(window.__QT_CHIP_ANIM__);
   if (chipAnim) window.__QT_CHIP_ANIM__ = false;
   renderHeroChip(state, now, chipAnim);
+  renderPlataformasHome(state, now);
   renderHomeLevel(now);
   checkNewRanks(now);
 }
@@ -293,6 +295,8 @@ function renderBadges() {
   const filtersEl = $('#badge-filters');
   const root = $('#badge-sections');
   if (!root) return;
+
+  renderMedallasLadder(state, now, escapeHtml);
 
   const view = renderBadgesScreen({
     state,

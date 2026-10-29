@@ -15,6 +15,12 @@ import { xpLevelProgress, MAX_LEVEL } from './xp.js';
 
 export const BADGE_FILTER_ALL = 'all';
 
+function formatLevelTitle(title) {
+  const t = String(title || '').trim();
+  if (!t) return '';
+  return t.charAt(0) + t.slice(1).toLowerCase();
+}
+
 export function displayBadgeTitle(achievement, currency) {
   return badgeDisplayTitle(achievement, currency);
 }
@@ -121,7 +127,7 @@ export function renderBadgesScreen({
     levelHtml: `<div class="badge-level-bar ${xp.maxed ? 'badge-level-max' : ''}">
       <div class="badge-level-head">
         <span class="pixel-label">LV ${xp.level} / ${MAX_LEVEL}${xp.maxed ? ' MAX' : ''}</span>
-        <span class="badge-level-title pixel-label">${escapeHtml(xp.title)}</span>
+        <span class="badge-level-title pixel-label">${escapeHtml(formatLevelTitle(xp.title))}</span>
       </div>
       <div class="progress-track"><div class="progress-fill rank" style="width:${xpPct}%"></div></div>
       <p class="badge-level-xp muted small">${xp.maxed ? 'Nivel máximo — estatus leyenda' : `${xp.into} / ${xp.need} XP`}</p>

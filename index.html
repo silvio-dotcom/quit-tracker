@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f1419" />
+  <meta name="theme-color" content="#5c94fc" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Dejar" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -12,8 +12,9 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=28" />
-  <link rel="stylesheet" href="css/pixel-theme.css?v=28" />
+  <link rel="stylesheet" href="css/styles.css?v=29" />
+  <link rel="stylesheet" href="css/pixel-theme.css?v=29" />
+  <link rel="stylesheet" href="css/plataformas-theme.css?v=29" />
   <style>
     html.qt-native-android #btn-install-header,
     html.qt-native-android [data-install-ui],
@@ -21,7 +22,7 @@
       display: none !important;
     }
   </style>
-  <script>window.__QT_BUILD__ = '28';</script>
+  <script>window.__QT_BUILD__ = '29';</script>
   <script src="capacitor.js"></script>
   <script>
     (function () {
@@ -41,13 +42,13 @@
       if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=28';
+        s.src = 'js/sw-register.js?v=29';
         document.head.appendChild(s);
       }
     })();
   </script>
 </head>
-<body>
+<body class="plat-world">
   <div id="app">
     <header class="top-bar">
       <div class="brand">
@@ -62,6 +63,70 @@
 
     <main class="main-content">
       <section data-view="home" class="view">
+        <div class="plat-cloud plat-cloud--a" aria-hidden="true"></div>
+        <div class="plat-cloud plat-cloud--b" aria-hidden="true"></div>
+        <div class="plat-cloud plat-cloud--c" aria-hidden="true"></div>
+        <div class="plat-hud" aria-label="Estadísticas rápidas">
+          <div>
+            <div class="l" id="plat-hud-dias-label">DÍAS</div>
+            <div class="v" id="plat-hud-days">000</div>
+          </div>
+          <div>
+            <div class="l">MONEDAS</div>
+            <div class="v"><span id="plat-hud-coins">0/16</span></div>
+          </div>
+          <div>
+            <div class="l">AHORRO</div>
+            <div class="v" id="plat-hud-money">$0.00</div>
+          </div>
+          <div>
+            <div class="l">NIVEL</div>
+            <div class="v" id="plat-hud-level">1</div>
+          </div>
+        </div>
+        <div class="plat-hero">
+          <div class="n" id="plat-hero-days" aria-live="polite">0</div>
+          <div class="d" id="plat-hero-dias">DÍAS</div>
+          <div class="s" id="plat-hero-sub"></div>
+        </div>
+        <button type="button" id="hero-chip-btn" class="hero-chip-btn plat-stage-btn" aria-label="Mis medallas">
+          <div id="plat-stage" class="plat-stage"></div>
+          <div id="hero-chip-mount" class="hero-chip-mount plat-sr-only" aria-hidden="true"></div>
+        </button>
+        <div class="plat-medal">
+          <span id="plat-medal-tag" class="tag">Medalla: <b>—</b></span>
+        </div>
+        <div class="plat-path">
+          <div class="h">
+            <span>Rumbo a <b id="plat-path-target">—</b></span>
+            <span id="plat-path-eta">—</span>
+          </div>
+          <div class="blk" id="plat-chip-path-blocks"></div>
+        </div>
+        <div class="plat-bricks">
+          <div class="plat-brick">
+            <div class="in">
+              <div class="k">EVITADOS</div>
+              <div class="v"><span id="plat-stat-cigs">0</span> <span class="plat-unit-cig">cig.</span></div>
+            </div>
+          </div>
+          <div class="plat-brick">
+            <div class="in">
+              <div class="k">RANGO</div>
+              <div class="v px" id="plat-stat-rank">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="plat-sign">
+          <div class="k" id="plat-health-kicker">¡1-UP! SALUD</div>
+          <p id="plat-health-body"></p>
+        </div>
+        <div class="plat-pipe-rank" id="plat-pipe-rank"></div>
+        <div class="plat-home-actions">
+          <button type="button" id="btn-share-progress" class="btn ghost full">Compartir mi progreso</button>
+          <button type="button" id="btn-start-over" class="btn danger full">Fumé — empezar de nuevo</button>
+        </div>
+        <div class="plat-legacy-fold">
         <p id="home-level-pill" class="home-level-row" aria-live="polite"></p>
         <div class="hero-card">
           <div class="hero-card-inner">
@@ -69,13 +134,8 @@
               <p class="hero-label">Sin fumar hace</p>
               <div id="live-counter" class="live-counter" aria-live="polite"></div>
             </div>
-            <button type="button" id="hero-chip-btn" class="hero-chip-btn" aria-label="Mis medallas">
-              <div class="hero-chip-stack">
-                <div id="hero-chip-mount" class="hero-chip-mount"></div>
-                <p id="hero-chip-label" class="hero-chip-label pixel-label hidden"></p>
-                <span id="hero-chip-hint" class="hero-chip-hint hidden" aria-hidden="true"></span>
-              </div>
-            </button>
+            <p id="hero-chip-label" class="hero-chip-label pixel-label hidden"></p>
+            <span id="hero-chip-hint" class="hero-chip-hint hidden" aria-hidden="true"></span>
           </div>
         </div>
 
@@ -115,11 +175,6 @@
           </article>
         </div>
 
-        <button type="button" id="btn-share-progress" class="btn ghost full btn-with-icon">
-          <span class="btn-icon" aria-hidden="true">↗</span>
-          Compartir mi progreso
-        </button>
-
         <div class="card health-home-section">
           <h2>Recuperación de salud</h2>
           <p class="muted small">Hitos de salud pública (no es consejo médico).</p>
@@ -128,8 +183,7 @@
           <button type="button" id="btn-health-toggle" class="btn ghost full">Ver todos los hitos de salud</button>
           <div id="health-list-home" class="health-list hidden"></div>
         </div>
-
-        <button type="button" id="btn-start-over" class="btn danger full">Fumé — empezar de nuevo</button>
+        </div>
       </section>
 
       <section data-view="rank" class="view hidden">
@@ -152,10 +206,11 @@
 
       <section data-view="badges" class="view hidden">
         <div class="badges-header">
-          <h2 class="section-title">Medallas</h2>
+          <h2 class="section-title plat-view-header">Medallas sin fumar</h2>
           <div id="badge-level-bar" class="badge-level-host"></div>
         </div>
         <p id="badge-summary" class="badge-summary-count pixel-label"></p>
+        <div id="medallas-ladder" class="chips-path-grid" aria-label="Escalera de medallas"></div>
         <div id="badge-filters" class="badge-filters" role="tablist" aria-label="Categorías de medallas"></div>
         <div id="badge-sections" class="badge-sections"></div>
       </section>
@@ -206,11 +261,12 @@
     </main>
 
     <nav class="bottom-nav" aria-label="Principal">
-      <button type="button" class="nav-btn active" data-nav="home" aria-label="Inicio"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Inicio</span></button>
-      <button type="button" class="nav-btn" data-nav="rank" aria-label="Rango"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Rango</span></button>
-      <button type="button" class="nav-btn" data-nav="badges" aria-label="Medallas"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Medallas</span></button>
-      <button type="button" class="nav-btn" data-nav="more" aria-label="Más"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Más</span></button>
+      <button type="button" class="nav-btn active" data-nav="home" aria-label="Inicio"><span class="pixel-nav-icon" aria-hidden="true"></span><span class="nav-label">Inicio</span></button>
+      <button type="button" class="nav-btn" data-nav="rank" aria-label="Rango"><span class="pixel-nav-icon" aria-hidden="true"></span><span class="nav-label">Rango</span></button>
+      <button type="button" class="nav-btn" data-nav="badges" aria-label="Medallas"><span class="pixel-nav-icon" aria-hidden="true"></span><span class="nav-label">Medallas</span></button>
+      <button type="button" class="nav-btn" data-nav="more" aria-label="Más"><span class="pixel-nav-icon" aria-hidden="true"></span><span class="nav-label">Más</span></button>
     </nav>
+    <div class="plat-ground" aria-hidden="true"></div>
   </div>
 
   <div id="toast" class="toast" role="status"></div>
@@ -251,7 +307,7 @@
       <div class="modal-panel chips-sheet-panel">
         <h2 id="chips-sheet-title">Mis medallas</h2>
         <p id="chips-sheet-summary" class="chips-sheet-summary muted small"></p>
-        <div id="chips-grid" class="chips-grid"></div>
+        <div id="chips-grid" class="chips-grid chips-path-grid"></div>
         <button type="button" class="btn full" data-close="modal-chips">Cerrar</button>
       </div>
     </div>
@@ -313,6 +369,6 @@
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=28"></script>
+  <script type="module" src="js/bootstrap.js?v=29"></script>
 </body>
 </html>

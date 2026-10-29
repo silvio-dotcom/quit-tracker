@@ -12,15 +12,15 @@ import android.widget.RemoteViews;
 import org.json.JSONObject;
 
 public final class WidgetUi {
-    private static final int COLOR_BRAND = 0xFF86EFAC;
-    private static final int COLOR_MUTED = 0xFF64748B;
-    private static final int COLOR_TEXT = 0xFFF3F6F9;
-    private static final int COLOR_MONEY = 0xFF22C55E;
-    private static final int COLOR_CHIP = 0xFFE2E8F0;
-    private static final int COLOR_CURRENT = 0xFF86EFAC;
-    private static final int COLOR_ETA = 0xFF86EFAC;
-    private static final int COLOR_EMPTY = 0xFF94A3B8;
-    private static final int COLOR_LEVEL = 0xFF22C55E;
+    private static final int COLOR_BRAND = 0xFFF8B800;
+    private static final int COLOR_MUTED = 0xFFFCE0A8;
+    private static final int COLOR_TEXT = 0xFFFFFFFF;
+    private static final int COLOR_MONEY = 0xFFFCE0A8;
+    private static final int COLOR_CHIP = 0xFFFFFFFF;
+    private static final int COLOR_CURRENT = 0xFFF8B800;
+    private static final int COLOR_ETA = 0xFFFCE0A8;
+    private static final int COLOR_EMPTY = 0xFF1F3C8C;
+    private static final int COLOR_LEVEL = 0xFFF8B800;
     private static final int COLOR_NO_CHIP = 0xFF64748B;
 
     private WidgetUi() {}
@@ -90,27 +90,44 @@ public final class WidgetUi {
             );
 
             if (model.showNextRow) {
-                views.setViewVisibility(R.id.widget_next_row, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_block_progress, View.VISIBLE);
+                String sigLine = model.nextLabel;
+                if (model.nextEta != null && !model.nextEta.isEmpty()) {
+                    sigLine = model.nextLabel + " · " + model.nextEta;
+                }
                 int nextRes = WidgetComputer.coinDrawableRes(context, model.nextTierId);
-                views.setImageViewResource(R.id.widget_next_coin, nextRes);
-                views.setImageViewBitmap(
-                    R.id.widget_chip_label,
-                    WidgetPixelText.line(context, model.nextLabel, compact ? 6f : 7f, COLOR_CHIP, textWidthPx, scale)
-                );
-                views.setImageViewBitmap(
-                    R.id.widget_chip_eta,
-                    WidgetPixelText.line(context, model.nextEta, 6f, COLOR_ETA, textWidthPx, scale)
-                );
+                float sigSp = compact ? 5f : 7f;
+
+                if (compact) {
+                    views.setViewVisibility(R.id.widget_next_row, View.GONE);
+                    views.setViewVisibility(R.id.widget_next_row_bottom, View.VISIBLE);
+                    views.setImageViewResource(R.id.widget_next_coin_bottom, nextRes);
+                    views.setImageViewBitmap(
+                        R.id.widget_chip_label_bottom,
+                        WidgetPixelText.line(context, sigLine, sigSp, COLOR_CHIP, textWidthPx, scale)
+                    );
+                } else {
+                    views.setViewVisibility(R.id.widget_next_row, View.VISIBLE);
+                    views.setViewVisibility(R.id.widget_next_row_bottom, View.GONE);
+                    views.setImageViewResource(R.id.widget_next_coin, nextRes);
+                    views.setImageViewBitmap(
+                        R.id.widget_chip_label,
+                        WidgetPixelText.line(context, sigLine, sigSp, COLOR_CHIP, textWidthPx, scale)
+                    );
+                }
             } else {
                 views.setViewVisibility(R.id.widget_next_row, View.GONE);
-                views.setImageViewBitmap(R.id.widget_chip_label, WidgetPixelText.line(context, "", 6f, COLOR_CHIP, 1, scale));
-                views.setImageViewBitmap(R.id.widget_chip_eta, WidgetPixelText.line(context, "", 6f, COLOR_ETA, 1, scale));
+                views.setViewVisibility(R.id.widget_next_row_bottom, View.GONE);
             }
 
-            views.setProgressBar(R.id.widget_chip_progress, 100, model.chipProgress, false);
-            views.setViewVisibility(R.id.widget_chip_progress, View.VISIBLE);
+            views.setViewVisibility(R.id.widget_chip_progress, View.GONE);
+            views.setImageViewBitmap(
+                R.id.widget_block_progress,
+                WidgetPixelBlocks.progressRow(context, textWidthPx, dpPx(context, 10), model.chipProgress)
+            );
 
-            if (model.showLevel && model.levelPill != null) {
+            // 2×2 cells are too narrow for brand + level on one row (brand gets clipped).
+            if (model.showLevel && model.levelPill != null && !compact) {
                 views.setViewVisibility(R.id.widget_level, View.VISIBLE);
                 views.setImageViewBitmap(
                     R.id.widget_level,
@@ -151,5 +168,9 @@ public final class WidgetUi {
     private static int widthPx(Context context, int widthDp) {
         float density = context.getResources().getDisplayMetrics().density;
         return Math.max(1, (int) (widthDp * density));
+    }
+
+    private static int dpPx(Context context, int dp) {
+        return Math.max(1, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()));
     }
 }

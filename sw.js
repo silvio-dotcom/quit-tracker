@@ -1,4 +1,4 @@
-const BUILD = '28';
+const BUILD = '29';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -6,6 +6,7 @@ const PRECACHE = [
   './index.html',
   `./css/styles.css?v=${BUILD}`,
   `./css/pixel-theme.css?v=${BUILD}`,
+  `./css/plataformas-theme.css?v=${BUILD}`,
   `./js/bootstrap.js?v=${BUILD}`,
   './js/version.js',
   `./js/sw-register.js?v=${BUILD}`,
@@ -34,6 +35,8 @@ const PRECACHE = [
   './js/chip-art.js',
   './js/chips.js',
   './js/chips-ui.js',
+  './js/plataformas-home.js',
+  './js/plataformas-text.js',
   './js/achievements-catalog.js',
   './js/badges-screen.js',
   './js/xp.js',
