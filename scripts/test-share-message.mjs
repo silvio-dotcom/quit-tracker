@@ -18,16 +18,16 @@ if (!msg.startsWith('2026!')) {
   console.error('expected year line');
   process.exit(1);
 }
-if (!msg.includes('28 days smoke-free')) {
+if (!msg.includes('28 días sin fumar')) {
   console.error('expected days line', msg);
   process.exit(1);
 }
-if (!msg.includes('cigarettes avoided')) {
+if (!msg.includes('cigarrillos evitados')) {
   process.exit(1);
 }
 
 const tb = formatTimeBack(985, TIME_BACK_MINUTES_PER_CIG);
-if (tb !== '4d 2h of my time back') {
+if (tb !== '4d 2h de mi tiempo recuperado') {
   console.error('time back expected 4d 2h, got', tb);
   process.exit(1);
 }

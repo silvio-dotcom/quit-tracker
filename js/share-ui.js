@@ -32,7 +32,7 @@ export async function openSharePreview(state, toast) {
   const pre = $('#share-preview-text');
   if (img) {
     img.src = url;
-    img.alt = 'Share preview image';
+    img.alt = 'Vista previa para compartir';
   }
   if (pre) pre.textContent = text;
   openModal();
@@ -50,19 +50,19 @@ export function bindSharePreviewUi(getState, toast) {
   $('#btn-share-preview-copy')?.addEventListener('click', async () => {
     if (!pending?.text) return;
     const ok = await copyShareText(pending.text);
-    toast(ok ? 'Text copied' : 'Could not copy text');
+    toast(ok ? 'Texto copiado' : 'No se pudo copiar el texto');
   });
   $('#btn-share-preview-share')?.addEventListener('click', async () => {
     if (!pending) return;
     try {
       const mode = await shareProgressPayload(pending.state || getState(), pending.text, pending.blob);
-      if (mode === 'shared') toast('Shared!');
-      else if (mode === 'copy-download') toast('Text copied — image downloaded');
+      if (mode === 'shared') toast('¡Compartido!');
+      else if (mode === 'copy-download') toast('Texto copiado — imagen descargada');
       else if (mode === 'cancelled') return;
-      else toast('Image downloaded');
+      else toast('Imagen descargada');
       closeModal();
     } catch {
-      toast('Could not share');
+      toast('No se pudo compartir');
     }
   });
 }

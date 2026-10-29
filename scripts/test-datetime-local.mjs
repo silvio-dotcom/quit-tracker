@@ -46,6 +46,11 @@ function runNodeRoundTrip() {
 
 async function dismissRankModals(page) {
   for (let i = 0; i < 24; i++) {
+    if (await page.locator('#modal-chip-health.open').count()) {
+      await page.locator('[data-close="modal-chip-health"]').click();
+      await page.waitForTimeout(350);
+      continue;
+    }
     if (await page.locator('#modal-milestone.open').count()) {
       await page.locator('[data-close="modal-milestone"]').click();
       await page.waitForTimeout(350);
@@ -145,7 +150,7 @@ async function runBrowserManagua() {
   await page.evaluate(() => document.querySelector('#settings-form')?.requestSubmit());
   await page.waitForTimeout(400);
   const toastText = await page.locator('#toast.show').textContent().catch(() => '');
-  if (!toastText || !/future/i.test(toastText)) {
+  if (!toastText || !/futura/i.test(toastText)) {
     throw new Error(`expected future-date toast, got "${toastText}"`);
   }
   const afterFuture = await page.evaluate(() => JSON.parse(localStorage.getItem('quit-tracker-data-v1')).profile.quitDate);

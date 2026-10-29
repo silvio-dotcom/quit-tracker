@@ -10,6 +10,8 @@ import {
 import { renderPixelCoin } from './chip-art.js';
 import { BASE_SMOKE_FREE_CHIPS } from './constants.js';
 import { msSinceQuit } from './stats.js';
+import { isChipHealthUnlockTier } from './chip-health-unlocks.js';
+import { showChipHealthUnlockModal } from './chip-health-unlock-ui.js';
 
 function $(sel) {
   return document.querySelector(sel);
@@ -68,10 +70,10 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     btn.setAttribute(
       'aria-label',
       maxChip
-        ? `My chips: ${earned.tier.label}, all chips earned`
+        ? `Mis medallas: ${earned.tier.label}, todas ganadas`
         : earned
-          ? `My chips: ${earned.tier.label} earned`
-          : `Next chip: ${next?.tier.shortLabel ?? '24h'}`
+          ? `Mis medallas: ${earned.tier.label} ganada`
+          : `Próxima medalla: ${next?.tier.shortLabel ?? '24 h'}`
     );
     btn.classList.toggle('hero-chip-btn--max', maxChip);
     btn.classList.remove('chip-animate');
@@ -82,7 +84,7 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     const next = nextChipTarget(state, now);
     const earned = highestEarnedChip(state, now);
     if (maxChip) {
-      hint.textContent = 'Complete';
+      hint.textContent = 'Completo';
       hint.classList.remove('hidden');
       hint.classList.add('hero-chip-hint--max');
     } else if (!earned && next) {
@@ -119,10 +121,15 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
       });
       const meta = earned
         ? `<span class="chips-grid-date">${escapeHtml(formatChipEarnedDate(earnedAt))}</span>`
-        : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} left</span>`;
+        : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))} restantes</span>`;
       const maxTag =
         tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MAX</span>' : '';
-      return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}">
+      const healthTap = earned && isChipHealthUnlockTier(tier.id);
+      const tapAttrs = healthTap
+        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Dato de salud de ${escapeHtml(tier.label)}"`
+        : '';
+      const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';
+      return `<article class="chips-grid-item ${earned ? 'earned' : 'locked'}${healthClass}"${tapAttrs}>
         <div class="chips-grid-art">${coin}${maxTag}</div>
         <p class="chips-grid-label pixel-label">${escapeHtml(tier.label)}</p>
         ${meta}
@@ -134,15 +141,21 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
     const ms = msSinceQuit(state.profile, now);
     const top = highestEarnedChip(state, now);
     if (isAtMaxChip(state, now)) {
-      summary.textContent = `All ${allChipTiers().length} chips earned — MAX for your first year.`;
+      summary.textContent = `Las ${allChipTiers().length} medallas ganadas — MAX en tu primer año.`;
     } else if (top) {
-      summary.textContent = `Highest chip: ${top.tier.label}`;
+      summary.textContent = `Medalla más alta: ${top.tier.label}`;
     } else if (ms > 0) {
-      summary.textContent = 'Your first chip unlocks at 24 hours smoke-free.';
+      summary.textContent = 'Tu primera medalla se desbloquea a las 24 horas sin fumar.';
     } else {
       summary.textContent = '';
     }
   }
+}
+
+function openHealthChipFromGrid(tierId) {
+  const tier = BASE_SMOKE_FREE_CHIPS.find((t) => t.id === tierId);
+  if (!tier) return;
+  showChipHealthUnlockModal(tier, () => {});
 }
 
 export function bindChipsUi(getState, escapeHtml) {
@@ -152,6 +165,18 @@ export function bindChipsUi(getState, escapeHtml) {
   });
   $$('[data-close="modal-chips"]').forEach((btn) => {
     btn.addEventListener('click', closeChipsSheet);
+  });
+  $('#chips-grid')?.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-health-chip]');
+    if (!item) return;
+    openHealthChipFromGrid(item.dataset.healthChip);
+  });
+  $('#chips-grid')?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const item = e.target.closest('[data-health-chip]');
+    if (!item) return;
+    e.preventDefault();
+    openHealthChipFromGrid(item.dataset.healthChip);
   });
 }
 

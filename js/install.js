@@ -66,7 +66,7 @@ export function updateInstallUi() {
   const moreBtn = $('#btn-install-more');
   if (moreBtn) {
     moreBtn.disabled = standalone;
-    moreBtn.textContent = standalone ? 'Installed on home screen' : 'Add to Home Screen';
+    moreBtn.textContent = standalone ? 'Instalada en inicio' : 'Agregar a inicio';
   }
 }
 
@@ -101,7 +101,7 @@ async function onInstallTap() {
   }
 
   const toast = window.__QT_TOAST__;
-  if (toast) toast('Use your browser menu (⋮ or Share) to install this app.');
+  if (toast) toast('Usa el menú del navegador (⋮ o Compartir) para instalar esta app.');
 }
 
 export function initInstallUi() {

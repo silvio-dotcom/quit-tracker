@@ -1,4 +1,5 @@
 import { BASE_SMOKE_FREE_CHIPS, MAX_CHIP_TIER, MAX_CHIP_MS } from './constants.js';
+import { formatLocaleDate } from './locale.js';
 
 export { MAX_CHIP_MS, MAX_CHIP_TIER };
 
@@ -68,13 +69,13 @@ export function upcomingChipNotifications(state, now = Date.now()) {
     .map((x) => ({
       key: `chip:${x.tier.id}`,
       at: x.at,
-      title: 'Smoke-free chip earned',
-      body: `You earned your ${x.tier.notifyLabel}`,
+      title: 'Medalla sin fumar',
+      body: `Ganaste tu ${x.tier.notifyLabel}`,
     }));
 }
 
 export function formatChipRemaining(ms) {
-  if (ms <= 0) return 'Now';
+  if (ms <= 0) return 'Ahora';
   const h = Math.floor(ms / (60 * 60 * 1000));
   if (h >= 24) {
     const d = Math.floor(h / 24);
@@ -86,9 +87,5 @@ export function formatChipRemaining(ms) {
 }
 
 export function formatChipEarnedDate(ts) {
-  try {
-    return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch {
-    return '';
-  }
+  return formatLocaleDate(ts, { month: 'short', day: 'numeric', year: 'numeric' });
 }

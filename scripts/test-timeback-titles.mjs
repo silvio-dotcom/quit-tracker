@@ -9,8 +9,8 @@ const profiles = [
 ];
 
 const quit = new Date(Date.now() - 86400000).toISOString();
-const YEAR_BACK = /year back/i;
-const MONTH_BACK = /month back/i;
+const YEAR_BACK = /año recuperados/i;
+const MONTH_BACK = /meses recuperados/i;
 
 for (const p of profiles) {
   const profile = { quitDate: quit, ...p };
@@ -30,7 +30,7 @@ for (const p of profiles) {
       console.error(`${p.cigsPerDay}cpd: ${a.id} title "${title}" missing label "${label.text}"`);
       process.exit(1);
     }
-    const dayMatch = title.match(/(\d+)\s*day/);
+    const dayMatch = title.match(/(\d+)\s*día/);
     if (dayMatch) {
       const titledDays = Number(dayMatch[1]);
       const maxDays = Math.ceil(a.regainedMinutes / 1440);

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es-419">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f1419" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Quit" />
+  <meta name="apple-mobile-web-app-title" content="Dejar" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Silvio's personal smoke-free tracker — time, savings, health milestones, and ranks." />
-  <title>Quit Tracker</title>
+  <meta name="description" content="Seguimiento personal sin fumar de Silvio — tiempo, ahorro, hitos de salud y rangos." />
+  <title>Dejar de fumar</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=26" />
-  <link rel="stylesheet" href="css/pixel-theme.css?v=26" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/pixel-theme.css?v=28" />
   <style>
     html.qt-native-android #btn-install-header,
     html.qt-native-android [data-install-ui],
@@ -21,7 +21,7 @@
       display: none !important;
     }
   </style>
-  <script>window.__QT_BUILD__ = '26';</script>
+  <script>window.__QT_BUILD__ = '28';</script>
   <script src="capacitor.js"></script>
   <script>
     (function () {
@@ -41,7 +41,7 @@
       if (native) document.documentElement.classList.add('qt-native-android');
       if (!native) {
         var s = document.createElement('script');
-        s.src = 'js/sw-register.js?v=26';
+        s.src = 'js/sw-register.js?v=28';
         document.head.appendChild(s);
       }
     })();
@@ -53,11 +53,11 @@
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">🌿</span>
         <div>
-          <h1>Quit Tracker</h1>
-          <p class="tagline">Smoke-free &amp; stronger every minute</p>
+          <h1>Dejar de fumar</h1>
+          <p class="tagline">Sin fumar y más fuerte cada minuto</p>
         </div>
       </div>
-      <button type="button" id="btn-install-header" class="btn-install-header hidden" aria-label="Add to Home Screen">📲 Install</button>
+      <button type="button" id="btn-install-header" class="btn-install-header hidden" aria-label="Agregar a inicio">📲 Instalar</button>
     </header>
 
     <main class="main-content">
@@ -66,10 +66,10 @@
         <div class="hero-card">
           <div class="hero-card-inner">
             <div class="hero-time">
-              <p class="hero-label">Smoke-free for</p>
+              <p class="hero-label">Sin fumar hace</p>
               <div id="live-counter" class="live-counter" aria-live="polite"></div>
             </div>
-            <button type="button" id="hero-chip-btn" class="hero-chip-btn" aria-label="My chips">
+            <button type="button" id="hero-chip-btn" class="hero-chip-btn" aria-label="Mis medallas">
               <div class="hero-chip-stack">
                 <div id="hero-chip-mount" class="hero-chip-mount"></div>
                 <p id="hero-chip-label" class="hero-chip-label pixel-label hidden"></p>
@@ -79,12 +79,12 @@
           </div>
         </div>
 
-        <button type="button" id="rank-dashboard-card" class="rank-dashboard card" aria-label="View rank ladder">
+        <button type="button" id="rank-dashboard-card" class="rank-dashboard card" aria-label="Ver escalera de rangos">
           <div class="rank-dashboard-top">
             <span id="rank-dash-icon" class="rank-dash-icon">🌱</span>
             <div class="rank-dash-text">
-              <span class="rank-dash-label">Personal rank</span>
-              <span id="rank-dash-name" class="rank-dash-name">Rookie</span>
+              <span class="rank-dash-label">Rango personal</span>
+              <span id="rank-dash-name" class="rank-dash-name">Novato</span>
             </div>
             <span id="rank-dash-pct" class="rank-dash-pct muted">0%</span>
           </div>
@@ -94,122 +94,122 @@
         </button>
 
         <div id="next-up-card" class="card next-up-card">
-          <h2 class="next-up-heading">Next up</h2>
+          <h2 class="next-up-heading">Próximo</h2>
           <div id="next-up-body"></div>
         </div>
 
         <div class="stat-grid">
           <article class="stat-card">
-            <span class="stat-label">Not smoked</span>
+            <span class="stat-label">Sin fumar</span>
             <span id="stat-cigs" class="stat-value">0</span>
-            <span class="stat-hint muted">Based on 16 waking hours/day</span>
+            <span class="stat-hint muted">Según 16 horas despierto al día</span>
           </article>
           <article class="stat-card stat-card-wide">
-            <span class="stat-label">Money saved</span>
+            <span class="stat-label">Dinero ahorrado</span>
             <span id="stat-money" class="stat-value">$0.00</span>
             <ul id="money-projections" class="money-projections muted small"></ul>
           </article>
           <article class="stat-card">
-            <span class="stat-label">Current streak</span>
-            <span id="stat-streak" class="stat-value">0 days</span>
+            <span class="stat-label">Racha actual</span>
+            <span id="stat-streak" class="stat-value">0 días</span>
           </article>
         </div>
 
         <button type="button" id="btn-share-progress" class="btn ghost full btn-with-icon">
           <span class="btn-icon" aria-hidden="true">↗</span>
-          Share my progress
+          Compartir mi progreso
         </button>
 
         <div class="card health-home-section">
-          <h2>Health recovery</h2>
-          <p class="muted small">Sourced public-health milestones (not medical advice).</p>
-          <h3 class="health-subhead">Recently achieved</h3>
+          <h2>Recuperación de salud</h2>
+          <p class="muted small">Hitos de salud pública (no es consejo médico).</p>
+          <h3 class="health-subhead">Logrados recientemente</h3>
           <ul id="health-recent-list" class="health-recent-list"></ul>
-          <button type="button" id="btn-health-toggle" class="btn ghost full">See all health milestones</button>
+          <button type="button" id="btn-health-toggle" class="btn ghost full">Ver todos los hitos de salud</button>
           <div id="health-list-home" class="health-list hidden"></div>
         </div>
 
-        <button type="button" id="btn-start-over" class="btn danger full">I smoked — start over</button>
+        <button type="button" id="btn-start-over" class="btn danger full">Fumé — empezar de nuevo</button>
       </section>
 
       <section data-view="rank" class="view hidden">
-        <h2 class="section-title">Personal ranking</h2>
-        <p class="section-sub muted">Climb the ladder with smoke-free time — top rank at one year.</p>
+        <h2 class="section-title">Rango personal</h2>
+        <p class="section-sub muted">Sube la escalera con tiempo sin fumar — rango máximo a un año.</p>
         <div class="rank-hero card">
           <div class="rank-hero-icon" id="rank-hero-icon">🌱</div>
-          <h3 id="rank-hero-name">Rookie</h3>
+          <h3 id="rank-hero-name">Novato</h3>
           <p id="rank-hero-tag" class="muted"></p>
           <p class="rank-streak-compare">
-            Current streak: <strong id="rank-current-streak">0 days</strong>
+            Racha actual: <strong id="rank-current-streak">0 días</strong>
           </p>
-          <p class="muted small">Next rank</p>
+          <p class="muted small">Siguiente rango</p>
           <div class="progress-track lg"><div id="rank-hero-bar" class="progress-fill rank"></div></div>
           <p id="rank-hero-next" class="muted small"></p>
         </div>
-        <h3 class="section-title">Rank ladder</h3>
+        <h3 class="section-title">Escalera de rangos</h3>
         <div id="rank-ladder" class="rank-ladder"></div>
       </section>
 
       <section data-view="badges" class="view hidden">
         <div class="badges-header">
-          <h2 class="section-title">Badges</h2>
+          <h2 class="section-title">Medallas</h2>
           <div id="badge-level-bar" class="badge-level-host"></div>
         </div>
         <p id="badge-summary" class="badge-summary-count pixel-label"></p>
-        <div id="badge-filters" class="badge-filters" role="tablist" aria-label="Badge categories"></div>
+        <div id="badge-filters" class="badge-filters" role="tablist" aria-label="Categorías de medallas"></div>
         <div id="badge-sections" class="badge-sections"></div>
       </section>
 
       <section data-view="more" class="view hidden">
-        <h2 class="section-title">Settings</h2>
+        <h2 class="section-title">Ajustes</h2>
         <div class="card row-actions">
-          <button type="button" id="btn-open-setup" class="btn ghost full">Open setup wizard</button>
+          <button type="button" id="btn-open-setup" class="btn ghost full">Abrir asistente de configuración</button>
         </div>
         <form id="settings-form" class="card form-card">
-          <label>Quit date &amp; time<input type="datetime-local" id="settings-quit" required /></label>
-          <label>Cigarettes per day<input type="number" id="settings-cpd" min="1" max="100" required /></label>
-          <label>Cigarettes per pack<input type="number" id="settings-cpp" min="1" max="50" required /></label>
-          <label>Pack price<input type="number" id="settings-price" min="0" step="0.01" required /></label>
-          <label>Currency<select id="settings-currency"></select></label>
-          <button type="submit" class="btn">Save settings</button>
+          <label>Fecha y hora de dejar de fumar<input type="datetime-local" id="settings-quit" required /></label>
+          <label>Cigarrillos por día<input type="number" id="settings-cpd" min="1" max="100" required /></label>
+          <label>Cigarrillos por paquete<input type="number" id="settings-cpp" min="1" max="50" required /></label>
+          <label>Precio del paquete<input type="number" id="settings-price" min="0" step="0.01" required /></label>
+          <label>Moneda<select id="settings-currency"></select></label>
+          <button type="submit" class="btn">Guardar ajustes</button>
         </form>
 
-        <h2 class="section-title">Alerts</h2>
+        <h2 class="section-title">Alertas</h2>
         <div class="card form-card">
           <label class="toggle-row">
-            <span>Milestone alerts</span>
+            <span>Alertas de hitos</span>
             <input type="checkbox" id="toggle-milestone-alerts" />
           </label>
           <p id="milestone-alerts-help" class="muted small"></p>
         </div>
 
-        <h2 class="section-title" data-install-ui>App</h2>
+        <h2 class="section-title" data-install-ui>Aplicación</h2>
         <div class="card row-actions" data-install-ui>
-          <button type="button" id="btn-install-more" class="btn ghost full">Add to Home Screen</button>
+          <button type="button" id="btn-install-more" class="btn ghost full">Agregar a inicio</button>
         </div>
 
-        <h2 class="section-title">Streaks</h2>
+        <h2 class="section-title">Rachas</h2>
         <div class="card">
-          <p>Current streak: <strong id="stats-current">0 days</strong></p>
+          <p>Racha actual: <strong id="stats-current">0 días</strong></p>
         </div>
 
-        <h2 class="section-title">Backup</h2>
+        <h2 class="section-title">Copia de seguridad</h2>
         <div class="card row-actions">
-          <button type="button" id="btn-export" class="btn">Export JSON</button>
+          <button type="button" id="btn-export" class="btn">Exportar JSON</button>
           <label class="btn ghost file-label">
-            Import JSON
+            Importar JSON
             <input type="file" id="import-file" accept="application/json" hidden />
           </label>
         </div>
-        <p class="muted small">Data stays on this device. Export regularly so you never lose progress.</p>
+        <p class="muted small">Los datos quedan en este dispositivo. Exporta con frecuencia para no perder tu progreso.</p>
       </section>
     </main>
 
-    <nav class="bottom-nav" aria-label="Main">
-      <button type="button" class="nav-btn active" data-nav="home" aria-label="Home"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Home</span></button>
-      <button type="button" class="nav-btn" data-nav="rank" aria-label="Rank"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Rank</span></button>
-      <button type="button" class="nav-btn" data-nav="badges" aria-label="Badges"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Badges</span></button>
-      <button type="button" class="nav-btn" data-nav="more" aria-label="More"><span class="pixel-nav-icon" aria-hidden="true"></span><span>More</span></button>
+    <nav class="bottom-nav" aria-label="Principal">
+      <button type="button" class="nav-btn active" data-nav="home" aria-label="Inicio"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Inicio</span></button>
+      <button type="button" class="nav-btn" data-nav="rank" aria-label="Rango"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Rango</span></button>
+      <button type="button" class="nav-btn" data-nav="badges" aria-label="Medallas"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Medallas</span></button>
+      <button type="button" class="nav-btn" data-nav="more" aria-label="Más"><span class="pixel-nav-icon" aria-hidden="true"></span><span>Más</span></button>
     </nav>
   </div>
 
@@ -219,11 +219,11 @@
     <div class="modal-backdrop dark">
       <div class="modal-panel rank-up-panel">
         <div class="rank-up-burst" aria-hidden="true"></div>
-        <p class="rank-up-label">Rank up!</p>
+        <p class="rank-up-label">¡Subiste de rango!</p>
         <div id="rank-up-icon" class="rank-up-icon">🏅</div>
-        <h2 id="rank-up-title">Champion</h2>
+        <h2 id="rank-up-title">Campeón</h2>
         <p id="rank-up-desc" class="muted center"></p>
-        <button type="button" class="btn full" data-close="modal-rank-up">Keep climbing</button>
+        <button type="button" class="btn full" data-close="modal-rank-up">Sigue subiendo</button>
       </div>
     </div>
   </div>
@@ -231,16 +231,16 @@
   <div id="modal-setup" class="modal" aria-modal="true">
     <div class="modal-backdrop">
       <div class="modal-panel">
-        <h2>Welcome, Silvio</h2>
-        <p class="muted">Set up your quit profile. You can change this anytime in More.</p>
+        <h2>Bienvenido, Silvio</h2>
+        <p class="muted">Configura tu perfil para dejar de fumar. Puedes cambiarlo cuando quieras en Más.</p>
         <form id="setup-form" class="form-card">
-          <label>Your name<input type="text" id="setup-name" value="Silvio" /></label>
-          <label>Quit date &amp; time<input type="datetime-local" id="setup-quit" required /></label>
-          <label>Cigarettes per day (before quitting)<input type="number" id="setup-cpd" min="1" value="15" required /></label>
-          <label>Cigarettes per pack<input type="number" id="setup-cpp" min="1" value="20" required /></label>
-          <label>Pack price<input type="number" id="setup-price" min="0" step="0.01" value="12" required /></label>
-          <label>Currency<select id="setup-currency"></select></label>
-          <button type="submit" class="btn full">Start tracking</button>
+          <label>Tu nombre<input type="text" id="setup-name" value="Silvio" /></label>
+          <label>Fecha y hora de dejar de fumar<input type="datetime-local" id="setup-quit" required /></label>
+          <label>Cigarrillos por día (antes de dejar)<input type="number" id="setup-cpd" min="1" value="15" required /></label>
+          <label>Cigarrillos por paquete<input type="number" id="setup-cpp" min="1" value="20" required /></label>
+          <label>Precio del paquete<input type="number" id="setup-price" min="0" step="0.01" value="12" required /></label>
+          <label>Moneda<select id="setup-currency"></select></label>
+          <button type="submit" class="btn full">Empezar a seguir</button>
         </form>
       </div>
     </div>
@@ -249,10 +249,10 @@
   <div id="modal-chips" class="modal" aria-modal="true" aria-labelledby="chips-sheet-title">
     <div class="modal-backdrop dark">
       <div class="modal-panel chips-sheet-panel">
-        <h2 id="chips-sheet-title">My chips</h2>
+        <h2 id="chips-sheet-title">Mis medallas</h2>
         <p id="chips-sheet-summary" class="chips-sheet-summary muted small"></p>
         <div id="chips-grid" class="chips-grid"></div>
-        <button type="button" class="btn full" data-close="modal-chips">Close</button>
+        <button type="button" class="btn full" data-close="modal-chips">Cerrar</button>
       </div>
     </div>
   </div>
@@ -260,11 +260,24 @@
   <div id="modal-milestone" class="modal" aria-modal="true">
     <div class="modal-backdrop dark">
       <div class="modal-panel rank-up-panel">
-        <p class="rank-up-label">Milestone</p>
+        <p class="rank-up-label">Hito</p>
         <div id="milestone-celebration-icon" class="rank-up-icon">🏅</div>
-        <h2 id="milestone-celebration-title">Unlocked</h2>
+        <h2 id="milestone-celebration-title">Desbloqueado</h2>
         <p id="milestone-celebration-sub" class="muted center"></p>
-        <button type="button" class="btn full" data-close="modal-milestone">Nice!</button>
+        <button type="button" class="btn full" data-close="modal-milestone">¡Bien!</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-chip-health" class="modal" aria-modal="true" aria-labelledby="chip-health-title">
+    <div class="modal-backdrop dark">
+      <div class="modal-panel rank-up-panel chip-health-unlock-panel">
+        <div class="rank-up-burst" aria-hidden="true"></div>
+        <p class="rank-up-label">HITO DE SALUD</p>
+        <div id="chip-health-art" class="chip-health-unlock-art" aria-hidden="true"></div>
+        <h2 id="chip-health-title">1 SEM</h2>
+        <p id="chip-health-fact" class="chip-health-fact"></p>
+        <button type="button" class="btn full" data-close="modal-chip-health">¡Bien!</button>
       </div>
     </div>
   </div>
@@ -272,14 +285,14 @@
   <div id="modal-share-preview" class="modal" aria-modal="true" aria-labelledby="share-preview-title">
     <div class="modal-backdrop dark">
       <div class="modal-panel share-preview-panel">
-        <h2 id="share-preview-title">Share my progress</h2>
-        <p class="muted small">Preview what you will share.</p>
+        <h2 id="share-preview-title">Compartir mi progreso</h2>
+        <p class="muted small">Vista previa de lo que compartirás.</p>
         <img id="share-preview-image" class="share-preview-image" alt="" width="280" height="350" />
         <pre id="share-preview-text" class="share-preview-text"></pre>
         <div class="share-preview-actions">
-          <button type="button" id="btn-share-preview-share" class="btn full">Share</button>
-          <button type="button" id="btn-share-preview-copy" class="btn ghost full">Copy text</button>
-          <button type="button" class="btn ghost full" data-close="modal-share-preview">Cancel</button>
+          <button type="button" id="btn-share-preview-share" class="btn full">Compartir</button>
+          <button type="button" id="btn-share-preview-copy" class="btn ghost full">Copiar texto</button>
+          <button type="button" class="btn ghost full" data-close="modal-share-preview">Cancelar</button>
         </div>
       </div>
     </div>
@@ -288,18 +301,18 @@
   <div id="modal-ios-install" class="modal" aria-modal="true" aria-labelledby="ios-install-title">
     <div class="modal-backdrop">
       <div class="modal-panel ios-install-panel">
-        <h2 id="ios-install-title">Add to Home Screen</h2>
-        <p class="muted">On iPhone or iPad, install Quit Tracker from Safari:</p>
+        <h2 id="ios-install-title">Agregar a inicio</h2>
+        <p class="muted">En iPhone o iPad, instala Dejar de fumar desde Safari:</p>
         <ol class="ios-install-steps">
-          <li><span class="ios-step-icon" aria-hidden="true">⬆️</span> Tap the <strong>Share</strong> button in Safari’s toolbar.</li>
-          <li><span class="ios-step-icon" aria-hidden="true">➕</span> Scroll and tap <strong>Add to Home Screen</strong>.</li>
-          <li><span class="ios-step-icon" aria-hidden="true">✓</span> Tap <strong>Add</strong> in the top corner.</li>
+          <li><span class="ios-step-icon" aria-hidden="true">⬆️</span> Toca el botón <strong>Compartir</strong> en la barra de Safari.</li>
+          <li><span class="ios-step-icon" aria-hidden="true">➕</span> Scroll and tap <strong>Agregar a inicio</strong>.</li>
+          <li><span class="ios-step-icon" aria-hidden="true">✓</span> Toca <strong>Agregar</strong> en la esquina superior.</li>
         </ol>
-        <button type="button" class="btn full" data-close="modal-ios-install">Got it</button>
+        <button type="button" class="btn full" data-close="modal-ios-install">Entendido</button>
       </div>
     </div>
   </div>
 
-  <script type="module" src="js/bootstrap.js?v=26"></script>
+  <script type="module" src="js/bootstrap.js?v=28"></script>
 </body>
 </html>

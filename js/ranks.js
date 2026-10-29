@@ -9,16 +9,16 @@ const D = 24 * H;
 const Y = 365 * D;
 
 export const RANK_LADDER = [
-  { id: 'rookie', name: 'Rookie', icon: '🌱', tagline: 'Every journey starts here.', smokeFreeMs: 0 },
-  { id: 'fighter', name: 'Fighter', icon: '🥊', tagline: 'Six hours smoke-free.', smokeFreeMs: 6 * H },
-  { id: 'survivor', name: 'Survivor', icon: '🛡️', tagline: 'First full day.', smokeFreeMs: 1 * D },
-  { id: 'warrior', name: 'Warrior', icon: '⚔️', tagline: 'Three days strong.', smokeFreeMs: 3 * D },
-  { id: 'guardian', name: 'Guardian', icon: '🏰', tagline: 'One week free.', smokeFreeMs: 7 * D },
-  { id: 'champion', name: 'Champion', icon: '🏅', tagline: 'Two weeks.', smokeFreeMs: 14 * D },
-  { id: 'veteran', name: 'Veteran', icon: '🎖️', tagline: 'One month.', smokeFreeMs: 30 * D },
-  { id: 'elite', name: 'Elite', icon: '💎', tagline: 'Two months.', smokeFreeMs: 60 * D },
-  { id: 'master', name: 'Master', icon: '👑', tagline: 'Six months.', smokeFreeMs: 180 * D },
-  { id: 'legend', name: 'Legend', icon: '🌟', tagline: 'One full year smoke-free.', smokeFreeMs: Y },
+  { id: 'rookie', name: 'Novato', icon: '🌱', tagline: 'Todo camino empieza aquí.', smokeFreeMs: 0 },
+  { id: 'fighter', name: 'Luchador', icon: '🥊', tagline: 'Seis horas sin fumar.', smokeFreeMs: 6 * H },
+  { id: 'survivor', name: 'Superviviente', icon: '🛡️', tagline: 'Tu primer día completo.', smokeFreeMs: 1 * D },
+  { id: 'warrior', name: 'Guerrero', icon: '⚔️', tagline: 'Tres días firmes.', smokeFreeMs: 3 * D },
+  { id: 'guardian', name: 'Guardián', icon: '🏰', tagline: 'Una semana libre.', smokeFreeMs: 7 * D },
+  { id: 'champion', name: 'Campeón', icon: '🏅', tagline: 'Dos semanas.', smokeFreeMs: 14 * D },
+  { id: 'veteran', name: 'Veterano', icon: '🎖️', tagline: 'Un mes.', smokeFreeMs: 30 * D },
+  { id: 'elite', name: 'Élite', icon: '💎', tagline: 'Dos meses.', smokeFreeMs: 60 * D },
+  { id: 'master', name: 'Maestro', icon: '👑', tagline: 'Seis meses.', smokeFreeMs: 180 * D },
+  { id: 'legend', name: 'Leyenda', icon: '🌟', tagline: 'Un año entero sin fumar.', smokeFreeMs: Y },
 ];
 
 export const MAX_RANK_MS = Y;
@@ -70,7 +70,7 @@ export function leaderboardPayload(state, now = Date.now()) {
   const cigs = cigarettesAvoided(state, now);
   const score = Math.floor(metrics.smokeFreeMs / H);
   return {
-    displayName: state.profile.displayName || 'Anonymous',
+    displayName: state.profile.displayName || 'Anónimo',
     rankId: rank.id,
     rankName: rank.name,
     rankTier: currentRankIndex(metrics),
@@ -83,16 +83,16 @@ export function leaderboardPayload(state, now = Date.now()) {
 }
 
 export function formatSmokeFreeRequirement(ms) {
-  if (ms >= Y) return '1 year smoke-free';
+  if (ms >= Y) return '1 año sin fumar';
   if (ms >= D) {
     const days = Math.round(ms / D);
-    return `${days} ${days === 1 ? 'day' : 'days'} smoke-free`;
+    return `${days} ${days === 1 ? 'día' : 'días'} sin fumar`;
   }
   if (ms >= H) {
     const hrs = Math.round(ms / H);
-    return `${hrs} ${hrs === 1 ? 'hr' : 'hrs'} smoke-free`;
+    return `${hrs} ${hrs === 1 ? 'hora' : 'horas'} sin fumar`;
   }
-  return 'Starting rank';
+  return 'Rango inicial';
 }
 
 export function nextRankHint(metrics, nextRank) {

@@ -350,7 +350,8 @@ label,
 #share-preview-title,
 .rank-up-label,
 #rank-up-title,
-#milestone-celebration-title {
+#milestone-celebration-title,
+#chip-health-title {
   font-family: var(--pixel-display);
   letter-spacing: 0.02em;
 }
