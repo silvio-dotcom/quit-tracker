@@ -150,7 +150,7 @@ async function runBrowserManagua() {
   await page.evaluate(() => document.querySelector('#settings-form')?.requestSubmit());
   await page.waitForTimeout(400);
   const toastText = await page.locator('#toast.show').textContent().catch(() => '');
-  if (!toastText || !/futura/i.test(toastText)) {
+  if (!toastText || !/future/i.test(toastText)) {
     throw new Error(`expected future-date toast, got "${toastText}"`);
   }
   const afterFuture = await page.evaluate(() => JSON.parse(localStorage.getItem('quit-tracker-data-v1')).profile.quitDate);

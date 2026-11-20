@@ -18,13 +18,7 @@ function $(sel) {
 }
 
 function chipLabelHtml(label, escapeHtml) {
-  let s = escapeHtml(label);
-  s = s.replace(/DÍAS/g, 'D<span class="ia">I</span>AS');
-  s = s.replace(/DÍA/g, 'D<span class="ia">I</span>A');
-  if (s.includes('AÑO')) {
-    s = s.replace(/AÑO/g, '<span class="px-accent-word">AÑO</span>');
-  }
-  return s;
+  return escapeHtml(label);
 }
 
 function displayLabel(state, now) {
@@ -85,10 +79,10 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     btn.setAttribute(
       'aria-label',
       maxChip
-        ? `Mis medallas: ${earned.tier.label}, todas ganadas`
+        ? `My badges: ${earned.tier.label}, all earned`
         : earned
-          ? `Mis medallas: ${earned.tier.label} ganada`
-          : `Próxima medalla: ${next?.tier.shortLabel ?? '24 h'}`
+          ? `My badges: ${earned.tier.label} earned`
+          : `Next badge: ${next?.tier.shortLabel ?? '24 h'}`
     );
     btn.classList.toggle('hero-chip-btn--max', maxChip);
     btn.classList.remove('chip-animate');
@@ -99,7 +93,7 @@ export function renderHeroChip(state, now = Date.now(), popUnlock = false) {
     const next = nextChipTarget(state, now);
     const earned = highestEarnedChip(state, now);
     if (maxChip) {
-      hint.textContent = 'Completo';
+      hint.textContent = 'Complete';
       hint.classList.remove('hidden');
       hint.classList.add('hero-chip-hint--max');
     } else if (!earned && next) {
@@ -130,11 +124,11 @@ export function renderChipsSheet(state, now = Date.now(), escapeHtml) {
     const ms = msSinceQuit(state.profile, now);
     const top = highestEarnedChip(state, now);
     if (isAtMaxChip(state, now)) {
-      summary.textContent = `Las ${allChipTiers().length} medallas ganadas — MAX en tu primer año.`;
+      summary.textContent = `All ${allChipTiers().length} badges earned — MAX in your first year.`;
     } else if (top) {
-      summary.textContent = `Medalla más alta: ${top.tier.label}`;
+      summary.textContent = `Highest badge: ${top.tier.label}`;
     } else if (ms > 0) {
-      summary.textContent = 'Tu primera medalla se desbloquea a las 24 horas sin fumar.';
+      summary.textContent = 'Your first badge unlocks at 24 hours smoke-free.';
     } else {
       summary.textContent = '';
     }
@@ -165,10 +159,10 @@ function renderChipsPathGrid(rootSel, state, now, escapeHtml) {
         ? `<span class="chips-grid-date">${escapeHtml(formatChipEarnedDate(earnedAt))}</span>`
         : `<span class="chips-grid-remaining">${escapeHtml(formatChipRemaining(remainingMs))}</span>`;
       const maxTag =
-        tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MÁX</span>' : '';
+        tier.id === 'chip-1y' && earned ? '<span class="chips-grid-max pixel-label">MAX</span>' : '';
       const healthTap = earned && isChipHealthUnlockTier(tier.id);
       const tapAttrs = healthTap
-        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Dato de salud de ${escapeHtml(tier.label)}"`
+        ? ` data-health-chip="${escapeHtml(tier.id)}" role="button" tabindex="0" aria-label="Health fact for ${escapeHtml(tier.label)}"`
         : '';
       const extraClass = isNext ? ' chips-grid-item--next' : isCastle ? ' chips-grid-item--castle' : '';
       const healthClass = healthTap ? ' chips-grid-item--health-tap' : '';

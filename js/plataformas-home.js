@@ -64,11 +64,11 @@ export function renderChipPathBlocks(state, now = Date.now()) {
   const headTarget = $('#plat-path-target');
   const headEta = $('#plat-path-eta');
   if (isAtMaxChip(state, now)) {
-    if (headTarget) headTarget.innerHTML = htmlPixelifyWord('MÁX');
-    if (headEta) headEta.textContent = 'Nivel completo';
+    if (headTarget) headTarget.innerHTML = htmlPixelifyWord('MAX');
+    if (headEta) headEta.textContent = 'Level complete';
   } else if (next) {
     if (headTarget) headTarget.textContent = next.tier.label;
-    if (headEta) headEta.textContent = `Faltan ${formatCountdown(next.remainingMs)} · ${Math.round(pct)}%`;
+    if (headEta) headEta.textContent = `${formatCountdown(next.remainingMs)} left · ${Math.round(pct)}%`;
   }
 }
 
@@ -97,10 +97,10 @@ export function renderPlataformasStage(state, now = Date.now()) {
   const tag = $('#plat-medal-tag');
   if (tag) {
     if (earned) {
-      const name = earned.tier.notifyLabel.replace(/^medalla de /i, '');
-      tag.innerHTML = `Medalla: <b>${name}</b>`;
+      const name = earned.tier.notifyLabel;
+      tag.innerHTML = `Badge: <b>${name}</b>`;
     } else {
-      tag.innerHTML = 'Medalla: <b>24 horas</b>';
+      tag.innerHTML = 'Badge: <b>24 hours</b>';
     }
   }
 }
@@ -113,14 +113,14 @@ export function renderPlataformasHealthSign(state, now = Date.now()) {
   const recentDone = [...items].reverse().find((m) => m.done);
   const next = getNextHealthMilestone(state, now);
   if (recentDone) {
-    k.textContent = `¡1-UP! SALUD ${recentDone.title}`.toUpperCase();
+    k.textContent = `1-UP! HEALTH ${recentDone.title}`.toUpperCase();
     p.textContent = recentDone.displayBenefit;
   } else if (next) {
-    k.textContent = `¡1-UP! SALUD ${next.title}`.toUpperCase();
+    k.textContent = `1-UP! HEALTH ${next.title}`.toUpperCase();
     p.textContent = next.displayBenefit;
   } else {
-    k.textContent = '¡1-UP! SALUD';
-    p.textContent = 'Sigue sin fumar — cada minuto cuenta.';
+    k.textContent = '1-UP! HEALTH';
+    p.textContent = 'Keep it smoke-free — every minute counts.';
   }
 }
 
@@ -131,12 +131,12 @@ export function renderPlataformasPipeRank(state, now = Date.now()) {
   const next = getNextRank(metrics);
   if (!next) {
     el.innerHTML = `<div class="pipe" aria-hidden="true"><div class="top"></div><div class="body"></div></div>
-      <div class="txt">Rango máximo alcanzado — ${htmlPixelifyWord('leyenda')}</div>`;
+      <div class="txt">Max rank reached — ${htmlPixelifyWord('legend')}</div>`;
     return;
   }
   const req = formatSmokeFreeRequirement(next.smokeFreeMs);
   el.innerHTML = `<div class="pipe" aria-hidden="true"><div class="top"></div><div class="body"></div></div>
-    <div class="txt">Siguiente rango:<br><b>${htmlPixelifyWord(next.name.toUpperCase())}</b> ${req}</div>`;
+    <div class="txt">Next rank:<br><b>${htmlPixelifyWord(next.name.toUpperCase())}</b> ${req}</div>`;
 }
 
 export function renderPlataformasHud(state, now = Date.now()) {

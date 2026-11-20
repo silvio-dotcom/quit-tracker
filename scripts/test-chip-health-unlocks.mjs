@@ -22,8 +22,8 @@ for (const id of EXPECTED) {
     console.error(`missing copy for ${id}`);
     process.exit(1);
   }
-  if (chipHealthFact(id) !== row.factEs) {
-    console.error(`es fact mismatch for ${id}`);
+  if (chipHealthFact(id) !== row.factEn) {
+    console.error(`default en fact mismatch for ${id}`);
     process.exit(1);
   }
   if (chipHealthFact(id, 'en') !== row.factEn) {

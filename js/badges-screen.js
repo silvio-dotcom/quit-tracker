@@ -64,7 +64,7 @@ function nextUpCardHtml(next, state, now, escapeHtml) {
   const pct = Math.round(next.progress.pct);
   const eta = escapeHtml(formatBadgeEta(next, state, now));
   return `<section class="badge-next-up card" aria-labelledby="badge-next-up-title">
-    <p class="badge-next-up-kicker pixel-label">Próximo</p>
+    <p class="badge-next-up-kicker pixel-label">Next up</p>
     <div class="badge-next-up-inner">
       <div class="badge-next-up-icon" aria-hidden="true">${a.icon}</div>
       <div class="badge-next-up-body">
@@ -103,7 +103,7 @@ export function renderBadgesScreen({
   const xpPct = xp.need > 0 ? Math.min(100, (xp.into / xp.need) * 100) : 100;
 
   const filters = [
-    { id: BADGE_FILTER_ALL, label: 'Todas' },
+    { id: BADGE_FILTER_ALL, label: 'All' },
     ...BADGE_CATEGORIES.map((c) => ({ id: c.id, label: c.label })),
   ];
 
@@ -116,30 +116,30 @@ export function renderBadgesScreen({
 
   const earnedHtml = earned.length
     ? earned.map((s) => badgeCardHtml(s, state, now, escapeHtml)).join('')
-    : '<p class="muted small badge-empty">Aún no hay medallas en esta categoría.</p>';
+    : '<p class="muted small badge-empty">No badges in this category yet.</p>';
 
   const lockedHtml = locked.length
     ? locked.map((s) => badgeCardHtml(s, state, now, escapeHtml)).join('')
-    : '<p class="muted small badge-empty">Todas las medallas de esta vista están ganadas — ¡bien!</p>';
+    : '<p class="muted small badge-empty">Every badge in this view is earned — nice!</p>';
 
   return {
-    summary: `${unlockedTotal} / ${statuses.length} ganadas`,
+    summary: `${unlockedTotal} / ${statuses.length} earned`,
     levelHtml: `<div class="badge-level-bar ${xp.maxed ? 'badge-level-max' : ''}">
       <div class="badge-level-head">
         <span class="pixel-label">LV ${xp.level} / ${MAX_LEVEL}${xp.maxed ? ' MAX' : ''}</span>
         <span class="badge-level-title pixel-label">${escapeHtml(formatLevelTitle(xp.title))}</span>
       </div>
       <div class="progress-track"><div class="progress-fill rank" style="width:${xpPct}%"></div></div>
-      <p class="badge-level-xp muted small">${xp.maxed ? 'Nivel máximo — estatus leyenda' : `${xp.into} / ${xp.need} XP`}</p>
+      <p class="badge-level-xp muted small">${xp.maxed ? 'Max level — legend status' : `${xp.into} / ${xp.need} XP`}</p>
     </div>`,
     filterHtml,
     bodyHtml: `${nextUpCardHtml(next, state, now, escapeHtml)}
       <section class="badge-list-section" aria-labelledby="badge-earned-heading">
-        <h3 id="badge-earned-heading" class="badge-list-heading">Ganadas <span class="muted">(${earned.length})</span></h3>
+        <h3 id="badge-earned-heading" class="badge-list-heading">Earned <span class="muted">(${earned.length})</span></h3>
         <div class="badge-grid">${earnedHtml}</div>
       </section>
       <section class="badge-list-section" aria-labelledby="badge-locked-heading">
-        <h3 id="badge-locked-heading" class="badge-list-heading">Bloqueadas <span class="muted">(${locked.length})</span></h3>
+        <h3 id="badge-locked-heading" class="badge-list-heading">Locked <span class="muted">(${locked.length})</span></h3>
         <div class="badge-grid">${lockedHtml}</div>
       </section>`,
     bindFilters(root) {

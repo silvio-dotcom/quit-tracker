@@ -51,10 +51,10 @@ export async function renderSharePng(state, now = Date.now()) {
 
   ctx.fillStyle = '#1f3c8c';
   ctx.font = '28px "Press Start 2P", monospace';
-  ctx.fillText('SIN HUMO', 72, 120);
+  ctx.fillText('SMOKE FREE', 72, 120);
   ctx.font = '600 22px "Pixelify Sans", system-ui, sans-serif';
   ctx.fillStyle = '#7a2b00';
-  ctx.fillText('Progreso sin fumar', 72, 155);
+  ctx.fillText('Smoke-free progress', 72, 155);
 
   ctx.fillStyle = '#c84c0c';
   ctx.font = '600 26px "Pixelify Sans", system-ui, sans-serif';
@@ -71,9 +71,9 @@ export async function renderSharePng(state, now = Date.now()) {
   }
 
   const lines = [
-    `Cigarrillos sin fumar: ${cigs.toLocaleString('es-419')}`,
-    `Dinero ahorrado: ${formatMoney(money, cur, CURRENCIES)}`,
-    `Tiempo recuperado: ${timeBack.replace(' de mi tiempo recuperado', '')}`,
+    `Cigarettes not smoked: ${cigs.toLocaleString('en-US')}`,
+    `Money saved: ${formatMoney(money, cur, CURRENCIES)}`,
+    `Time back: ${timeBack.replace(' of life back', '')}`,
   ];
   ctx.font = '22px "Pixelify Sans", system-ui, sans-serif';
   ctx.fillStyle = '#111';
@@ -85,7 +85,7 @@ export async function renderSharePng(state, now = Date.now()) {
 
   ctx.fillStyle = '#7a2b00';
   ctx.font = '14px "Press Start 2P", monospace';
-  ctx.fillText('SIN-HUMO', 72, H - 72);
+  ctx.fillText('SMOKE-FREE', 72, H - 72);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -100,7 +100,7 @@ export async function shareProgressPayload(state, text, blob) {
 
   if (navigator.share) {
     try {
-      const base = { title: 'Mi progreso sin fumar', text };
+      const base = { title: 'My smoke-free progress', text };
       if (navigator.canShare?.({ ...base, files: [file] })) {
         await navigator.share({ ...base, files: [file] });
         return 'shared';
@@ -116,7 +116,7 @@ export async function shareProgressPayload(state, text, blob) {
     const Share = window.Capacitor?.Plugins?.Share;
     if (Share?.share) {
       try {
-        await Share.share({ title: 'Mi progreso sin fumar', text, dialogTitle: 'Compartir mi progreso' });
+        await Share.share({ title: 'My smoke-free progress', text, dialogTitle: 'Share my progress' });
         return 'shared';
       } catch {
         /* fall through */

@@ -124,7 +124,7 @@ public final class WidgetComputer {
         long hours = (totalSec % 86400L) / 3600L;
         long minutes = (totalSec % 3600L) / 60L;
         if (days >= 1) {
-            m.smokeTime = days + (days == 1 ? " DÍA " : " DÍAS ") + hours + (hours == 1 ? " H" : " H");
+            m.smokeTime = days + (days == 1 ? " DAY " : " DAYS ") + hours + " H";
         } else {
             m.smokeTime = hours + (hours == 1 ? " H " : " H ") + minutes + " MIN";
         }
@@ -137,7 +137,7 @@ public final class WidgetComputer {
         long cigsAvoided = (long) Math.floor((elapsed * cigsPerDay) / (double) MS_DAY);
         double money = cigsAvoided * pricePerCig;
         String sym = snapshot.optString("currencySymbol", "$");
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.forLanguageTag("es-419"));
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         nf.setMinimumFractionDigits(2);
         nf.setMaximumFractionDigits(2);
         m.money = sym + nf.format(money);
@@ -169,7 +169,7 @@ public final class WidgetComputer {
             m.showNextRow = next != null;
             if (next != null) {
                 m.nextTierId = next.id;
-                m.nextLabel = "SIG.: " + next.label;
+                m.nextLabel = "NEXT: " + next.label;
                 m.nextEta = formatChipRemaining(next.ms - elapsed);
                 long prevMs = highest.ms;
                 long span = next.ms - prevMs;
@@ -180,10 +180,10 @@ public final class WidgetComputer {
             }
         } else {
             m.currentTierId = null;
-            m.currentLabel = "SIN MEDALLA";
+            m.currentLabel = "NO BADGE";
             m.showNextRow = true;
             m.nextTierId = "chip-24h";
-            m.nextLabel = "SIG.: 24 H";
+            m.nextLabel = "NEXT: 24 H";
             m.nextEta = formatChipRemaining(Math.max(0, MS_DAY - elapsed));
             m.chipProgress = (int) Math.min(100, (elapsed * 100L) / MS_DAY);
         }
@@ -202,7 +202,7 @@ public final class WidgetComputer {
     }
 
     static String formatChipRemaining(long ms) {
-        if (ms <= 0) return "Ahora";
+        if (ms <= 0) return "Now";
         long h = ms / MS_HOUR;
         if (h >= 24) {
             long d = h / 24;

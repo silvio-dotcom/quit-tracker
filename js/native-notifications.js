@@ -22,8 +22,8 @@ async function ensureChannel() {
   try {
     await LN.createChannel({
       id: CHANNEL_ID,
-      name: 'Alertas de hitos',
-      description: 'Hitos de salud y medallas desbloqueadas',
+      name: 'Milestone alerts',
+      description: 'Health milestones and unlocked badges',
       importance: 4,
       visibility: 1,
     });

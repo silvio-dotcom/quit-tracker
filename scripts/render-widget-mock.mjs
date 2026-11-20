@@ -41,12 +41,12 @@ function widgetModel(msElapsed) {
   const now = Date.now();
   const elapsed = msSinceQuit(state.profile, now);
   const dur = formatDuration(elapsed);
-  const days = dur.parts.find((p) => p.u.startsWith('día') || p.u === 'días');
-  const hrs = dur.parts.find((p) => p.u.startsWith('hora') || p.u === 'horas');
+  const days = dur.parts.find((p) => p.u.startsWith('day'));
+  const hrs = dur.parts.find((p) => p.u.startsWith('hour'));
   const mins = dur.parts.find((p) => p.u === 'min');
   let smoke;
   if ((days?.v || 0) >= 1) {
-    smoke = `${days.v} ${days.v === 1 ? 'DÍA' : 'DÍAS'} ${hrs?.v || 0} H`;
+    smoke = `${days.v} ${days.v === 1 ? 'DAY' : 'DAYS'} ${hrs?.v || 0} H`;
   } else {
     smoke = `${hrs?.v || 0} H ${mins?.v || 0} MIN`;
   }
@@ -67,7 +67,7 @@ function widgetModel(msElapsed) {
     currentLabel = earned.tier.label;
     currentTierId = earned.tier.id;
   } else {
-    currentLabel = 'SIN MEDALLA';
+    currentLabel = 'NO BADGE';
     currentTierId = 'chip-24h';
   }
 
@@ -79,7 +79,7 @@ function widgetModel(msElapsed) {
     nextTierId = next.tier.id;
     const h = Math.floor(next.remainingMs / MS_H);
     const eta = h >= 24 ? `${Math.floor(h / 24)} d` : `${h} h`;
-    sigLine = `SIG.: ${next.tier.label} · ${eta}`;
+    sigLine = `NEXT: ${next.tier.label} · ${eta}`;
     progress = Math.round(next.progress);
   }
 
@@ -235,7 +235,7 @@ async function paint() {
   let y = pad + 6 * S;
   const logo = await loadImg(M.logoB64);
   if (logo) ctx.drawImage(logo, pad, y - 4 * S, 18 * S, 18 * S);
-  drawP2(ctx, 'SIN HUMO', pad + 24 * S, y + 8 * S, 6 * S, '#f8b800', null);
+  drawP2(ctx, 'SMOKE FREE', pad + 24 * S, y + 8 * S, 6 * S, '#f8b800', null);
 
   if (!M.compact && M.showLevel) {
     const lvSize = 7 * S;
@@ -362,7 +362,7 @@ const browser = await chromium.launch();
 for (const sc of scenarios) {
   const model = widgetModel(sc.ms);
   for (const sz of sizes) {
-    const name = `v29-widget-${sz.suffix}-${sc.tag}.png`;
+    const name = `v31-widget-${sz.suffix}-${sc.tag}.png`;
     const outPath = path.join(out, name);
     const page = await browser.newPage({
       viewport: { width: sz.outW + 40, height: sz.outH + 40 },
@@ -391,10 +391,10 @@ for (const sc of scenarios) {
 }
 await browser.close();
 
-const previewSrc = path.join(out, 'v29-widget-4x2-45d.png');
+const previewSrc = path.join(out, 'v31-widget-4x2-45d.png');
 fs.mkdirSync(repoArtifacts, { recursive: true });
 fs.copyFileSync(previewSrc, path.join(drawable, 'widget_preview.png'));
-fs.copyFileSync(previewSrc, path.join(out, 'v29-widget-preview.png'));
-fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-v29-plataformas.png'));
+fs.copyFileSync(previewSrc, path.join(out, 'v31-widget-preview.png'));
+fs.copyFileSync(previewSrc, path.join(repoArtifacts, 'widget-v31-plataformas.png'));
 assertPngNotBlank(path.join(drawable, 'widget_preview.png'));
-console.log('saved v29 widget mocks + widget_preview.png + artifacts/widget-v29-plataformas.png');
+console.log('saved v31 widget mocks + widget_preview.png + artifacts/widget-v31-plataformas.png');

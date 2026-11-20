@@ -69,13 +69,13 @@ export function upcomingChipNotifications(state, now = Date.now()) {
     .map((x) => ({
       key: `chip:${x.tier.id}`,
       at: x.at,
-      title: 'Medalla sin fumar',
-      body: `Ganaste tu ${x.tier.notifyLabel}`,
+      title: 'Smoke-free badge',
+      body: `You earned your ${x.tier.notifyLabel}`,
     }));
 }
 
 export function formatChipRemaining(ms) {
-  if (ms <= 0) return 'Ahora';
+  if (ms <= 0) return 'Now';
   const h = Math.floor(ms / (60 * 60 * 1000));
   if (h >= 24) {
     const d = Math.floor(h / 24);

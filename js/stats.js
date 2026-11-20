@@ -49,11 +49,11 @@ export function formatDuration(ms) {
   const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
   const parts = [];
-  if (y) parts.push({ v: y, u: y === 1 ? 'año' : 'años' });
-  if (d) parts.push({ v: d, u: d === 1 ? 'día' : 'días' });
-  if (h) parts.push({ v: h, u: h === 1 ? 'hora' : 'horas' });
+  if (y) parts.push({ v: y, u: y === 1 ? 'year' : 'years' });
+  if (d) parts.push({ v: d, u: d === 1 ? 'day' : 'days' });
+  if (h) parts.push({ v: h, u: h === 1 ? 'hour' : 'hours' });
   if (m) parts.push({ v: m, u: 'min' });
-  if (!y && !d && !h) parts.push({ v: s, u: 'seg' });
+  if (!y && !d && !h) parts.push({ v: s, u: 'sec' });
   const label = parts.slice(0, 3).map((p) => `${p.v} ${p.u}`).join(' ');
   return { parts, label };
 }
@@ -72,9 +72,9 @@ export function formatStreakDisplay(state, now = Date.now()) {
   if (days >= 1) return formatDayCount(days);
   if (ms <= 0) return formatDayCount(0);
   const hours = Math.floor(ms / MS_PER_HOUR);
-  if (hours >= 1) return `${hours} ${hours === 1 ? 'hora' : 'horas'}`;
+  if (hours >= 1) return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
   const mins = Math.floor(ms / (60 * 1000));
-  if (mins >= 1) return `${mins} ${mins === 1 ? 'min' : 'min'}`;
+  if (mins >= 1) return `${mins} min`;
   return formatDayCount(0);
 }
 
@@ -115,12 +115,12 @@ export function projectedMoneySaved(state, days) {
 }
 
 export const MONEY_PROJECTION_DAYS = [
-  { label: '1 mes', days: 30 },
-  { label: '6 meses', days: 182 },
-  { label: '1 año', days: 365 },
+  { label: '1 month', days: 30 },
+  { label: '6 months', days: 182 },
+  { label: '1 year', days: 365 },
 ];
 
 export function formatDayCount(days) {
   const n = Math.max(0, Math.floor(Number(days) || 0));
-  return `${n} ${n === 1 ? 'día' : 'días'}`;
+  return `${n} ${n === 1 ? 'day' : 'days'}`;
 }

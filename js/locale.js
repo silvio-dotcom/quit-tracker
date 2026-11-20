@@ -1,5 +1,5 @@
-/** Default UI locale — Latin American Spanish (neutral, tú). */
-export const APP_LOCALE = 'es-419';
+/** Default UI locale — US English. */
+export const APP_LOCALE = 'en-US';
 
 export function formatLocaleNumber(n, options) {
   return Number(n).toLocaleString(APP_LOCALE, options);

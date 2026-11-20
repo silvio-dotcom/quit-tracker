@@ -9,30 +9,30 @@ const MS_PER_MIN = 60 * 1000;
 export function formatSmokeFreeShareLine(state, now = Date.now()) {
   const ms = msSinceQuit(state.profile, now);
   const days = Math.floor(ms / MS_PER_DAY);
-  if (days >= 1) return `${days} ${days === 1 ? 'día' : 'días'} sin fumar`;
+  if (days >= 1) return `${days} ${days === 1 ? 'day' : 'days'} smoke-free`;
   const hours = Math.max(1, Math.floor(ms / MS_PER_HOUR));
-  return `${hours} ${hours === 1 ? 'hora' : 'horas'} sin fumar`;
+  return `${hours} ${hours === 1 ? 'hour' : 'hours'} smoke-free`;
 }
 
 export function formatMoneyShareWhole(state, now = Date.now()) {
   const amount = Math.round(moneySaved(state, now));
   const sym = CURRENCIES[state.profile.currency]?.symbol ?? '$';
-  return `${sym}${formatLocaleNumber(amount)} ahorrados`;
+  return `${sym}${formatLocaleNumber(amount)} saved`;
 }
 
 export function formatTimeBack(cigsAvoided, minutesPerCig = TIME_BACK_MINUTES_PER_CIG) {
   const totalMin = Math.round(Math.max(0, cigsAvoided) * minutesPerCig);
-  if (totalMin <= 0) return '0m de mi tiempo recuperado';
+  if (totalMin <= 0) return '0m of life back';
   const days = Math.floor(totalMin / (24 * 60));
   const rem = totalMin % (24 * 60);
   const hours = Math.floor(rem / 60);
   const mins = rem % 60;
-  if (days > 0) return `${days}d ${hours}h de mi tiempo recuperado`;
+  if (days > 0) return `${days}d ${hours}h of life back`;
   if (hours > 0) {
-    if (mins > 0) return `${hours}h ${mins}m de mi tiempo recuperado`;
-    return `${hours}h de mi tiempo recuperado`;
+    if (mins > 0) return `${hours}h ${mins}m of life back`;
+    return `${hours}h of life back`;
   }
-  return `${mins}m de mi tiempo recuperado`;
+  return `${mins}m of life back`;
 }
 
 export function buildShareMessage(state, now = Date.now()) {
@@ -43,7 +43,7 @@ export function buildShareMessage(state, now = Date.now()) {
     '',
     formatSmokeFreeShareLine(state, now),
     '',
-    `${formatLocaleNumber(cigs)} cigarrillos evitados`,
+    `${formatLocaleNumber(cigs)} cigarettes avoided`,
     '',
     formatMoneyShareWhole(state, now),
     '',

@@ -1,4 +1,4 @@
-const BUILD = '30';
+const BUILD = '31';
 const CACHE_NAME = `quit-tracker-v${BUILD}`;
 
 const PRECACHE = [
@@ -98,7 +98,7 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SHOW_MILESTONE') {
     const { title, body, tag } = event.data;
     event.waitUntil(
-      self.registration.showNotification(title || 'Dejar de fumar', {
+      self.registration.showNotification(title || 'Quit Tracker', {
         body: body || '',
         icon: new URL('icons/icon-192.png', self.location).href,
         tag: tag || 'milestone',

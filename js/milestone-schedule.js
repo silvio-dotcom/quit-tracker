@@ -32,7 +32,7 @@ export function upcomingMilestoneNotifications(state, now = Date.now()) {
       key,
       id: notificationIdForKey(key),
       at,
-      title: 'Hito de salud alcanzado',
+      title: 'Health milestone reached',
       body: m.title,
     });
   }
@@ -48,7 +48,7 @@ export function upcomingMilestoneNotifications(state, now = Date.now()) {
       key,
       id: notificationIdForKey(key),
       at,
-      title: 'Medalla desbloqueada',
+      title: 'Badge unlocked',
       body: badgeDisplayTitle(a, state.profile.currency),
     });
   }

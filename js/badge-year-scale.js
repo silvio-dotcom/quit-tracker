@@ -71,56 +71,56 @@ export function formatTimebackLabel(minutes) {
   const monthMin = 43200;
   if (minutes >= 60 * dayMin) {
     const mo = Math.round(minutes / monthMin);
-    return { amount: mo, text: `${mo} ${mo === 1 ? 'mes' : 'meses'}` };
+    return { amount: mo, text: `${mo} ${mo === 1 ? 'month' : 'months'}` };
   }
   if (minutes >= dayMin) {
     const d = Math.round(minutes / 1440);
-    return { amount: d, text: `${d} ${d === 1 ? 'día' : 'días'}` };
+    return { amount: d, text: `${d} ${d === 1 ? 'day' : 'days'}` };
   }
   if (minutes >= 60) {
     const h = Math.round(minutes / 60);
-    return { amount: h, text: `${h} ${h === 1 ? 'hora' : 'horas'}` };
+    return { amount: h, text: `${h} ${h === 1 ? 'hour' : 'hours'}` };
   }
   return { amount: minutes, text: `${minutes} min` };
 }
 
 export function timebackTitle(minutes, isYear = false) {
   const { text } = formatTimebackLabel(minutes);
-  return `${text} recuperados`;
+  return `${text} back`;
 }
 
 export function timebackDesc(minutes, isYear = false) {
   const { text } = formatTimebackLabel(minutes);
-  if (isYear) return `${text} de vida recuperados en tu primer año.`;
-  return `${text} de vida recuperados.`;
+  if (isYear) return `${text} of life back in your first year.`;
+  return `${text} of life back.`;
 }
 
 export function moneyTitle(amount, isYear = false) {
-  if (isYear) return 'Ahorro del año';
+  if (isYear) return 'Year savings';
   const label = amount >= 1000 ? formatLocaleNumber(amount) : String(amount);
-  return `${label} ahorrados`;
+  return `${label} saved`;
 }
 
 function moneyDesc(amount, isYear) {
   const label = amount >= 1000 ? formatLocaleNumber(amount) : String(amount);
-  if (isYear) return `Un año entero de ahorro — unos ${label} que conservaste.`;
-  return `${label} ahorrados en lugar de gastarlos en cigarrillos.`;
+  if (isYear) return `A full year of savings — about ${label} you kept.`;
+  return `${label} saved instead of spending it on cigarettes.`;
 }
 
 export function cigsTitle(count, specId) {
-  if (specId === 'cigs-1') return 'Primer cigarrillo';
-  return `${formatLocaleNumber(count)} evitados`;
+  if (specId === 'cigs-1') return 'First cigarette';
+  return `${formatLocaleNumber(count)} avoided`;
 }
 
 export function cigsPackTitle(packs, specId) {
-  if (specId === 'cigs-first-pack') return 'Primer paquete';
-  return `${packs} ${packs === 1 ? 'paquete' : 'paquetes'}`;
+  if (specId === 'cigs-first-pack') return 'First pack';
+  return `${packs} ${packs === 1 ? 'pack' : 'packs'}`;
 }
 
 function cigsDesc(count, isYear) {
   const label = formatLocaleNumber(count);
-  if (isYear) return `Tu total de un año: ${label} cigarrillos sin fumar.`;
-  return `${label} cigarrillos que nunca encendiste.`;
+  if (isYear) return `Your one-year total: ${label} cigarettes not smoked.`;
+  return `${label} cigarettes you never lit.`;
 }
 
 export function yearHorizonMetrics(profile) {
@@ -191,7 +191,7 @@ function buildCigsAchievements(profile, horizon) {
         category: 'cigs',
         icon: spec.icon,
         title,
-        desc: `${packs} ${packs === 1 ? 'paquete' : 'paquetes'} evitados.`,
+        desc: `${packs} ${packs === 1 ? 'pack' : 'packs'} avoided.`,
         packs,
       });
       prevEquiv = packs * cpp;
@@ -214,7 +214,7 @@ function buildCigsAchievements(profile, horizon) {
     id: 'cigs-year',
     category: 'cigs',
     icon: CIGS_SPECS.find((s) => s.id === 'cigs-year').icon,
-    title: `${formatLocaleNumber(yearCount)} evitados`,
+    title: `${formatLocaleNumber(yearCount)} avoided`,
     desc: cigsDesc(yearCount, true),
     count: yearCount,
   });

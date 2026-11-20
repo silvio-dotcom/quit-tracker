@@ -26,21 +26,21 @@ export function isLongTermHealthMilestone(milestone) {
 export const HEALTH_MILESTONES = [
   {
     id: 'who-20m',
-    title: '20 minutos',
+    title: '20 minutes',
     timeMs: 20 * M,
-    benefit: 'Tu frecuencia cardíaca y la presión arterial bajan.',
+    benefit: 'Your heart rate and blood pressure drop.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'nhs-8h',
-    title: '8 horas',
+    title: '8 hours',
     timeMs: 8 * H,
     benefit:
-      'Se recupera el oxígeno y el monóxido de carbono en la sangre se reduce a la mitad.',
-    headline: 'El oxígeno se recupera; el CO en sangre cae a la mitad.',
+      'Oxygen levels recover and carbon monoxide in the blood falls by half.',
+    headline: 'Oxygen recovers; blood CO drops by half.',
     source: {
       name: 'NHS Better Health',
       url: 'https://www.nhs.uk/better-health/quit-smoking/',
@@ -48,19 +48,19 @@ export const HEALTH_MILESTONES = [
   },
   {
     id: 'who-12h',
-    title: '12 horas',
+    title: '12 hours',
     timeMs: 12 * H,
-    benefit: 'El monóxido de carbono en la sangre vuelve a la normalidad.',
+    benefit: 'Carbon monoxide in the blood returns to normal.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'cdc-24h',
-    title: '24 horas',
+    title: '24 hours',
     timeMs: 24 * H,
-    benefit: 'La nicotina en la sangre llega a cero.',
+    benefit: 'Nicotine in the blood drops to zero.',
     source: {
       name: 'CDC',
       url: 'https://www.cdc.gov/tobacco/about/benefits-of-quitting.html',
@@ -68,11 +68,11 @@ export const HEALTH_MILESTONES = [
   },
   {
     id: 'nhs-48h',
-    title: '48 horas',
+    title: '48 hours',
     timeMs: 48 * H,
     benefit:
-      'El monóxido de carbono baja al nivel de un no fumador. Los pulmones eliminan mucosidad y mejoran gusto y olfato.',
-    headline: 'El monóxido de carbono sale de tu cuerpo.',
+      'Carbon monoxide falls to non-smoker levels. Lungs clear mucus and taste and smell improve.',
+    headline: 'Carbon monoxide leaves your body.',
     source: {
       name: 'NHS Better Health',
       url: 'https://www.nhs.uk/better-health/quit-smoking/',
@@ -80,11 +80,11 @@ export const HEALTH_MILESTONES = [
   },
   {
     id: 'nhs-72h',
-    title: '72 horas',
+    title: '72 hours',
     timeMs: 72 * H,
     benefit:
-      'Si respiras más fácil, es porque los bronquios empiezan a relajarse. También sube tu energía.',
-    headline: 'Respirar puede sentirse más fácil y la energía sube.',
+      'If breathing feels easier, your bronchial tubes are starting to relax. Energy often picks up too.',
+    headline: 'Breathing can feel easier and energy picks up.',
     source: {
       name: 'NHS Better Health',
       url: 'https://www.nhs.uk/better-health/quit-smoking/',
@@ -92,65 +92,65 @@ export const HEALTH_MILESTONES = [
   },
   {
     id: 'who-2-12w',
-    title: '2–12 semanas',
+    title: '2–12 weeks',
     timeMs: 14 * D,
-    benefit: 'Mejora la circulación y la función pulmonar.',
+    benefit: 'Circulation and lung function improve.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'who-1-9m',
-    title: '1–9 meses',
+    title: '1–9 months',
     timeMs: 30 * D,
-    benefit: 'Disminuyen la tos y la falta de aire.',
+    benefit: 'Coughing and shortness of breath decrease.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'who-1y',
-    title: '1 año',
+    title: '1 year',
     timeMs: 1 * Y,
-    benefit: 'El riesgo de enfermedad coronaria es casi la mitad que el de un fumador.',
-    headline: 'Riesgo cardíaco casi la mitad del de un fumador.',
+    benefit: 'Risk of coronary heart disease is about half that of someone who still smokes.',
+    headline: 'Heart risk about half that of a smoker.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'who-5y',
-    title: '5 años',
+    title: '5 years',
     timeMs: 5 * Y,
-    benefit: 'El riesgo de derrame se acerca al de alguien que nunca fumó (5 a 15 años después).',
-    headline: 'El riesgo de derrame se acerca al de un no fumador.',
+    benefit: 'Stroke risk approaches that of someone who never smoked (5–15 years after quitting).',
+    headline: 'Stroke risk nears that of a non-smoker.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'who-10y',
-    title: '10 años',
+    title: '10 years',
     timeMs: 10 * Y,
     benefit:
-      'El riesgo de cáncer de pulmón cae a casi la mitad del de un fumador y bajan otros cánceres.',
-    headline: 'El riesgo de cáncer de pulmón es casi la mitad del de un fumador.',
+      'Lung cancer risk falls to about half that of a smoker; other cancer risks drop too.',
+    headline: 'Lung cancer risk about half that of a smoker.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },
   {
     id: 'who-15y',
-    title: '15 años',
+    title: '15 years',
     timeMs: 15 * Y,
-    benefit: 'El riesgo de enfermedad coronaria es el de alguien que nunca fumó.',
+    benefit: 'Risk of coronary heart disease matches someone who never smoked.',
     source: {
-      name: 'OMS',
+      name: 'WHO',
       url: 'https://www.who.int/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation',
     },
   },

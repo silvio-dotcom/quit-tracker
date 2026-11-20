@@ -1,9 +1,10 @@
-/** Pixel accent for Press Start 2P — Í reads as lowercase i without this. */
+/** HUD / hero label for smoke-free day count (plain English; no pixel accent). */
 export function htmlPixelDias(className = 'ia') {
-  return `D<span class="${className}" aria-hidden="false">I</span>AS`;
+  void className;
+  return 'DAYS';
 }
 
-/** Words with Ó/Á that should render in Pixelify Sans, not P2. */
+/** Words that should render in Pixelify Sans, not Press Start 2P. */
 export function htmlPixelifyWord(word) {
   return `<span class="px-accent-word">${word}</span>`;
 }

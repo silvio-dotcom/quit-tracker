@@ -25,11 +25,11 @@ export function datetimeLocalNow() {
  */
 export function quitDateFromDatetimeLocal(value) {
   const raw = String(value ?? '').trim();
-  if (!raw) return { ok: false, error: 'La fecha de dejar de fumar es obligatoria.' };
+  if (!raw) return { ok: false, error: 'Quit date is required.' };
   const t = new Date(raw).getTime();
-  if (Number.isNaN(t)) return { ok: false, error: 'Fecha de dejar de fumar no válida.' };
+  if (Number.isNaN(t)) return { ok: false, error: 'Quit date is not valid.' };
   if (t > Date.now()) {
-    return { ok: false, error: 'La fecha no puede ser futura. Elige el momento en que ya dejaste de fumar.' };
+    return { ok: false, error: 'Quit date cannot be in the future. Pick when you actually stopped smoking.' };
   }
   return { ok: true, iso: new Date(t).toISOString() };
 }

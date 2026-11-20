@@ -56,7 +56,7 @@ public final class WidgetUi {
         bindLaunchIntent(context, views, widgetId);
 
         views.setImageViewResource(R.id.widget_logo, R.drawable.widget_logo);
-        views.setImageViewBitmap(R.id.widget_brand, WidgetPixelText.line(context, "SIN HUMO", 6f, COLOR_BRAND, textWidthPx, scale));
+        views.setImageViewBitmap(R.id.widget_brand, WidgetPixelText.line(context, "SMOKE FREE", 6f, COLOR_BRAND, textWidthPx, scale));
 
         if (!model.configured) {
             views.setViewVisibility(R.id.widget_empty, View.VISIBLE);

@@ -151,7 +151,7 @@ function renderHealthHome(now = Date.now()) {
         </li>`
           )
           .join('')
-      : '<li class="muted">Tus primeros hitos están a minutos de distancia.</li>';
+      : '<li class="muted">Your first milestones are minutes away.</li>';
   }
 
   const full = $('#health-list-home');
@@ -188,7 +188,7 @@ function renderHealthHome(now = Date.now()) {
 
     full.innerHTML = `${nearTerm.map(renderNear).join('')}${longBlock}`;
   }
-  if (toggle) toggle.textContent = healthExpanded ? 'Ocultar línea de tiempo' : 'Ver todos los hitos de salud';
+  if (toggle) toggle.textContent = healthExpanded ? 'Hide timeline' : 'See all health milestones';
 }
 
 function renderRankPreview(now = Date.now()) {
@@ -203,11 +203,11 @@ function renderRankPreview(now = Date.now()) {
   const nextEl = $('#rank-dash-next');
   if (nextEl) {
     nextEl.textContent = next
-      ? `Siguiente: ${next.icon} ${next.name} — ${nextRankHint(metrics, next) || 'casi ahí'}`
-      : 'Llegaste al rango más alto.';
+      ? `Next: ${next.icon} ${next.name} — ${nextRankHint(metrics, next) || 'almost there'}`
+      : 'You reached the top rank.';
   }
   const streaks = $('#rank-dash-streaks');
-  if (streaks) streaks.textContent = `Racha actual: ${formatStreakDisplay(state, now)}`;
+  if (streaks) streaks.textContent = `Current streak: ${formatStreakDisplay(state, now)}`;
 }
 
 function renderDashboard() {
@@ -267,7 +267,7 @@ function renderRank() {
     '#rank-hero-next',
     next
       ? `→ ${next.icon} ${next.name}: ${formatSmokeFreeRequirement(next.smokeFreeMs)}`
-      : 'Rango leyenda — un año sin fumar. Lo lograste.'
+      : 'Legend rank — one year smoke-free. You did it.'
   );
 
   const ladder = $('#rank-ladder');
@@ -278,7 +278,7 @@ function renderRank() {
         return `<article class="rank-row ${unlocked ? 'unlocked' : 'locked'} ${current ? 'current' : ''}">
           <span class="rank-row-icon">${unlocked ? r.icon : '🔒'}</span>
           <div class="rank-row-body">
-            <span class="rank-row-name">${r.name}${current ? ' · Tú' : ''}</span>
+            <span class="rank-row-name">${r.name}${current ? ' · You' : ''}</span>
             <span class="rank-row-req muted">${req}</span>
           </div>
         </article>`;
@@ -349,13 +349,13 @@ function openSetupWizard() {
 }
 
 function startOverAfterSmoking() {
-  const msg = 'Esto reiniciará tu fecha de dejar de fumar a ahora y empezará un intento nuevo. ¿Continuar?';
+  const msg = 'This will reset your quit date to now and start a fresh attempt. Continue?';
   if (!confirm(msg)) return;
   state.profile.quitDate = new Date().toISOString();
   state.seenRanks = ['rookie'];
   persist();
   renderDashboard();
-  toast('Nuevo comienzo — tú puedes.');
+  toast('Fresh start — you\'ve got this.');
 }
 
 function checkNewRanks(now = Date.now()) {
@@ -400,14 +400,14 @@ function bindEvents() {
     try {
       await openSharePreview(state, toast);
     } catch {
-      toast('No se pudo preparar para compartir');
+      toast('Could not prepare share');
     }
   });
   $('#toggle-milestone-alerts')?.addEventListener('change', async (e) => {
     const perm = await setMilestoneAlertsEnabled(state, e.target.checked, persist);
     if (e.target.checked && perm !== 'granted') {
       e.target.checked = false;
-      toast('Notificaciones bloqueadas — actívalas en ajustes del navegador.');
+      toast('Notifications blocked — enable them in browser settings.');
     }
     renderMore();
   });
@@ -428,7 +428,7 @@ function bindEvents() {
     persist();
     closeModal('modal-setup');
     renderDashboard();
-    toast(`¡Vamos, ${state.profile.displayName}!`);
+    toast(`Let's go, ${state.profile.displayName}!`);
   });
 
   $('#settings-form')?.addEventListener('submit', (e) => {
@@ -448,7 +448,7 @@ function bindEvents() {
     state.profile.currency = $('#settings-currency').value;
     persist();
     renderDashboard();
-    toast('Ajustes guardados');
+    toast('Settings saved');
   });
 
   $('#btn-export')?.addEventListener('click', () => exportJson(state));
@@ -458,9 +458,9 @@ function bindEvents() {
     try {
       state = await importJson(file);
       renderAll();
-      toast('Copia de seguridad importada');
+      toast('Backup imported');
     } catch {
-      toast('No se pudo importar el archivo');
+      toast('Could not import file');
     }
     e.target.value = '';
   });
